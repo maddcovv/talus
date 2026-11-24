@@ -1,3 +1,10 @@
 packages:
   - packages/*
   - apps/*
+
+# Build scripts: esbuild needs its install script; the other two work without
+# theirs. Listing them keeps pnpm from failing the install in CI.
+allowBuilds:
+  '@bundled-es-modules/glob': false
+  esbuild: true
+  style-dictionary: false

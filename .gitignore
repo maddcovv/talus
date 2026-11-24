@@ -6,3 +6,5 @@ storybook-static/
 .vercel/
 .turbo/
 coverage/
+.vercel
+.env*
