@@ -1,0 +1,21 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as SelectStories from "./Select.stories";
+
+<Meta of={SelectStories} />
+
+# Select
+
+One choice from a list that would crowd the page as radios. The open list is a real listbox with full keyboard support.
+
+<Canvas of={SelectStories.Default} />
+
+<Controls of={SelectStories.Default} />
+
+## Usage notes
+
+- The label sits above the trigger and names the decision; the placeholder shows an example or a prompt.
+- Keyboard: Tab reaches the trigger; Enter, Space or arrow keys open the list; arrows move; Enter picks; Escape closes without picking. Typing jumps to matching options.
+- The selected option shows a check icon in the list, so selection is not color alone.
+- The list takes its surface, border, radius and shadow from the menu component tokens, so it restyles per brand automatically.
+
+<Stories />

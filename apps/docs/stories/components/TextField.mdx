@@ -1,0 +1,21 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as TextFieldStories from "./TextField.stories";
+
+<Meta of={TextFieldStories} />
+
+# TextField
+
+A single-line text input with a visible label, an optional hint, and an error state.
+
+<Canvas of={TextFieldStories.Default} />
+
+<Controls of={TextFieldStories.Default} />
+
+## Usage notes
+
+- Every field gets a real, visible label. Placeholder text is an example, never the label.
+- The hint and the error are wired to the input with `aria-describedby`, so screen readers announce them with the field.
+- Setting `errorMessage` marks the field invalid, turns the border, and shows the message with a warning icon. The icon and the text carry the meaning, not the color alone.
+- Keyboard: Tab moves through fields; the focus ring is the shared Talus ring.
+
+<Stories />

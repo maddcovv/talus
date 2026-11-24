@@ -1,0 +1,109 @@
+{
+  "$description": "Talus enterprise brand: type, size, density and shape. Pairs with a color mode.",
+  "radius": {
+    "control": {
+      "$type": "dimension",
+      "$value": "{radius.sm}"
+    },
+    "container": {
+      "$type": "dimension",
+      "$value": "{radius.md}"
+    }
+  },
+  "control": {
+    "height": {
+      "sm": {
+        "$type": "dimension",
+        "$value": "28px"
+      },
+      "md": {
+        "$type": "dimension",
+        "$value": "32px"
+      },
+      "lg": {
+        "$type": "dimension",
+        "$value": "40px"
+      }
+    }
+  },
+  "density": {
+    "row": {
+      "$type": "dimension",
+      "$value": "36px"
+    }
+  },
+  "border": {
+    "width": {
+      "control": {
+        "$type": "dimension",
+        "$value": "1px"
+      }
+    }
+  },
+  "font": {
+    "family": {
+      "display": {
+        "$type": "fontFamily",
+        "$value": "{font.family.plex-sans}"
+      },
+      "body": {
+        "$type": "fontFamily",
+        "$value": "{font.family.plex-sans}"
+      },
+      "mono": {
+        "$type": "fontFamily",
+        "$value": "{font.family.plex-mono}"
+      }
+    },
+    "weight": {
+      "display": {
+        "$type": "fontWeight",
+        "$value": "{font.weight.semibold}"
+      }
+    },
+    "size": {
+      "display": {
+        "$type": "dimension",
+        "$value": "{font.size.32}"
+      },
+      "h1": {
+        "$type": "dimension",
+        "$value": "{font.size.28}"
+      },
+      "h2": {
+        "$type": "dimension",
+        "$value": "{font.size.20}"
+      },
+      "h3": {
+        "$type": "dimension",
+        "$value": "{font.size.16}"
+      },
+      "body": {
+        "$type": "dimension",
+        "$value": "{font.size.14}"
+      },
+      "body-sm": {
+        "$type": "dimension",
+        "$value": "{font.size.13}"
+      },
+      "label": {
+        "$type": "dimension",
+        "$value": "{font.size.13}"
+      },
+      "caption": {
+        "$type": "dimension",
+        "$value": "{font.size.12}"
+      }
+    }
+  },
+  "focus": {
+    "ring-width": {
+      "$type": "dimension",
+      "$value": "2px"
+    },
+    "ring-offset": {
+      "$type": "dimension",
+      "$value": "2px"
+    }
+  }
+}

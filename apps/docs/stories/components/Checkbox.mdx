@@ -1,0 +1,21 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as CheckboxStories from "./Checkbox.stories";
+
+<Meta of={CheckboxStories} />
+
+# Checkbox
+
+An independent on-off choice. Use a group of checkboxes when people can pick several things; use a RadioGroup when they pick exactly one.
+
+<Canvas of={CheckboxStories.Unchecked} />
+
+<Controls of={CheckboxStories.Unchecked} />
+
+## Usage notes
+
+- The label is part of the component and part of the click target, so the whole row is pressable and at least 24px tall.
+- `isIndeterminate` is for "some of the things below are selected" parent boxes.
+- Keyboard: Tab reaches the checkbox, Space toggles it.
+- The check mark is drawn with an icon on a filled box, so the checked state is a shape change, not only a color change.
+
+<Stories />

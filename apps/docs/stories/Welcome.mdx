@@ -1,0 +1,23 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Welcome" />
+
+# Talus
+
+Talus is a design system with two brands on one token foundation. Everything on these pages is drawn with `--talus-*` CSS variables generated from the token files, the same files that drive the Figma library.
+
+Use the two toolbar switches above:
+
+- **Brand** switches between Enterprise (dense, quiet, IBM Plex Sans) and Consumer (bigger, warmer, Archivo extrabold headlines).
+- **Scheme** switches Enterprise between light and dark. Consumer has no dark mode yet and stays light.
+
+## Where things are
+
+- **Foundations** shows the colors, type and spacing straight from the tokens.
+- **Components** has every component in every state, with usage notes on each docs page.
+
+## Accessibility
+
+WCAG 2.1 AA is built in: all 141 text, icon, border and chart contrast pairs pass in all three color modes, every interactive element has a visible focus ring and a full keyboard path, and every component ships with a jest-axe test. The a11y panel in this Storybook runs the same axe checks on whatever story you are viewing.
+
+All names and data here are fictional. Talus is a portfolio project by John Reese, built with Claude.

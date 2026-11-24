@@ -1,0 +1,5 @@
+body {
+  background: var(--talus-color-bg-canvas);
+  color: var(--talus-color-text-primary);
+  font-family: var(--talus-font-family-body);
+}

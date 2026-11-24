@@ -1,0 +1,53 @@
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--talus-space-1);
+}
+
+.radio {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--talus-space-2);
+  min-block-size: var(--talus-size-touch-min);
+  font-family: var(--talus-font-family-body);
+  font-size: var(--talus-font-size-body);
+  color: var(--talus-color-text-primary);
+  cursor: pointer;
+}
+
+.circle {
+  box-sizing: border-box;
+  width: var(--talus-size-icon-md);
+  height: var(--talus-size-icon-md);
+  flex-shrink: 0;
+  border: var(--talus-border-width-control) solid var(--talus-color-border-input);
+  border-radius: var(--talus-radius-full);
+  background: var(--talus-color-bg-surface);
+  transition:
+    border-color var(--talus-motion-duration-fast) var(--talus-easing-standard),
+    border-width var(--talus-motion-duration-fast) var(--talus-easing-standard);
+}
+
+.radio[data-hovered] .circle {
+  border-color: var(--talus-color-border-strong);
+}
+
+.radio[data-selected] .circle {
+  border-color: var(--talus-color-action-primary-bg);
+  border-width: calc(var(--talus-size-icon-md) / 4);
+}
+
+.radio[data-focus-visible] .circle {
+  outline: var(--talus-focus-ring-width) solid var(--talus-color-border-focus);
+  outline-offset: var(--talus-focus-ring-offset);
+}
+
+.radio[data-disabled] {
+  color: var(--talus-color-text-disabled);
+  cursor: not-allowed;
+}
+
+.radio[data-disabled] .circle {
+  background: var(--talus-color-bg-disabled);
+  border-color: var(--talus-color-border-disabled);
+}

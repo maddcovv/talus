@@ -1,0 +1,83 @@
+{
+  "$description": "Talus component tokens. They alias brand, color and global tokens only.",
+  "button": {
+    "height": {
+      "$type": "dimension",
+      "$value": "{control.height.md}"
+    },
+    "radius": {
+      "$type": "dimension",
+      "$value": "{radius.control}"
+    },
+    "padding-x": {
+      "$type": "dimension",
+      "$value": "{space.4}"
+    },
+    "gap": {
+      "$type": "dimension",
+      "$value": "{space.2}"
+    },
+    "border-width": {
+      "$type": "dimension",
+      "$value": "{border.width.control}"
+    }
+  },
+  "input": {
+    "height": {
+      "$type": "dimension",
+      "$value": "{control.height.md}"
+    },
+    "radius": {
+      "$type": "dimension",
+      "$value": "{radius.control}"
+    },
+    "border-width": {
+      "$type": "dimension",
+      "$value": "{border.width.control}"
+    },
+    "padding-x": {
+      "$type": "dimension",
+      "$value": "{space.3}"
+    }
+  },
+  "card": {
+    "radius": {
+      "$type": "dimension",
+      "$value": "{radius.container}"
+    },
+    "padding": {
+      "$type": "dimension",
+      "$value": "{space.4}"
+    }
+  },
+  "table": {
+    "row-height": {
+      "$type": "dimension",
+      "$value": "{density.row}"
+    }
+  },
+  "dialog": {
+    "radius": {
+      "$type": "dimension",
+      "$value": "{radius.container}"
+    },
+    "padding": {
+      "$type": "dimension",
+      "$value": "{space.6}"
+    },
+    "shadow": {
+      "$type": "shadow",
+      "$value": "{elevation.3}"
+    }
+  },
+  "menu": {
+    "radius": {
+      "$type": "dimension",
+      "$value": "{radius.container}"
+    },
+    "shadow": {
+      "$type": "shadow",
+      "$value": "{elevation.2}"
+    }
+  }
+}

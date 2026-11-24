@@ -1,0 +1,68 @@
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--talus-space-2);
+  min-block-size: var(--talus-size-touch-min);
+  font-family: var(--talus-font-family-body);
+  font-size: var(--talus-font-size-body);
+  color: var(--talus-color-text-primary);
+  cursor: pointer;
+}
+
+.box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--talus-size-icon-md);
+  height: var(--talus-size-icon-md);
+  flex-shrink: 0;
+  border: var(--talus-border-width-control) solid var(--talus-color-border-input);
+  border-radius: var(--talus-radius-control);
+  background: var(--talus-color-bg-surface);
+  transition:
+    background-color var(--talus-motion-duration-fast) var(--talus-easing-standard),
+    border-color var(--talus-motion-duration-fast) var(--talus-easing-standard);
+}
+
+.mark {
+  width: var(--talus-size-icon-sm);
+  height: var(--talus-size-icon-sm);
+  color: var(--talus-color-icon-on-action);
+  opacity: 0;
+  transition: opacity var(--talus-motion-duration-fast) var(--talus-easing-standard);
+}
+
+.checkbox[data-hovered] .box {
+  border-color: var(--talus-color-border-strong);
+}
+
+.checkbox[data-selected] .box,
+.checkbox[data-indeterminate] .box {
+  background: var(--talus-color-action-primary-bg);
+  border-color: var(--talus-color-action-primary-bg);
+}
+
+.checkbox[data-selected] .mark,
+.checkbox[data-indeterminate] .mark {
+  opacity: 1;
+}
+
+.checkbox[data-focus-visible] .box {
+  outline: var(--talus-focus-ring-width) solid var(--talus-color-border-focus);
+  outline-offset: var(--talus-focus-ring-offset);
+}
+
+.checkbox[data-disabled] {
+  color: var(--talus-color-text-disabled);
+  cursor: not-allowed;
+}
+
+.checkbox[data-disabled] .box {
+  background: var(--talus-color-bg-disabled);
+  border-color: var(--talus-color-border-disabled);
+}
+
+.checkbox[data-disabled][data-selected] .mark {
+  color: var(--talus-color-text-disabled);
+}

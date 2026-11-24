@@ -1,0 +1,20 @@
+import { Meta, Canvas, Stories } from "@storybook/addon-docs/blocks";
+import * as DialogStories from "./Dialog.stories";
+
+<Meta of={DialogStories} />
+
+# Dialog
+
+A modal that interrupts for one decision or one small task. If people need the page behind it, use an inline section instead.
+
+<Canvas of={DialogStories.Default} />
+
+## Usage notes
+
+- Wrap a trigger and a `Dialog` in `DialogTrigger`. The `title` prop is required and labels the dialog for screen readers.
+- Focus moves into the dialog on open, stays trapped inside while it is up, and returns to the trigger on close.
+- Escape closes it. Clicking the dim overlay closes it too unless `isDismissable={false}`.
+- The children can be a function receiving `{ close }`, which is how footer buttons close the dialog.
+- The dialog takes its radius, padding and shadow from the dialog component tokens, and the overlay color from the overlay token, so both brands restyle it automatically.
+
+<Stories />

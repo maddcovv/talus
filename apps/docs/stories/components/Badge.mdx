@@ -1,0 +1,20 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as BadgeStories from "./Badge.stories";
+
+<Meta of={BadgeStories} />
+
+# Badge
+
+A short status word on an order, a listing or a candidate. Badges are read-only; if it needs a click, it is a Button.
+
+<Canvas of={BadgeStories.Success} />
+
+<Controls of={BadgeStories.Success} />
+
+## Usage notes
+
+- The text names the status: "Shipped," "Low stock," "Draft." The color reinforces it; the word carries it, so status never relies on color alone.
+- Five variants map to the status color tokens: success, warning, danger, info and neutral. Each pairs a soft background with a dark foreground that passes 4.5:1 in every color mode.
+- Keep badges to one or two words. Longer messages belong in body text or a status region.
+
+<Stories />

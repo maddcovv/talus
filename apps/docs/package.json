@@ -1,0 +1,30 @@
+{
+  "name": "talus-docs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "storybook": "storybook dev -p 6006",
+    "build": "storybook build"
+  },
+  "dependencies": {
+    "@fontsource/archivo": "^5.2.0",
+    "@fontsource/ibm-plex-mono": "^5.2.0",
+    "@fontsource/ibm-plex-sans": "^5.2.0",
+    "@talus/react": "workspace:*",
+    "@talus/tokens": "workspace:*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@phosphor-icons/react": "^2.1.7"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "^10.6.8",
+    "@storybook/addon-docs": "^10.6.8",
+    "@storybook/react-vite": "^10.6.8",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "storybook": "^10.6.8",
+    "typescript": "^5.7.0",
+    "vite": "^7.0.0"
+  }
+}

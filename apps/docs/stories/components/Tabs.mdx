@@ -1,0 +1,19 @@
+import { Meta, Canvas, Stories } from "@storybook/addon-docs/blocks";
+import * as TabsStories from "./Tabs.stories";
+
+<Meta of={TabsStories} />
+
+# Tabs
+
+Peer views of one thing, like the items, shipping and history of a single order. For navigation between pages, use links instead.
+
+<Canvas of={TabsStories.Default} />
+
+## Usage notes
+
+- Compose from four parts: `Tabs` wraps `TabList` (with an `aria-label`), `Tab` and `TabPanel`, matched by `id`.
+- Keyboard: Tab moves into the tab list and then into the panel; arrow keys move between tabs and switch panels as they move.
+- The selected tab shows an underline plus a text color change, and the panel content changes with it, so state is not color alone.
+- Keep tab labels to one or two words, and keep the set stable; tabs that appear and disappear confuse the mental map.
+
+<Stories />

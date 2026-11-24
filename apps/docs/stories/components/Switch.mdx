@@ -1,0 +1,21 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as SwitchStories from "./Switch.stories";
+
+<Meta of={SwitchStories} />
+
+# Switch
+
+An on-off setting that takes effect right away, like vacation mode on a seller account. If the change only applies after a Save button, use a Checkbox instead.
+
+<Canvas of={SwitchStories.Off} />
+
+<Controls of={SwitchStories.Off} />
+
+## Usage notes
+
+- The label states the setting, not the action: "Vacation mode," not "Turn on vacation mode."
+- Keyboard: Tab reaches the switch, Space toggles it. It announces as a switch with an on-off state.
+- The track and thumb sizes derive from the brand control tokens, so the consumer switch is larger than the enterprise one on the same markup.
+- The thumb moves and the track fills on toggle; under reduced motion the move is instant.
+
+<Stories />

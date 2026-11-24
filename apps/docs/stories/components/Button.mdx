@@ -1,0 +1,26 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as ButtonStories from "./Button.stories";
+
+<Meta of={ButtonStories} />
+
+# Button
+
+One action per button, named with a verb. Four variants cover the common cases:
+
+- **Primary** for the one main action on the screen. One per view.
+- **Secondary** for actions next to the primary one.
+- **Danger** for destructive actions. Pair it with a confirm Dialog when the loss is real.
+- **Ghost** for low-weight actions inside toolbars, cards and table rows.
+
+<Canvas of={ButtonStories.Primary} />
+
+<Controls of={ButtonStories.Primary} />
+
+## Usage notes
+
+- The label says what happens: "Save changes," not "OK."
+- `isLoading` shows a spinner, keeps the label readable and blocks presses. Use it for requests that take longer than a beat.
+- Keyboard: Tab reaches the button, Enter and Space press it. The focus ring is the shared Talus ring.
+- Icons ride inside the button as children, sized with the icon size tokens, and always carry `aria-hidden` when the label already says what the button does.
+
+<Stories />

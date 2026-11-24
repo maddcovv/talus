@@ -1,0 +1,21 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as RadioGroupStories from "./RadioGroup.stories";
+
+<Meta of={RadioGroupStories} />
+
+# RadioGroup
+
+Exactly one choice from a short visible list. For more than about six options, or options that need searching, use Select instead.
+
+<Canvas of={RadioGroupStories.Default} />
+
+<Controls of={RadioGroupStories.Default} />
+
+## Usage notes
+
+- The group label names the decision; each radio label names one option.
+- Keyboard: Tab enters the group, arrow keys move between options and select as they move, which is the native radio pattern.
+- Hints and errors sit on the group, wired with `aria-describedby`. Errors show an icon plus text, never color alone.
+- Each option row is at least 24px tall, so the target is comfortable.
+
+<Stories />
