@@ -1,0 +1,25 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as AppShellStories from "./AppShell.stories";
+
+<Meta of={AppShellStories} />
+
+# AppShell
+
+The frame for a full application: a sidebar with the brand and the main navigation, a top bar for
+search and session controls, and the content in the main landmark. On narrow screens the sidebar
+becomes a strip across the top.
+
+<Canvas of={AppShellStories.Default} />
+
+<Controls of={AppShellStories.Default} />
+
+## Usage notes
+
+- Pass router links into `nav`, icon first inside each link, and mark the current page with
+  `aria-current="page"`; the shell styles the active state.
+- `topBar` is for the one thing a person reaches for everywhere, like global search. `end` holds
+  the scheme switch and the signed-in person.
+- The shell owns the landmarks: one nav, one banner, one main. Pages inside should not add a second
+  main.
+
+<Stories />

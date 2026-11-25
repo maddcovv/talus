@@ -1,0 +1,24 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as AccordionStories from "./Accordion.stories";
+
+<Meta of={AccordionStories} />
+
+# Accordion
+
+A list of Disclosure rows drawn as one block: shared borders, one outline, keyboard friendly. Use
+it for a list of collapsible records, like the jobs in a work history.
+
+<Canvas of={AccordionStories.Default} />
+
+<Controls of={AccordionStories.Default} />
+
+## Usage notes
+
+- Give each child Disclosure an `id`; the group tracks open rows by it. `expandedKeys` and
+  `onExpandedChange` control them, `defaultExpandedKeys` starts some open.
+- Several rows can be open at once by default, which suits records a person works through.
+  `allowsMultipleExpanded={false}` keeps one open at a time; use it only when panels are long.
+- The Disclosure rules still hold: nothing a person must act on hides in a closed row unless the
+  page names it in words when it blocks them.
+
+<Stories />

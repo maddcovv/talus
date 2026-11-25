@@ -1,0 +1,143 @@
+.shell {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  min-block-size: 100vh;
+  background: var(--talus-color-bg-canvas);
+}
+
+.sidebar {
+  position: sticky;
+  inset-block-start: 0;
+  max-block-size: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--talus-space-5);
+  padding: var(--talus-space-4);
+  background: var(--talus-color-bg-surface);
+  border-inline-end: var(--talus-border-width-control) solid var(--talus-color-border-default);
+}
+
+.brand {
+  padding-inline: var(--talus-space-3);
+  color: var(--talus-color-text-primary);
+  font-family: var(--talus-font-family-display);
+  font-weight: var(--talus-font-weight-display);
+  font-size: var(--talus-font-size-h3);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+a.brand:focus-visible {
+  outline: var(--talus-focus-ring-width) solid var(--talus-color-border-focus);
+  outline-offset: var(--talus-focus-ring-offset);
+  border-radius: var(--talus-radius-xs);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--talus-space-1);
+}
+
+.nav a {
+  display: flex;
+  align-items: center;
+  gap: var(--talus-space-3);
+  min-block-size: var(--talus-size-touch-min);
+  padding: var(--talus-space-2) var(--talus-space-3);
+  border-radius: var(--talus-radius-control);
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-body);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav a svg {
+  flex: none;
+  inline-size: var(--talus-size-icon-md);
+  block-size: var(--talus-size-icon-md);
+  color: var(--talus-color-icon-secondary);
+}
+
+.nav a:hover {
+  background: var(--talus-color-bg-hover);
+  color: var(--talus-color-text-primary);
+}
+
+.nav a:focus-visible {
+  outline: var(--talus-focus-ring-width) solid var(--talus-color-border-focus);
+  outline-offset: var(--talus-focus-ring-offset);
+}
+
+.nav a[aria-current="page"] {
+  background: var(--talus-color-bg-selected);
+  color: var(--talus-color-text-primary);
+  font-weight: var(--talus-font-weight-medium);
+}
+
+.nav a[aria-current="page"] svg {
+  color: var(--talus-color-icon-default);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.topBar {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--talus-z-sticky);
+  display: flex;
+  align-items: center;
+  gap: var(--talus-space-4);
+  min-block-size: calc(var(--talus-control-height-lg) + var(--talus-space-3));
+  padding-block: var(--talus-space-2);
+  padding-inline: var(--talus-space-5);
+  background: var(--talus-color-bg-surface);
+  border-block-end: var(--talus-border-width-control) solid var(--talus-color-border-default);
+}
+
+.topBarMain {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-inline-size: 0;
+}
+
+.end {
+  margin-inline-start: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--talus-space-3);
+  flex: none;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Matches the token --talus-breakpoint-medium. */
+@media (max-width: 768px) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sidebar {
+    position: static;
+    max-block-size: none;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    border-inline-end: none;
+    border-block-end: var(--talus-border-width-control) solid var(--talus-color-border-default);
+  }
+
+  .nav {
+    flex-direction: row;
+  }
+}

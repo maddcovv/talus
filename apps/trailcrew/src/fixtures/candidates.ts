@@ -1,5 +1,5 @@
 import { jobs } from "./jobs";
-import type { Candidate, EvidenceRow, Source, StageId } from "./types";
+import type { Candidate, EvidenceRow, PersonCheck, Source, StageId } from "./types";
 import { stageOrder } from "./types";
 
 // 39 invented names plus June Halloran. None belongs to a real hiring product.
@@ -104,6 +104,46 @@ const closedReasons = [
   "Location or work authorization",
 ];
 
+const currentRolePools: Record<string, string[]> = {
+  "warehouse-lead": [
+    "Shift lead at a regional parts distributor",
+    "Receiving associate at a grocery distribution center",
+    "Fulfillment supervisor at a print shop",
+  ],
+  "customer-support": [
+    "Support specialist at a mail order nursery",
+    "Help desk agent at a software reseller",
+    "Customer care at a bike shop",
+  ],
+  "senior-frontend": [
+    "Frontend engineer at an analytics startup",
+    "UI engineer at a health records company",
+    "Web developer at a small agency",
+  ],
+  "seasonal-fulfillment": [
+    "Winters at a ski rental counter",
+    "Stockroom associate at an outdoor retailer",
+    "Student, picks up seasonal work",
+  ],
+};
+
+const automatedNotes = [
+  "Applied in 9 seconds from a throwaway email",
+  "No typing on the form; every field arrived in one paste",
+  "The same resume hit 11 jobs in an hour from one address",
+];
+
+function personCheckFor(index: number): { personCheck: PersonCheck; personCheckNote?: string } {
+  if (index % 9 === 4) {
+    return {
+      personCheck: "likely-automated",
+      personCheckNote: automatedNotes[index % automatedNotes.length],
+    };
+  }
+  if (index % 5 === 3) return { personCheck: "not-checked" };
+  return { personCheck: index % 2 === 0 ? "verified-text" : "verified-email" };
+}
+
 function slug(name: string): string {
   return name.toLowerCase().replace(/[^a-z]+/g, "-");
 }
@@ -129,13 +169,17 @@ function makeCandidate(name: string, index: number): Candidate {
   const stage = stageCycle[index % stageCycle.length];
   const appliedDay = 3 + (index % 19);
   const waitingDays = (index * 7) % 13;
+  const jobId = jobCycle[index % jobCycle.length];
+  const rolePool = currentRolePools[jobId] ?? [];
   return {
     id: slug(name),
     name,
     email: email(name),
     location: locationCycle[index % locationCycle.length],
-    jobId: jobCycle[index % jobCycle.length],
+    currentRole: rolePool[index % rolePool.length] ?? "",
+    jobId,
     stage,
+    ...personCheckFor(index),
     appliedOn: `Nov ${appliedDay}`,
     stageDates: stageDatesFor(stage, appliedDay),
     source: sourceCycle[index % sourceCycle.length],
@@ -162,8 +206,10 @@ export const june: Candidate = {
   name: "June Halloran",
   email: "june.halloran@example.com",
   location: "Fort Collins, Colorado",
+  currentRole: "Senior Frontend Engineer at Blue Mesa Software",
   jobId: "senior-frontend",
   stage: "interview",
+  personCheck: "verified-text",
   appliedOn: "Nov 12",
   stageDates: { applied: "Nov 12", review: "Nov 14", interview: "Nov 20" },
   source: "Company site",

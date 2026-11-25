@@ -23,7 +23,14 @@ import {
 } from "@talus/react";
 import { candidatesForJob } from "../fixtures/candidates";
 import { getJob, jobs } from "../fixtures/jobs";
-import { stageOrder, stageTitles, type Candidate, type StageId } from "../fixtures/types";
+import {
+  personCheckWords,
+  stageOrder,
+  stageTitles,
+  type Candidate,
+  type StageId,
+} from "../fixtures/types";
+import { Switch } from "@talus/react";
 import styles from "./PipelinePage.module.css";
 
 const stageVariant: Record<StageId, BadgeVariant> = {
@@ -56,6 +63,7 @@ export function PipelinePage() {
   const [rows, setRows] = useState<Candidate[]>(() => candidatesForJob(jobId));
   const [filterStage, setFilterStage] = useState<string>("all");
   const [filterSource, setFilterSource] = useState<string>("all");
+  const [hideAutomated, setHideAutomated] = useState(false);
   const [selected, setSelected] = useState<Selection>(new Set());
   const [bulkStage, setBulkStage] = useState<string | null>(null);
   const [sort, setSort] = useState<SortDescriptor>({ column: "name", direction: "ascending" });
@@ -77,7 +85,9 @@ export function PipelinePage() {
   }
 
   const bySource = rows.filter(
-    (candidate) => filterSource === "all" || candidate.source === filterSource,
+    (candidate) =>
+      (filterSource === "all" || candidate.source === filterSource) &&
+      (!hideAutomated || candidate.personCheck !== "likely-automated"),
   );
   const tableRows = bySource
     .filter((candidate) => filterStage === "all" || candidate.stage === filterStage)
@@ -121,18 +131,23 @@ export function PipelinePage() {
             {rows.length} candidates. <Link to={`/recruit/jobs/${jobId}/ai-log`}>AI activity log</Link>
           </p>
         </div>
-        <div className={styles.jobSwitch}>
-          <Select
-            label="Job"
-            selectedKey={jobId}
-            onSelectionChange={(key) => navigate(`/recruit/jobs/${String(key)}`)}
-          >
-            {jobs.map((item) => (
-              <SelectItem key={item.id} id={item.id}>
-                {item.title}
-              </SelectItem>
-            ))}
-          </Select>
+        <div className={styles.headActions}>
+          <div className={styles.jobSwitch}>
+            <Select
+              label="Job"
+              selectedKey={jobId}
+              onSelectionChange={(key) => navigate(`/recruit/jobs/${String(key)}`)}
+            >
+              {jobs.map((item) => (
+                <SelectItem key={item.id} id={item.id}>
+                  {item.title}
+                </SelectItem>
+              ))}
+            </Select>
+          </div>
+          <Button variant="secondary" onPress={() => navigate("/recruit/jobs/new")}>
+            New job
+          </Button>
         </div>
       </div>
 
@@ -157,6 +172,11 @@ export function PipelinePage() {
             </SelectItem>
           ))}
         </Select>
+        <div className={styles.filterSwitch}>
+          <Switch isSelected={hideAutomated} onChange={setHideAutomated}>
+            Hide likely automated
+          </Switch>
+        </div>
       </div>
 
       <Tabs defaultSelectedKey="board">
@@ -172,22 +192,36 @@ export function PipelinePage() {
           >
             {stageOrder.map((stage) => {
               const inStage = bySource.filter((candidate) => candidate.stage === stage);
+              const totalWait = inStage.reduce((sum, candidate) => sum + candidate.waitingDays, 0);
               return (
                 <BoardColumn
                   key={stage}
                   id={stage}
                   title={stageTitles[stage]}
                   count={inStage.length}
+                  detail={inStage.length > 0 ? `${totalWait} days waiting in total` : undefined}
                   headingLevel={2}
                 >
                   {inStage.map((candidate) => (
                     <BoardCard key={candidate.id} id={candidate.id} title={candidate.name}>
+                      <span className={styles.cardRole}>{candidate.currentRole}</span>
                       <span className={styles.cardMeta}>
-                        Applied {candidate.appliedOn}. Waiting {candidate.waitingDays}{" "}
+                        Applied {candidate.appliedOn}, waiting {candidate.waitingDays}{" "}
                         {candidate.waitingDays === 1 ? "day" : "days"}.
                       </span>
+                      {candidate.personCheck !== "likely-automated" ? (
+                        <span className={styles.cardMeta}>
+                          {personCheckWords[candidate.personCheck]}.
+                        </span>
+                      ) : null}
                       <span className={styles.cardTags}>
                         <Tag>{candidate.source}</Tag>
+                        {candidate.personCheck === "likely-automated" ? (
+                          <Badge variant="warning">Likely automated</Badge>
+                        ) : null}
+                        {candidate.reviewRequested ? (
+                          <Badge variant="info">Asked for review</Badge>
+                        ) : null}
                       </span>
                     </BoardCard>
                   ))}

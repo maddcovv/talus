@@ -16,6 +16,8 @@ interface ActionList {
   title: string;
   detail: (candidate: Candidate) => string;
   items: Candidate[];
+  /** One line under the list, e.g. what never happens automatically. */
+  note?: string;
 }
 
 export function TodayPage() {
@@ -39,6 +41,13 @@ export function TodayPage() {
       title: "Offers waiting on approval",
       detail: () => "Waiting on Marcus Lee",
       items: candidates.filter((c) => c.stage === "offer" && c.offerNeedsApproval),
+    },
+    {
+      id: "automated",
+      title: "Likely automated applications",
+      detail: (c) => c.personCheckNote ?? "Quiet signals flagged this application",
+      note: "Marked, never auto rejected. A person makes every call.",
+      items: candidates.filter((c) => c.personCheck === "likely-automated"),
     },
     {
       id: "identity",
@@ -103,6 +112,9 @@ export function TodayPage() {
             )}
             {list.items.length > 5 ? (
               <p className={styles.more}>And {list.items.length - 5} more in the pipeline.</p>
+            ) : null}
+            {list.note && list.items.length > 0 ? (
+              <p className={styles.more}>{list.note}</p>
             ) : null}
           </Card>
         ))}

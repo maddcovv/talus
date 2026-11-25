@@ -43,6 +43,14 @@
   font-variant-numeric: tabular-nums;
 }
 
+.columnDetail {
+  margin: 0;
+  padding-inline: var(--talus-space-2);
+  padding-block-end: var(--talus-space-2);
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-caption);
+}
+
 .cards {
   display: flex;
   flex-direction: column;

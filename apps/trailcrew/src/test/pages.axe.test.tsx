@@ -9,17 +9,24 @@ import { renderAt } from "./renderAt";
 const candidatePages: Array<[string, string]> = [
   ["jobs index", "/"],
   ["job page", "/jobs/senior-frontend"],
+  ["job page, warehouse", "/jobs/warehouse-lead"],
   ["apply", "/jobs/senior-frontend/apply"],
   ["status", "/status/june-halloran"],
   ["status, closed", "/status/dev-rao"],
+  ["life", "/life"],
+  ["benefits", "/benefits"],
+  ["ai notice", "/how-ai-works"],
 ];
 
 const recruiterPages: Array<[string, string]> = [
   ["today", "/recruit"],
   ["pipeline", "/recruit/jobs/warehouse-lead"],
   ["candidate", "/recruit/candidates/june-halloran"],
+  ["candidates", "/recruit/candidates"],
   ["job setup", "/recruit/jobs/new"],
   ["ai log", "/recruit/jobs/senior-frontend/ai-log"],
+  ["ai activity", "/recruit/ai-activity"],
+  ["settings", "/recruit/settings"],
 ];
 
 describe("candidate pages have no axe violations", () => {

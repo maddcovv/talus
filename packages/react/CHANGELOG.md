@@ -1,5 +1,11 @@
 # @talus/react
 
+## 0.5.0
+
+### Minor Changes
+
+- Add Accordion, AppShell, DescriptionList, ErrorSummary and OneTimeCodeInput, and give BoardColumn a detail line for things like total waiting time.
+
 ## 0.4.0
 
 ### Minor Changes

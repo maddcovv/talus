@@ -66,6 +66,8 @@ export interface BoardColumnProps extends React.HTMLAttributes<HTMLElement> {
   id: string;
   title: string;
   count?: number;
+  /** One line under the header, e.g. total waiting time. */
+  detail?: React.ReactNode;
   /** Heading level for the column title, so it fits the page's outline. */
   headingLevel?: 2 | 3 | 4;
   children?: React.ReactNode;
@@ -75,6 +77,7 @@ export function BoardColumn({
   id,
   title,
   count,
+  detail,
   headingLevel = 3,
   children,
   className,
@@ -121,6 +124,7 @@ export function BoardColumn({
           </Heading>
           {count !== undefined ? <span className={styles.count}>{count}</span> : null}
         </header>
+        {detail ? <p className={styles.columnDetail}>{detail}</p> : null}
         <ul className={styles.cards}>{children}</ul>
       </section>
     </ColumnContext.Provider>

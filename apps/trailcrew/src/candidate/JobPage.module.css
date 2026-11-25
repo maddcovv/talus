@@ -1,3 +1,26 @@
+.container {
+  inline-size: 100%;
+  max-inline-size: 72rem;
+  margin-inline: auto;
+  padding: var(--talus-space-6) var(--talus-space-5) var(--talus-space-12);
+}
+
+.crumbs {
+  margin: 0 0 var(--talus-space-5);
+  font-size: var(--talus-font-size-body-sm);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20rem;
+  gap: var(--talus-space-10);
+  align-items: start;
+}
+
+.main {
+  max-inline-size: 42.5rem;
+}
+
 .employer {
   margin: 0;
   color: var(--talus-color-text-secondary);
@@ -5,45 +28,40 @@
 }
 
 .title {
-  margin: var(--talus-space-1) 0 var(--talus-space-3);
+  margin: var(--talus-space-1) 0 var(--talus-space-4);
   font-family: var(--talus-font-family-display);
   font-weight: var(--talus-font-weight-display);
   font-size: var(--talus-font-size-h1);
   line-height: var(--talus-font-line-height-tight);
 }
 
-.meta {
+.rail {
+  position: sticky;
+  inset-block-start: var(--talus-space-16);
+}
+
+.card {
   display: flex;
-  gap: var(--talus-space-2) var(--talus-space-5);
-  flex-wrap: wrap;
-  margin: 0 0 var(--talus-space-5);
-  padding: 0;
-  list-style: none;
+  flex-direction: column;
+  gap: var(--talus-space-4);
+  padding: var(--talus-space-5);
+  background: var(--talus-color-bg-surface);
+  border: var(--talus-border-width-control) solid var(--talus-color-border-default);
+  border-radius: var(--talus-radius-container);
 }
 
-.meta li {
-  display: flex;
-  align-items: center;
-  gap: var(--talus-space-2);
+.cardButton {
+  inline-size: 100%;
 }
 
-.metaIcon {
-  inline-size: var(--talus-size-icon-sm);
-  block-size: var(--talus-size-icon-sm);
-  color: var(--talus-color-icon-secondary);
-}
-
-.applyRow {
-  display: flex;
-  align-items: center;
-  gap: var(--talus-space-3);
-  flex-wrap: wrap;
-  margin-block: var(--talus-space-5) var(--talus-space-6);
-}
-
-.applyNote {
+.cardNote {
+  margin: 0;
   color: var(--talus-color-text-secondary);
   font-size: var(--talus-font-size-body-sm);
+}
+
+.summaryMobile {
+  display: none;
 }
 
 .lede {
@@ -83,6 +101,13 @@
   font-size: var(--talus-font-size-body-sm);
 }
 
+.applyRow {
+  display: flex;
+  align-items: center;
+  gap: var(--talus-space-3);
+  margin-block: var(--talus-space-2) var(--talus-space-6);
+}
+
 .finePrint {
   margin-block-start: var(--talus-space-6);
   padding-block-start: var(--talus-space-5);
@@ -96,4 +121,50 @@
 
 .finePrint p {
   margin: 0;
+}
+
+.meta {
+  padding-block-end: var(--talus-space-4);
+}
+
+.applyBar {
+  display: none;
+}
+
+/* Matches the token --talus-breakpoint-wide. */
+@media (max-width: 1080px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rail {
+    display: none;
+  }
+
+  .summaryMobile {
+    display: block;
+    margin-block-end: var(--talus-space-4);
+  }
+
+  .container {
+    padding-block-end: var(--talus-space-20);
+  }
+
+  .applyBar {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: var(--talus-z-sticky);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--talus-space-4);
+    padding: var(--talus-space-3) var(--talus-space-5);
+    background: var(--talus-color-bg-surface);
+    border-block-start: var(--talus-border-width-control) solid var(--talus-color-border-default);
+  }
+
+  .applyBarPay {
+    font-weight: var(--talus-font-weight-medium);
+  }
 }

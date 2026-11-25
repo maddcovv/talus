@@ -1,18 +1,23 @@
 // June Halloran's sample resume as the AI fill sees it: field values with the
-// source line each one came from. Phone, work authorization and one link have
-// no source, so the form marks them "Needs your answer."
+// source line each one came from. Phone, work authorization, sponsorship and
+// two links have no source, so the form marks them "Needs your answer."
+
+export interface FieldSource {
+  /** The line the AI read, shown by the SourceChip. */
+  line: string;
+  where: string;
+}
 
 export interface FilledField {
   id: string;
   label: string;
   value: string;
-  /** The line the AI read, shown by the SourceChip. */
-  source?: { line: string; where: string };
+  source?: FieldSource;
   /** Must be answered before the application can continue. */
   required?: boolean;
   multiline?: boolean;
-  /** When set, the field renders inside a collapsed Disclosure row. */
-  collapse?: { title: string; detail?: string };
+  /** Short helper text under the field. */
+  hint?: string;
 }
 
 export interface FilledSection {
@@ -21,8 +26,48 @@ export interface FilledSection {
   fields: FilledField[];
 }
 
+/** One job on the resume, split into the fields a person can correct. */
+export interface WorkEntry {
+  id: string;
+  company: string;
+  title: string;
+  location: string;
+  startMonth: string;
+  startYear: string;
+  endMonth: string;
+  endYear: string;
+  /** "I work here now": clears the end date. */
+  current: boolean;
+  /** What you did there, one line per bullet. */
+  bullets: string;
+  source?: FieldSource;
+}
+
+export interface EducationEntry {
+  id: string;
+  school: string;
+  credential: string;
+  year: string;
+  source?: FieldSource;
+}
+
 export const sampleResumeName = "june-halloran-resume.pdf";
 export const sampleResumeSize = "84 KB";
+
+export const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 export const filledSections: FilledSection[] = [
   {
@@ -51,63 +96,6 @@ export const filledSections: FilledSection[] = [
     ],
   },
   {
-    id: "work",
-    title: "Work history",
-    fields: [
-      {
-        id: "job1",
-        label: "What you did at Blue Mesa Software",
-        collapse: { title: "Senior Frontend Engineer, Blue Mesa Software", detail: "2022 to now" },
-        value:
-          "Led the component library used by four product teams.\nShipped the accessibility pass that took dashboards to WCAG 2.1 AA.\nCut the checkout bundle by a third and wrote up how.\nRan the frontend side of the hiring loop.",
-        source: {
-          line: "Blue Mesa Software. Senior Frontend Engineer, 2022 to present.",
-          where: "your resume, page 1",
-        },
-        multiline: true,
-      },
-      {
-        id: "job2",
-        label: "What you did at Cairn Analytics",
-        collapse: { title: "Frontend Engineer, Cairn Analytics", detail: "2018 to 2022" },
-        value:
-          "Built dashboard views in React and TypeScript.\nOwned the charting layer and its tests.\nIntroduced Vitest and got the frontend to 80 percent coverage.",
-        source: {
-          line: "Cairn Analytics. Frontend Engineer, 2018 to 2022.",
-          where: "your resume, page 2",
-        },
-        multiline: true,
-      },
-      {
-        id: "job3",
-        label: "What you did at Hogback Gear Works",
-        collapse: { title: "Trail guide, Hogback Gear Works", detail: "2016 to 2018" },
-        value:
-          "Led day trips of up to twelve guests.\nKept the gear inventory and the booking calendar.",
-        source: {
-          line: "Hogback Gear Works. Trail guide, 2016 to 2018.",
-          where: "your resume, page 2",
-        },
-        multiline: true,
-      },
-    ],
-  },
-  {
-    id: "education",
-    title: "Education",
-    fields: [
-      {
-        id: "school",
-        label: "Education",
-        value: "BS Computer Science, Colorado State University, 2016",
-        source: {
-          line: "Colorado State University, BS Computer Science, 2016",
-          where: "your resume, page 2",
-        },
-      },
-    ],
-  },
-  {
     id: "skills",
     title: "Skills",
     fields: [
@@ -132,6 +120,12 @@ export const filledSections: FilledSection[] = [
         value: "",
         required: true,
       },
+      {
+        id: "sponsorship",
+        label: "Will you now or in the future need visa sponsorship?",
+        value: "",
+        required: true,
+      },
     ],
   },
   {
@@ -139,12 +133,90 @@ export const filledSections: FilledSection[] = [
     title: "Links",
     fields: [
       {
+        id: "linkedin",
+        label: "LinkedIn",
+        value: "",
+        hint: "Optional.",
+      },
+      {
         id: "portfolio",
         label: "Portfolio",
         value: "junehalloran.example",
+        hint: "Optional.",
         source: { line: "junehalloran.example", where: "your resume, page 1" },
       },
-      { id: "other-link", label: "Anything else you want us to see", value: "" },
+      {
+        id: "github",
+        label: "GitHub",
+        value: "",
+        hint: "Optional.",
+      },
     ],
+  },
+];
+
+export const workEntries: WorkEntry[] = [
+  {
+    id: "blue-mesa",
+    company: "Blue Mesa Software",
+    title: "Senior Frontend Engineer",
+    location: "Remote, from Fort Collins, Colorado",
+    startMonth: "March",
+    startYear: "2022",
+    endMonth: "",
+    endYear: "",
+    current: true,
+    bullets:
+      "Led the component library used by four product teams.\nShipped the accessibility pass that took dashboards to WCAG 2.1 AA.\nCut the checkout bundle by a third and wrote up how.\nRan the frontend side of the hiring loop.",
+    source: {
+      line: "Blue Mesa Software. Senior Frontend Engineer, March 2022 to present.",
+      where: "your resume, page 1",
+    },
+  },
+  {
+    id: "cairn",
+    company: "Cairn Analytics",
+    title: "Frontend Engineer",
+    location: "Denver, Colorado",
+    startMonth: "June",
+    startYear: "2018",
+    endMonth: "March",
+    endYear: "2022",
+    current: false,
+    bullets:
+      "Built dashboard views in React and TypeScript.\nOwned the charting layer and its tests.\nIntroduced Vitest and got the frontend to 80 percent coverage.",
+    source: {
+      line: "Cairn Analytics. Frontend Engineer, June 2018 to March 2022.",
+      where: "your resume, page 2",
+    },
+  },
+  {
+    id: "hogback",
+    company: "Hogback Gear Works",
+    title: "Trail guide",
+    location: "Salida, Colorado",
+    startMonth: "May",
+    startYear: "2016",
+    endMonth: "June",
+    endYear: "2018",
+    current: false,
+    bullets: "Led day trips of up to twelve guests.\nKept the gear inventory and the booking calendar.",
+    source: {
+      line: "Hogback Gear Works. Trail guide, May 2016 to June 2018.",
+      where: "your resume, page 2",
+    },
+  },
+];
+
+export const educationEntries: EducationEntry[] = [
+  {
+    id: "csu",
+    school: "Colorado State University",
+    credential: "BS, Computer Science",
+    year: "2016",
+    source: {
+      line: "Colorado State University, BS Computer Science, 2016",
+      where: "your resume, page 2",
+    },
   },
 ];

@@ -20,8 +20,26 @@
   color: var(--talus-color-text-secondary);
 }
 
+.headActions {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--talus-space-3);
+  flex-wrap: wrap;
+}
+
 .jobSwitch {
   min-inline-size: 18rem;
+}
+
+.filterSwitch {
+  display: flex;
+  align-items: center;
+  min-block-size: var(--talus-control-height-md);
+  align-self: flex-end;
+}
+
+.cardRole {
+  font-size: var(--talus-font-size-body-sm);
 }
 
 .filters {

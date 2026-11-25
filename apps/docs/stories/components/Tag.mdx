@@ -5,7 +5,7 @@ import * as TagStories from "./Tag.stories";
 
 # Tag
 
-A small, quiet label for a fact: a skill, a source, a location.
+A small, quiet label: a skill, a source, a category.
 
 <Canvas of={TagStories.Default} />
 
@@ -13,7 +13,9 @@ A small, quiet label for a fact: a skill, a source, a location.
 
 ## Usage notes
 
-- Tags state facts. When the color itself carries meaning (success, warning, danger), use Badge instead.
+- Tags are for short labels, not facts. A fact a person must read, like pay, a location or a date,
+  belongs in a DescriptionList with a label, in plain text size.
+- When the color itself carries meaning (success, warning, danger), use Badge instead.
 - Keep the text to a word or three. A tag is scanned, not read.
 - Tags are not interactive. If removing or filtering is needed, wrap or pair them with a Button.
 

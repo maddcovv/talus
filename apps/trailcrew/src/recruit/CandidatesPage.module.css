@@ -1,0 +1,28 @@
+.title {
+  margin: 0;
+  font-family: var(--talus-font-family-display);
+  font-weight: var(--talus-font-weight-display);
+  font-size: var(--talus-font-size-h1);
+  line-height: var(--talus-font-line-height-tight);
+}
+
+.meta {
+  margin: var(--talus-space-1) 0 var(--talus-space-5);
+  color: var(--talus-color-text-secondary);
+}
+
+.filters {
+  display: flex;
+  gap: var(--talus-space-4);
+  flex-wrap: wrap;
+  margin-block-end: var(--talus-space-5);
+}
+
+.filters > * {
+  min-inline-size: 14rem;
+}
+
+.nameLink {
+  color: var(--talus-color-text-primary);
+  font-weight: var(--talus-font-weight-medium);
+}

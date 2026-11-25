@@ -1,0 +1,25 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as OneTimeCodeInputStories from "./OneTimeCodeInput.stories";
+
+<Meta of={OneTimeCodeInputStories} />
+
+# OneTimeCodeInput
+
+Six drawn boxes over one real input. Because it is a single field underneath, paste works, the
+keyboard autofill (`autocomplete="one-time-code"`) works, and a screen reader hears one labeled
+input, not six fragments.
+
+<Canvas of={OneTimeCodeInputStories.Default} />
+
+<Controls of={OneTimeCodeInputStories.Default} />
+
+## Usage notes
+
+- Use it for verification codes from a text or an email, as in a person check before submitting a
+  form. Do not use picture puzzles for that job: they block people with low vision, and modern
+  bots solve them anyway.
+- Digits only; anything else a person types is ignored rather than erred on.
+- Errors come as words through `errorMessage`, never as a red border alone.
+- `onComplete` fires when the last digit lands; verify then, or on an explicit button.
+
+<Stories />

@@ -1,0 +1,48 @@
+.container {
+  inline-size: 100%;
+  max-inline-size: 72rem;
+  margin-inline: auto;
+  padding: var(--talus-space-8) var(--talus-space-5) var(--talus-space-12);
+}
+
+.prose {
+  max-inline-size: 42.5rem;
+}
+
+.title {
+  margin: 0 0 var(--talus-space-4);
+  font-family: var(--talus-font-family-display);
+  font-weight: var(--talus-font-weight-display);
+  font-size: var(--talus-font-size-h1);
+  line-height: var(--talus-font-line-height-tight);
+}
+
+.lede {
+  margin: 0 0 var(--talus-space-4);
+  font-size: var(--talus-font-size-18);
+  line-height: var(--talus-font-line-height-normal);
+}
+
+.body {
+  margin: 0 0 var(--talus-space-4);
+}
+
+.h2 {
+  margin: var(--talus-space-8) 0 var(--talus-space-3);
+  font-size: var(--talus-font-size-h2);
+  font-weight: var(--talus-font-weight-semibold);
+  line-height: var(--talus-font-line-height-snug);
+}
+
+.list {
+  margin: 0 0 var(--talus-space-4);
+  padding-inline-start: var(--talus-space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--talus-space-2);
+}
+
+.note {
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-body-sm);
+}

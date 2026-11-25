@@ -1,6 +1,6 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { useBrand } from "../lib/useBrand";
-import { DemoFooter } from "../components/DemoFooter";
+import { TwoTrackMark } from "../components/TwoTrackMark";
 import styles from "./CandidateLayout.module.css";
 
 export function CandidateLayout() {
@@ -8,15 +8,31 @@ export function CandidateLayout() {
   return (
     <div className={styles.shell}>
       <header className={styles.header}>
-        <Link to="/" className={styles.brand}>
-          Two Track Supply
-        </Link>
-        <span className={styles.sub}>Jobs</span>
+        <div className={styles.headerInner}>
+          <Link to="/" className={styles.brand}>
+            <TwoTrackMark className={styles.mark} />
+            Two Track Supply
+          </Link>
+          <nav aria-label="Careers" className={styles.nav}>
+            <NavLink to="/" end>
+              Jobs
+            </NavLink>
+            <NavLink to="/life">Life at Two Track</NavLink>
+            <NavLink to="/benefits">Benefits</NavLink>
+          </nav>
+        </div>
       </header>
       <main className={styles.main}>
         <Outlet />
       </main>
-      <DemoFooter />
+      <footer className={styles.footer}>
+        <div className={styles.footerInner}>
+          <span>
+            Hiring runs on <Link to="/recruit">Trailcrew</Link>.
+          </span>
+          <span>Demo product. All names and data are made up.</span>
+        </div>
+      </footer>
     </div>
   );
 }

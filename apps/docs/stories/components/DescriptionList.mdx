@@ -1,0 +1,22 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as DescriptionListStories from "./DescriptionList.stories";
+
+<Meta of={DescriptionListStories} />
+
+# DescriptionList
+
+Key facts as a definition list: a quiet label over a solid value, with an optional icon per row.
+Facts like pay, location and dates belong here, where a label explains each value.
+
+<Canvas of={DescriptionListStories.Default} />
+
+<Controls of={DescriptionListStories.Default} />
+
+## Usage notes
+
+- Use it for facts: pay, location, schedule, dates, IDs. A Tag is for a short label and a Badge is
+  for a status; neither should carry a fact a person needs to read.
+- Icons are decorative and hidden from assistive tech; the label does the naming.
+- Give the list an `aria-label` when the surrounding heading does not already name it.
+
+<Stories />

@@ -1,0 +1,42 @@
+.list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--talus-space-4);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+}
+
+.icon {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  display: inline-flex;
+  margin-block-start: calc(var(--talus-space-1) / 2);
+  margin-inline-end: var(--talus-space-3);
+  color: var(--talus-color-icon-secondary);
+}
+
+.icon svg {
+  inline-size: var(--talus-size-icon-md);
+  block-size: var(--talus-size-icon-md);
+}
+
+.label {
+  grid-column: 2;
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-body-sm);
+  font-weight: var(--talus-font-weight-medium);
+}
+
+.value {
+  grid-column: 2;
+  margin: 0;
+  margin-block-start: calc(var(--talus-space-1) / 2);
+  color: var(--talus-color-text-primary);
+  font-size: var(--talus-font-size-body);
+  line-height: var(--talus-font-line-height-normal);
+}
