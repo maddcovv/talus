@@ -1,0 +1,49 @@
+.title {
+  margin: 0 0 var(--talus-space-2);
+  font-family: var(--talus-font-family-display);
+  font-weight: var(--talus-font-weight-display);
+  font-size: var(--talus-font-size-h1);
+  line-height: var(--talus-font-line-height-tight);
+}
+
+.blurb {
+  margin: 0 0 var(--talus-space-6);
+  color: var(--talus-color-text-secondary);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--talus-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.jobRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--talus-space-2);
+}
+
+.jobTitle {
+  font-size: var(--talus-font-size-h3);
+  font-weight: var(--talus-font-weight-semibold);
+}
+
+.jobMeta {
+  display: flex;
+  gap: var(--talus-space-2);
+  flex-wrap: wrap;
+}
+
+.jobPay {
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-body-sm);
+}
+
+.aside {
+  margin-block-start: var(--talus-space-8);
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-body-sm);
+}

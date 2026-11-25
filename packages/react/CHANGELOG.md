@@ -1,5 +1,11 @@
 # @talus/react
 
+## 0.3.0
+
+### Minor Changes
+
+- New components for product pages: DataTable (sortable, selectable, sticky header), Board with BoardColumn and BoardCard (drag and keyboard moves, announced), Avatar (initials only), Tag, and Header (sticky bar with a nav landmark). TextField gains a multiline mode, and BoardColumn headings can set their level.
+
 ## 0.2.1
 
 ### Patch Changes

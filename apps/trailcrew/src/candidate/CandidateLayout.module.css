@@ -1,0 +1,34 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100vh;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--talus-space-2);
+  padding: var(--talus-space-4) var(--talus-space-4);
+  border-block-end: var(--talus-border-width-control) solid var(--talus-color-border-default);
+  background: var(--talus-color-bg-surface);
+}
+
+.brand {
+  color: var(--talus-color-text-primary);
+  font-family: var(--talus-font-family-display);
+  font-weight: var(--talus-font-weight-display);
+  font-size: var(--talus-font-size-h3);
+  text-decoration: none;
+}
+
+.sub {
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-body-sm);
+}
+
+.main {
+  inline-size: 100%;
+  max-inline-size: 40rem;
+  margin-inline: auto;
+  padding: var(--talus-space-5) var(--talus-space-4) var(--talus-space-12);
+}

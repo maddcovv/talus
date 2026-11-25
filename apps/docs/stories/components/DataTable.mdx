@@ -1,0 +1,20 @@
+import { Meta, Canvas, Stories } from "@storybook/addon-docs/blocks";
+import * as DataTableStories from "./DataTable.stories";
+
+<Meta of={DataTableStories} />
+
+# DataTable
+
+Rows of records with sortable columns, row selection and a sticky header. Built on React Aria's grid, so arrow keys move through rows and cells.
+
+<Canvas of={DataTableStories.Default} />
+
+## Usage notes
+
+- Sorting is controlled: pass `sortDescriptor` and sort your own items in `onSortChange`. The header shows the direction and announces it.
+- `selectionMode="multiple"` adds checkboxes; the header checkbox selects all. Selection is announced through the rows themselves.
+- Row height follows the brand's `density.row` token, so the same table is denser in Enterprise and roomier in Consumer.
+- Give the wrapper a max height through `style` and the header sticks while rows scroll.
+- Always pass `emptyState` in words ("No candidates match these filters."), never leave an empty grid.
+
+<Stories />

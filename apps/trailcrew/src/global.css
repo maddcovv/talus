@@ -1,0 +1,22 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--talus-color-bg-canvas);
+  color: var(--talus-color-text-primary);
+  font-family: var(--talus-font-family-body);
+  font-size: var(--talus-font-size-body);
+  line-height: var(--talus-font-line-height-normal);
+}
+
+a {
+  color: var(--talus-color-text-link);
+}
+
+a:focus-visible {
+  outline: var(--talus-focus-ring-width) solid var(--talus-color-border-focus);
+  outline-offset: var(--talus-focus-ring-offset);
+  border-radius: var(--talus-radius-xs);
+}

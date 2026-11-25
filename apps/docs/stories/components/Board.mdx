@@ -1,0 +1,20 @@
+import { Meta, Canvas, Stories } from "@storybook/addon-docs/blocks";
+import * as BoardStories from "./Board.stories";
+
+<Meta of={BoardStories} />
+
+# Board
+
+Stage columns with cards: a pipeline at a glance. Cards move two ways, and both end in the same `onMove` call.
+
+<Canvas of={BoardStories.Default} />
+
+## Usage notes
+
+- Pointer: drag a card onto a column. The column shows a drop state while a card is over it.
+- Keyboard: every card has a "Move to" menu button, so moving never requires a drag. Each item names the target ("Move to Interview").
+- Every move is announced to screen readers ("June Halloran moved to Interview.") through a polite live region inside the Board.
+- The board owns no state. It calls `onMove(cardId, toColumnId)` and you move the card in your data, which keeps drag, menu and any bulk action on one code path.
+- Column counts are plain text next to the column title, which is a real heading.
+
+<Stories />

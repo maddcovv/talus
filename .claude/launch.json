@@ -6,6 +6,12 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["-y", "serve", "-l", "6007", "apps/docs/storybook-static"],
       "port": 6007
+    },
+    {
+      "name": "trailcrew",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "trailcrew", "preview", "--port", "6008", "--strictPort"],
+      "port": 6008
     }
   ]
 }

@@ -27,13 +27,24 @@ describe("TextField", () => {
     expect(screen.getByText("Enter a shop name")).toBeInTheDocument();
   });
 
-  it("has no axe violations in default, hint, error and disabled states", async () => {
+  it("renders a labeled textarea when multiline", async () => {
+    const user = userEvent.setup();
+    render(<TextField label="Kickoff notes" multiline rows={6} />);
+    const area = screen.getByLabelText("Kickoff notes");
+    expect(area.tagName).toBe("TEXTAREA");
+    expect(area).toHaveAttribute("rows", "6");
+    await user.type(area, "Two lines\nof notes");
+    expect(area).toHaveValue("Two lines\nof notes");
+  });
+
+  it("has no axe violations in default, hint, error, disabled and multiline states", async () => {
     const { container } = render(
       <>
         <TextField label="Name" />
         <TextField label="Email" hint="Work email" />
         <TextField label="City" errorMessage="Enter a city" />
         <TextField label="Country" isDisabled />
+        <TextField label="Notes" multiline />
       </>
     );
     expect(await axe(container)).toHaveNoViolations();

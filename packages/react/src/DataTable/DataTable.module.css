@@ -1,0 +1,130 @@
+.wrap {
+  box-sizing: border-box;
+  overflow: auto;
+  background: var(--talus-color-bg-surface);
+  border: var(--talus-border-width-control) solid var(--talus-color-border-default);
+  border-radius: var(--talus-radius-container);
+}
+
+.table {
+  inline-size: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--talus-color-text-primary);
+  font-family: var(--talus-font-family-body);
+  font-size: var(--talus-font-size-body);
+  outline: none;
+}
+
+.column {
+  position: sticky;
+  inset-block-start: 0;
+  /* Above cell content, still inside the wrap's own stacking context. */
+  z-index: calc(var(--talus-z-base) + 1);
+  box-sizing: border-box;
+  block-size: var(--talus-control-height-md);
+  padding-inline: var(--talus-space-3);
+  background: var(--talus-color-bg-subtle);
+  border-block-end: var(--talus-border-width-control) solid var(--talus-color-border-default);
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-label);
+  font-weight: var(--talus-font-weight-medium);
+  text-align: start;
+  white-space: nowrap;
+  outline: none;
+}
+
+.column[data-align="end"] {
+  text-align: end;
+}
+
+.column[data-sortable] {
+  cursor: pointer;
+}
+
+.column[data-hovered] {
+  color: var(--talus-color-text-primary);
+}
+
+.column[data-focus-visible] {
+  outline: var(--talus-focus-ring-width) solid var(--talus-color-border-focus);
+  outline-offset: calc(var(--talus-focus-ring-offset) * -1);
+}
+
+.columnInner {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--talus-space-1);
+}
+
+.column[data-align="end"] .columnInner {
+  flex-direction: row-reverse;
+}
+
+.sortIcon {
+  display: inline-flex;
+  color: var(--talus-color-icon-secondary);
+}
+
+.column[data-sort-direction] .sortIcon {
+  color: var(--talus-color-icon-default);
+}
+
+.sortGlyph {
+  inline-size: var(--talus-size-icon-sm);
+  block-size: var(--talus-size-icon-sm);
+}
+
+.row {
+  block-size: var(--talus-table-row-height);
+  outline: none;
+}
+
+.row[data-hovered] {
+  background: var(--talus-color-bg-hover);
+}
+
+.row[data-selected] {
+  background: var(--talus-color-bg-selected);
+}
+
+.row[data-focus-visible] {
+  outline: var(--talus-focus-ring-width) solid var(--talus-color-border-focus);
+  outline-offset: calc(var(--talus-focus-ring-offset) * -1);
+}
+
+.cell {
+  box-sizing: border-box;
+  padding-inline: var(--talus-space-3);
+  padding-block: var(--talus-space-1);
+  border-block-end: var(--talus-border-width-control) solid var(--talus-color-border-default);
+  vertical-align: middle;
+  outline: none;
+}
+
+.cell[data-align="end"] {
+  text-align: end;
+}
+
+.cell[data-focus-visible] {
+  outline: var(--talus-focus-ring-width) solid var(--talus-color-border-focus);
+  outline-offset: calc(var(--talus-focus-ring-offset) * -1);
+}
+
+.row:last-child .cell {
+  border-block-end: none;
+}
+
+.selectColumn,
+.selectCell {
+  inline-size: var(--talus-space-10);
+  padding-inline-end: var(--talus-space-0);
+}
+
+.empty {
+  box-sizing: border-box;
+  padding: var(--talus-space-8);
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-body);
+  text-align: center;
+}

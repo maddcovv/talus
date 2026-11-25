@@ -4,9 +4,11 @@
   "packageManager": "pnpm@12.23.0",
   "scripts": {
     "build:tokens": "pnpm --filter @talus/tokens build",
-    "test": "pnpm build:tokens && pnpm --filter @talus/react test",
+    "test": "pnpm build:tokens && pnpm --filter @talus/react test && pnpm --filter trailcrew test",
     "storybook": "pnpm build:tokens && pnpm --filter talus-docs storybook",
-    "build:storybook": "pnpm build:tokens && pnpm --filter talus-docs build"
+    "build:storybook": "pnpm build:tokens && pnpm --filter talus-docs build",
+    "dev:trailcrew": "pnpm build:tokens && pnpm --filter trailcrew dev",
+    "build:trailcrew": "pnpm build:tokens && pnpm --filter trailcrew build"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3"

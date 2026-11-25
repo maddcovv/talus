@@ -1,0 +1,8 @@
+.footer {
+  margin-block-start: auto;
+  padding: var(--talus-space-5);
+  border-block-start: var(--talus-border-width-control) solid var(--talus-color-border-default);
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-caption);
+  text-align: center;
+}

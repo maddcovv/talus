@@ -1,0 +1,51 @@
+.employer {
+  margin: 0;
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-body-sm);
+}
+
+.title {
+  margin: var(--talus-space-1) 0 var(--talus-space-1);
+  font-family: var(--talus-font-family-display);
+  font-weight: var(--talus-font-weight-display);
+  font-size: var(--talus-font-size-h1);
+  line-height: var(--talus-font-line-height-tight);
+}
+
+.candidateLine {
+  margin: 0 0 var(--talus-space-6);
+  color: var(--talus-color-text-secondary);
+}
+
+.tracker {
+  margin-block-end: var(--talus-space-5);
+}
+
+.reviewLine {
+  margin: 0 0 var(--talus-space-2);
+  font-weight: var(--talus-font-weight-medium);
+}
+
+.nextLine {
+  margin: 0 0 var(--talus-space-5);
+}
+
+.actionRow {
+  margin-block-start: var(--talus-space-5);
+}
+
+.dialogBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--talus-space-4);
+}
+
+.dialogText {
+  margin: 0;
+}
+
+.dialogActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--talus-space-3);
+}

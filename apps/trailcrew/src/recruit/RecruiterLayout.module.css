@@ -1,0 +1,21 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100vh;
+}
+
+.user {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--talus-space-2);
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-body-sm);
+  white-space: nowrap;
+}
+
+.main {
+  inline-size: 100%;
+  max-inline-size: 80rem;
+  margin-inline: auto;
+  padding: var(--talus-space-6) var(--talus-space-5) var(--talus-space-12);
+}
