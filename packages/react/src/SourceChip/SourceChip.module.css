@@ -1,0 +1,74 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--talus-space-1);
+  box-sizing: border-box;
+  min-block-size: var(--talus-space-6);
+  padding-block: calc(var(--talus-space-1) / 2);
+  padding-inline: var(--talus-space-2);
+  border: var(--talus-border-width-control) solid var(--talus-color-status-info-border);
+  border-radius: var(--talus-radius-full);
+  background: var(--talus-color-status-info-bg);
+  color: var(--talus-color-status-info-fg);
+  font-family: var(--talus-font-family-body);
+  font-size: var(--talus-font-size-caption);
+  font-weight: var(--talus-font-weight-medium);
+  line-height: var(--talus-font-line-height-snug);
+  cursor: pointer;
+  outline: none;
+}
+
+.chip[data-hovered] {
+  border-color: var(--talus-color-status-info-fg);
+}
+
+.chip[data-focus-visible] {
+  outline: var(--talus-focus-ring-width) solid var(--talus-color-border-focus);
+  outline-offset: var(--talus-focus-ring-offset);
+}
+
+.icon {
+  width: var(--talus-size-icon-sm);
+  height: var(--talus-size-icon-sm);
+  flex-shrink: 0;
+}
+
+.popover {
+  z-index: var(--talus-z-popover);
+}
+
+.dialog {
+  box-sizing: border-box;
+  max-inline-size: var(--talus-breakpoint-compact);
+  padding: var(--talus-space-4);
+  border: var(--talus-border-width-control) solid var(--talus-color-border-default);
+  border-radius: var(--talus-menu-radius);
+  background: var(--talus-color-bg-raised);
+  box-shadow: var(--talus-menu-shadow);
+  font-family: var(--talus-font-family-body);
+  outline: none;
+}
+
+.heading {
+  margin: 0 0 var(--talus-space-2);
+  font-size: var(--talus-font-size-caption);
+  font-weight: var(--talus-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--talus-color-text-secondary);
+}
+
+.quote {
+  margin: 0;
+  padding-inline-start: var(--talus-space-3);
+  border-inline-start: calc(var(--talus-border-width-control) * 2) solid var(--talus-color-status-info-border);
+  font-size: var(--talus-font-size-body-sm);
+  color: var(--talus-color-text-primary);
+  line-height: var(--talus-font-line-height-normal);
+}
+
+.cite {
+  margin: var(--talus-space-2) 0 0;
+  font-size: var(--talus-font-size-caption);
+  color: var(--talus-color-text-secondary);
+}

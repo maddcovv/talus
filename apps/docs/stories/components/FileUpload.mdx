@@ -1,0 +1,21 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as FileUploadStories from "./FileUpload.stories";
+
+<Meta of={FileUploadStories} />
+
+# FileUpload
+
+A drop area with a real button. Candidates attach a resume or a work sample; the field says what it takes before anything is picked.
+
+<Canvas of={FileUploadStories.Default} />
+
+<Controls of={FileUploadStories.Default} />
+
+## Usage notes
+
+- Say the rules up front. The accepted types and the size limit sit under the button before upload, so nobody learns the limit from an error.
+- Drag and drop is an extra, never the only path. The "Choose a file" button opens the system picker and works with a keyboard and a screen reader; the drop area itself is focusable and labeled.
+- Errors are sentences, not codes: what went wrong and what to do next, with a "Try again" action and a way to pick a different file. The error never relies on color alone; it pairs the danger color with an icon and words.
+- The component is presentational: the app owns the upload, passes `status`, `progress` and `errorMessage` down, and decides what "too big" means. The stories show the wiring.
+
+<Stories />

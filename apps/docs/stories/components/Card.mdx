@@ -1,0 +1,20 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as CardStories from "./Card.stories";
+
+<Meta of={CardStories} />
+
+# Card
+
+The container for one thing: a job posting, a candidate, an order. Surface background, default border, container radius.
+
+<Canvas of={CardStories.Default} />
+
+<Controls of={CardStories.Default} />
+
+## Usage notes
+
+- Three forms. Plain holds content. `elevated` lifts it with `elevation.1` for the few cards that float above the page. `onPress` turns the whole card into one button with a hover state and a real focus ring.
+- A clickable card is one target. Do not nest another button or link inside it; if the content needs its own actions, keep the card plain and put a Button in it.
+- The card sets padding, border and radius and nothing else. Type and layout inside come from the content, so cards hold anything without fighting it.
+
+<Stories />

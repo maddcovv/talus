@@ -1,0 +1,102 @@
+.root {
+  font-family: var(--talus-font-family-body);
+}
+
+.list {
+  display: flex;
+  align-items: center;
+  gap: var(--talus-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: var(--talus-space-2);
+}
+
+/* Connector line between steps */
+.step + .step::before {
+  content: "";
+  inline-size: var(--talus-space-8);
+  block-size: var(--talus-border-width-control);
+  background: var(--talus-color-border-default);
+}
+
+.step[data-state="done"] + .step::before {
+  background: var(--talus-color-border-selected);
+}
+
+.stepButton,
+.stepStatic {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--talus-space-2);
+  min-block-size: var(--talus-size-touch-min);
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: var(--talus-font-size-label);
+  line-height: var(--talus-font-line-height-snug);
+  color: var(--talus-color-text-secondary);
+  outline: none;
+}
+
+.stepButton {
+  cursor: pointer;
+  border-radius: var(--talus-radius-control);
+}
+
+.stepButton[data-focus-visible] {
+  outline: var(--talus-focus-ring-width) solid var(--talus-color-border-focus);
+  outline-offset: var(--talus-focus-ring-offset);
+}
+
+.stepButton[data-hovered] .stepLabel {
+  color: var(--talus-color-text-primary);
+}
+
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  inline-size: var(--talus-space-6);
+  block-size: var(--talus-space-6);
+  border-radius: var(--talus-radius-full);
+  border: var(--talus-border-width-control) solid var(--talus-color-border-default);
+  background: var(--talus-color-bg-subtle);
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-caption);
+  font-weight: var(--talus-font-weight-semibold);
+  flex-shrink: 0;
+}
+
+.step[data-state="done"] .indicator {
+  border-color: var(--talus-color-action-primary-bg);
+  background: var(--talus-color-action-primary-bg);
+  color: var(--talus-color-icon-on-action);
+}
+
+.step[data-state="current"] .indicator {
+  border-color: var(--talus-color-border-selected);
+  background: var(--talus-color-bg-surface);
+  color: var(--talus-color-text-primary);
+}
+
+.step[data-state="current"] .stepLabel {
+  color: var(--talus-color-text-primary);
+  font-weight: var(--talus-font-weight-semibold);
+}
+
+.step[data-state="done"] .stepLabel {
+  color: var(--talus-color-text-primary);
+}
+
+.checkIcon {
+  width: var(--talus-size-icon-sm);
+  height: var(--talus-size-icon-sm);
+}

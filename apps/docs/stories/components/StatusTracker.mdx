@@ -1,0 +1,21 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as StatusTrackerStories from "./StatusTracker.stories";
+
+<Meta of={StatusTrackerStories} />
+
+# StatusTracker
+
+A vertical history of an application: what happened, when, and what comes next. Candidates check this page more than any other, so it tells the truth plainly.
+
+<Canvas of={StatusTrackerStories.Default} />
+
+<Controls of={StatusTrackerStories.Default} />
+
+## Usage notes
+
+- Four states, each with its own icon: done (check), current (arrow), upcoming (empty circle), closed (x). Screen readers hear the state in words; sighted users see the icon shape. Color reinforces, never carries.
+- A closed stage always says why. "Position closed" with no reason reads as evasive; the `reason` line holds the plain words.
+- Dates come in already formatted. The tracker does not guess locales; the app formats and the tracker displays.
+- The current stage is announced with `aria-current="step"`. There is at most one.
+
+<Stories />

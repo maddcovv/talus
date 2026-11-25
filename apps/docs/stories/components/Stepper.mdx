@@ -1,0 +1,21 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as StepperStories from "./Stepper.stories";
+
+<Meta of={StepperStories} />
+
+# Stepper
+
+Numbered steps across the top of a multi-step flow, like the Trailcrew apply flow. It shows where the candidate is, what is done, and what is left.
+
+<Canvas of={StepperStories.Default} />
+
+<Controls of={StepperStories.Default} />
+
+## Usage notes
+
+- Three states, each with its own shape: completed steps carry a check, the current step a filled outline, upcoming steps a muted number. A screen reader hears the current step through `aria-current="step"` and completed steps as "Completed".
+- Pass `onStepClick` and completed steps become buttons that go back. Upcoming steps are never clickable; a flow moves forward through its own Continue button, not by tapping the rail.
+- Keep labels to a word or two. If a step needs a sentence, the step page explains it; the rail just names it.
+- The whole rail is a `nav` with a required accessible name, so two steppers on one page stay distinguishable.
+
+<Stories />

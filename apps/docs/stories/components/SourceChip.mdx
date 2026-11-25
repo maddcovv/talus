@@ -1,0 +1,22 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as SourceChipStories from "./SourceChip.stories";
+
+<Meta of={SourceChipStories} />
+
+# SourceChip
+
+When Trailcrew fills a field from a document, the chip beside the value says where it came from. Pressing it opens the exact line.
+
+<Canvas of={SourceChipStories.Default} />
+
+<Controls of={SourceChipStories.Default} />
+
+## Usage notes
+
+- Every value a machine filled in gets one. The candidate should never wonder where a value came from or hunt for the line it was taken from.
+- The chip uses the info status tint plus a document icon, never color alone. To a screen reader it reads as "Filled from your resume, page 1. Show source."
+- Write `source` as the place, not a sentence: "your resume, page 1", "your cover letter". The component adds "From" in front.
+- The popover quotes the source line and closes with Escape; focus returns to the chip.
+- A chip explains a value; it does not correct one. The field next to it stays editable, and editing the field does not remove the chip's history of where the first value came from.
+
+<Stories />

@@ -7,5 +7,8 @@
     "test": "pnpm build:tokens && pnpm --filter @talus/react test",
     "storybook": "pnpm build:tokens && pnpm --filter talus-docs storybook",
     "build:storybook": "pnpm build:tokens && pnpm --filter talus-docs build"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^3.0.3"
   }
 }

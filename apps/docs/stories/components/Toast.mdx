@@ -1,0 +1,19 @@
+import { Meta, Canvas, Stories } from "@storybook/addon-docs/blocks";
+import * as ToastStories from "./Toast.stories";
+
+<Meta of={ToastStories} />
+
+# Toast
+
+A short announcement that floats in from the corner: something finished, something arrived. It informs; it never blocks.
+
+<Canvas of={ToastStories.Variants} />
+
+## Usage notes
+
+- Mount `ToastRegion` once near the app root and keep it mounted. It is a polite live region (`aria-live="polite"`), so a toast added to it is read out without interrupting what the screen reader was saying.
+- Every toast can be dismissed; `onDismiss` is required. If you also auto-dismiss, wait long enough to read the words twice, and never auto-dismiss a danger toast.
+- A toast never holds the only copy of an error. If an upload fails, the lasting error lives on the field or page that failed; the toast just points there. Someone who misses the toast must lose nothing.
+- Keep it to a title and at most one short line. A message that needs a paragraph belongs on the page as an InlineAlert.
+
+<Stories />

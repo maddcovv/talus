@@ -1,0 +1,21 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as InlineAlertStories from "./InlineAlert.stories";
+
+<Meta of={InlineAlertStories} />
+
+# InlineAlert
+
+A message that belongs to the page: it sits where the problem or the news is and stays until the situation changes.
+
+<Canvas of={InlineAlertStories.Info} />
+
+<Controls of={InlineAlertStories.Info} />
+
+## Usage notes
+
+- Four variants on the status tokens: info, success, warning, danger. Each pairs its color with an icon and words; the color never carries the meaning alone.
+- The title says what happened; the body says what to do about it. Write both as sentences a person would say out loud.
+- Give `onDismiss` only to messages the reader can safely ignore. An error that blocks the flow stays until it is fixed.
+- InlineAlert is page content, not an announcement. News that arrives while the user is elsewhere on the page goes through Toast; a field-level problem belongs in the field's own error, not an alert above the form.
+
+<Stories />

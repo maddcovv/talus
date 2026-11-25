@@ -1,0 +1,51 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Governance" />
+
+# Governance
+
+How Talus changes without breaking the people who build on it. The full text
+lives in the repo: [CONTRIBUTING.md](https://github.com/maddcovv/talus/blob/main/CONTRIBUTING.md)
+and the [decision log](https://github.com/maddcovv/talus/tree/main/docs/decisions).
+
+## How a component gets in
+
+1. **Proposal.** An issue that answers: what problem, used where, and what
+   exists already? If a current component covers it, use that.
+2. **Review.** Checked against the token rules (built from semantic
+   `--talus-*` tokens only) and the accessibility rules (keyboard path,
+   labels, focus ring, no color-only meaning, 24 px targets) before any code.
+3. **Build.** Component, CSS module and tests in one folder; a story per
+   state plus a Modes story; an MDX page with usage notes. `pnpm test` must
+   pass with zero axe violations.
+4. **Release.** A changeset describes the change in plain words. Versions
+   and changelogs are generated from changesets.
+
+## Versioning
+
+`@talus/tokens` and `@talus/react` follow semver and version independently
+through [Changesets](https://github.com/maddcovv/talus/tree/main/.changeset):
+patch for fixes, minor for new components, props or tokens, major for
+removals or changed meaning. Every change ships with a changeset; no
+changeset, no merge. Changelogs:
+[tokens](https://github.com/maddcovv/talus/blob/main/packages/tokens/CHANGELOG.md),
+[react](https://github.com/maddcovv/talus/blob/main/packages/react/CHANGELOG.md).
+
+## Deprecation
+
+Nothing disappears without warning. A token or prop that is going away is
+marked deprecated in the docs and the changelog for at least one minor
+version before removal, and the notice names the replacement. The old name
+keeps working through the deprecation window.
+
+## Decisions
+
+Choices that shape the system are written down, one short file per decision,
+in [docs/decisions](https://github.com/maddcovv/talus/tree/main/docs/decisions):
+
+1. Two brands on one token foundation, with separate color modes.
+2. React Aria Components for behavior.
+3. Phosphor icons, not Lucide.
+4. Figma variables sync from the repo's tokens, by hand for now.
+
+Read them before proposing a change that crosses one.

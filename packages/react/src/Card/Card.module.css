@@ -1,0 +1,40 @@
+.card {
+  display: block;
+  box-sizing: border-box;
+  padding: var(--talus-space-5);
+  border: var(--talus-border-width-control) solid var(--talus-color-border-default);
+  border-radius: var(--talus-radius-container);
+  background: var(--talus-color-bg-surface);
+  color: var(--talus-color-text-primary);
+  font-family: var(--talus-font-family-body);
+  font-size: var(--talus-font-size-body);
+  line-height: var(--talus-font-line-height-normal);
+}
+
+.card[data-elevated] {
+  box-shadow: var(--talus-elevation-1);
+}
+
+.clickable {
+  inline-size: 100%;
+  text-align: start;
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color var(--talus-motion-duration-fast) var(--talus-easing-standard),
+    border-color var(--talus-motion-duration-fast) var(--talus-easing-standard);
+}
+
+.clickable[data-hovered] {
+  background: var(--talus-color-bg-hover);
+  border-color: var(--talus-color-border-strong);
+}
+
+.clickable[data-pressed] {
+  background: var(--talus-color-bg-subtle);
+}
+
+.clickable[data-focus-visible] {
+  outline: var(--talus-focus-ring-width) solid var(--talus-color-border-focus);
+  outline-offset: var(--talus-focus-ring-offset);
+}

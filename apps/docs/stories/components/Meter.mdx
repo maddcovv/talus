@@ -1,0 +1,21 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as MeterStories from "./Meter.stories";
+
+<Meta of={MeterStories} />
+
+# Meter
+
+A value against a limit: attachments used, storage taken. Not a progress bar; nothing is moving.
+
+<Canvas of={MeterStories.Default} />
+
+<Controls of={MeterStories.Default} />
+
+## Usage notes
+
+- `valueText` is required and it is words: "4 of 5 attachments used", not "4/5". The bar illustrates; the words carry the number.
+- Over the limit, the fill and the words switch to the danger color, a warning icon appears, and `valueText` should say what to do: "6 of 5 attachments. Remove one to continue." Shape and words change together, never color alone.
+- It renders `role="meter"` with `aria-valuenow`, `aria-valuemin` and `aria-valuemax`. Past the limit the reported value stays clamped at the maximum, which keeps the ARIA range valid; the words report the real number.
+- For something that fills over time (an upload), use a progress bar, which FileUpload already includes.
+
+<Stories />

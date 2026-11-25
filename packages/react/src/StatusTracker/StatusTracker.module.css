@@ -1,0 +1,92 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--talus-font-family-body);
+}
+
+.stage {
+  position: relative;
+  display: flex;
+  gap: var(--talus-space-3);
+  padding-block-end: var(--talus-space-5);
+}
+
+.stage:last-child {
+  padding-block-end: 0;
+}
+
+/* Vertical connector from this stage's icon down to the next */
+.stage:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  inset-block-start: var(--talus-space-6);
+  inset-block-end: 0;
+  inset-inline-start: calc(var(--talus-space-6) / 2);
+  inline-size: var(--talus-border-width-control);
+  transform: translateX(-50%);
+  background: var(--talus-color-border-default);
+}
+
+.stage[data-state="done"]:not(:last-child)::before {
+  background: var(--talus-color-border-selected);
+}
+
+.icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.icon > svg {
+  width: var(--talus-space-6);
+  height: var(--talus-space-6);
+}
+
+.stage[data-state="done"] .icon {
+  color: var(--talus-color-status-success-fg);
+}
+
+.stage[data-state="current"] .icon {
+  color: var(--talus-color-action-primary-bg);
+}
+
+.stage[data-state="upcoming"] .icon {
+  color: var(--talus-color-icon-secondary);
+}
+
+.stage[data-state="closed"] .icon {
+  color: var(--talus-color-status-danger-fg);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--talus-space-1) / 2);
+  padding-block-start: calc(var(--talus-space-1) / 2);
+}
+
+.label {
+  font-size: var(--talus-font-size-body-sm);
+  font-weight: var(--talus-font-weight-medium);
+  color: var(--talus-color-text-primary);
+  line-height: var(--talus-font-line-height-snug);
+}
+
+.stage[data-state="upcoming"] .label {
+  color: var(--talus-color-text-secondary);
+  font-weight: var(--talus-font-weight-regular);
+}
+
+.date {
+  font-size: var(--talus-font-size-caption);
+  color: var(--talus-color-text-secondary);
+  line-height: var(--talus-font-line-height-snug);
+}
+
+.reason {
+  font-size: var(--talus-font-size-caption);
+  color: var(--talus-color-status-danger-fg);
+  line-height: var(--talus-font-line-height-snug);
+}

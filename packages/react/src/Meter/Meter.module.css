@@ -1,0 +1,60 @@
+.meter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--talus-space-1);
+  font-family: var(--talus-font-family-body);
+  max-inline-size: var(--talus-breakpoint-compact);
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--talus-space-3);
+}
+
+.label {
+  font-size: var(--talus-font-size-label);
+  font-weight: var(--talus-font-weight-medium);
+  color: var(--talus-color-text-primary);
+  line-height: var(--talus-font-line-height-snug);
+}
+
+.value {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--talus-space-1);
+  font-size: var(--talus-font-size-caption);
+  color: var(--talus-color-text-secondary);
+  line-height: var(--talus-font-line-height-snug);
+}
+
+.meter[data-over] .value {
+  color: var(--talus-color-status-danger-fg);
+  font-weight: var(--talus-font-weight-medium);
+}
+
+.overIcon {
+  width: var(--talus-size-icon-sm);
+  height: var(--talus-size-icon-sm);
+  flex-shrink: 0;
+}
+
+.track {
+  inline-size: 100%;
+  block-size: var(--talus-space-2);
+  border-radius: var(--talus-radius-full);
+  background: var(--talus-color-bg-subtle);
+  overflow: hidden;
+}
+
+.fill {
+  block-size: 100%;
+  border-radius: var(--talus-radius-full);
+  background: var(--talus-color-action-primary-bg);
+  transition: width var(--talus-motion-duration-base) var(--talus-easing-standard);
+}
+
+.meter[data-over] .fill {
+  background: var(--talus-color-status-danger-fg);
+}

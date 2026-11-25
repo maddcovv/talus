@@ -1,0 +1,110 @@
+.region {
+  position: fixed;
+  inset-block-end: var(--talus-space-5);
+  inset-inline-end: var(--talus-space-5);
+  z-index: var(--talus-z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--talus-space-2);
+  max-inline-size: var(--talus-breakpoint-compact);
+}
+
+.toast {
+  display: flex;
+  gap: var(--talus-space-2);
+  box-sizing: border-box;
+  padding: var(--talus-space-3);
+  border: var(--talus-border-width-control) solid;
+  border-radius: var(--talus-radius-container);
+  box-shadow: var(--talus-elevation-2);
+  font-family: var(--talus-font-family-body);
+}
+
+.toast[data-variant="info"] {
+  background: var(--talus-color-status-info-bg);
+  border-color: var(--talus-color-status-info-border);
+  color: var(--talus-color-status-info-fg);
+}
+
+.toast[data-variant="success"] {
+  background: var(--talus-color-status-success-bg);
+  border-color: var(--talus-color-status-success-border);
+  color: var(--talus-color-status-success-fg);
+}
+
+.toast[data-variant="warning"] {
+  background: var(--talus-color-status-warning-bg);
+  border-color: var(--talus-color-status-warning-border);
+  color: var(--talus-color-status-warning-fg);
+}
+
+.toast[data-variant="danger"] {
+  background: var(--talus-color-status-danger-bg);
+  border-color: var(--talus-color-status-danger-border);
+  color: var(--talus-color-status-danger-fg);
+}
+
+.icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding-block-start: calc(var(--talus-space-1) / 4);
+}
+
+.icon > svg {
+  width: var(--talus-size-icon-md);
+  height: var(--talus-size-icon-md);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--talus-space-1);
+  flex: 1;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--talus-font-size-body-sm);
+  font-weight: var(--talus-font-weight-semibold);
+  line-height: var(--talus-font-line-height-snug);
+}
+
+.body {
+  font-size: var(--talus-font-size-body-sm);
+  line-height: var(--talus-font-line-height-normal);
+}
+
+.body p {
+  margin: 0;
+}
+
+.dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  box-sizing: border-box;
+  inline-size: var(--talus-space-6);
+  block-size: var(--talus-space-6);
+  padding: 0;
+  border: none;
+  border-radius: var(--talus-radius-control);
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+}
+
+.dismiss[data-hovered] {
+  background: var(--talus-color-alpha-ink-8);
+}
+
+.dismiss[data-focus-visible] {
+  outline: var(--talus-focus-ring-width) solid var(--talus-color-border-focus);
+  outline-offset: var(--talus-focus-ring-offset);
+}
+
+.dismissIcon {
+  width: var(--talus-size-icon-sm);
+  height: var(--talus-size-icon-sm);
+}
