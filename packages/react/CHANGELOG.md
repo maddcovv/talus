@@ -1,5 +1,11 @@
 # @talus/react
 
+## 0.2.1
+
+### Patch Changes
+
+- Example content renamed; sidebar order
+
 ## 0.2.0
 
 ### Minor Changes

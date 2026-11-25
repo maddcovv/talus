@@ -17,10 +17,10 @@ describe("FileUpload", () => {
       <FileUpload label="Resume" accept={[".pdf"]} onSelect={onSelect} />
     );
     const input = container.querySelector('input[type="file"]') as HTMLInputElement;
-    const file = new File(["resume"], "june-ashby-resume.pdf", { type: "application/pdf" });
+    const file = new File(["resume"], "june-halloran-resume.pdf", { type: "application/pdf" });
     await user.upload(input, file);
     expect(onSelect).toHaveBeenCalledTimes(1);
-    expect(onSelect.mock.calls[0][0][0].name).toBe("june-ashby-resume.pdf");
+    expect(onSelect.mock.calls[0][0][0].name).toBe("june-halloran-resume.pdf");
   });
 
   it("shows the error in words and retries", async () => {

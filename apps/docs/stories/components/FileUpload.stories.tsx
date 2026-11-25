@@ -19,11 +19,11 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 
 export const Uploading: Story = {
-  args: { status: "uploading", progress: 40, fileName: "june-ashby-resume.pdf" },
+  args: { status: "uploading", progress: 40, fileName: "june-halloran-resume.pdf" },
 };
 
 export const Success: Story = {
-  args: { status: "success", fileName: "june-ashby-resume.pdf", onRemove: () => {} },
+  args: { status: "success", fileName: "june-halloran-resume.pdf", onRemove: () => {} },
 };
 
 export const UploadError: Story = {

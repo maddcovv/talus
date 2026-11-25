@@ -8,7 +8,7 @@ const meta = {
   component: SourceChip,
   args: {
     source: "your resume, page 1",
-    children: "Trail guide, Sawtooth Basin Outfitters, 2021 to 2024",
+    children: "Trail guide, Hogback Gear Works, 2021 to 2024",
   },
 } satisfies Meta<typeof SourceChip>;
 
@@ -21,9 +21,9 @@ export const Default: Story = {};
 export const NextToAField: Story = {
   render: () => (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--talus-space-2)" }}>
-      <TextField label="Most recent role" defaultValue="Trail guide, Sawtooth Basin Outfitters" />
+      <TextField label="Most recent role" defaultValue="Trail guide, Hogback Gear Works" />
       <SourceChip source="your resume, page 1">
-        Trail guide, Sawtooth Basin Outfitters, 2021 to 2024
+        Trail guide, Hogback Gear Works, 2021 to 2024
       </SourceChip>
     </div>
   ),
@@ -33,7 +33,7 @@ export const Modes: Story = {
   render: () => (
     <ModeSplit>
       <SourceChip source="your resume, page 1">
-        Trail guide, Sawtooth Basin Outfitters, 2021 to 2024
+        Trail guide, Hogback Gear Works, 2021 to 2024
       </SourceChip>
     </ModeSplit>
   ),

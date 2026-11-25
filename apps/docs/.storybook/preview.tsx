@@ -55,6 +55,11 @@ const preview: Preview = {
   parameters: {
     layout: "padded",
     backgrounds: { disable: true },
+    options: {
+      storySort: {
+        order: ["Welcome", "Governance", "Components", "Foundations"],
+      },
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,
