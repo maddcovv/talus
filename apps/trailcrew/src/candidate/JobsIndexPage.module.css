@@ -23,7 +23,7 @@
 .jobRow {
   display: flex;
   flex-direction: column;
-  gap: var(--talus-space-2);
+  gap: var(--talus-space-1);
 }
 
 .jobTitle {
@@ -32,14 +32,12 @@
 }
 
 .jobMeta {
-  display: flex;
-  gap: var(--talus-space-2);
-  flex-wrap: wrap;
+  color: var(--talus-color-text-secondary);
 }
 
 .jobPay {
-  color: var(--talus-color-text-secondary);
-  font-size: var(--talus-font-size-body-sm);
+  margin-block-start: var(--talus-space-1);
+  font-weight: var(--talus-font-weight-medium);
 }
 
 .aside {

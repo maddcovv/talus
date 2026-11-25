@@ -1,5 +1,11 @@
 # @talus/react
 
+## 0.4.0
+
+### Minor Changes
+
+- Add Disclosure: a collapsible summary row with a heading-level option, built on React Aria, used for work history entries in apply flows.
+
 ## 0.3.0
 
 ### Minor Changes

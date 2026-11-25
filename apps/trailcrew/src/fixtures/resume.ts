@@ -8,9 +8,11 @@ export interface FilledField {
   value: string;
   /** The line the AI read, shown by the SourceChip. */
   source?: { line: string; where: string };
-  /** Must be answered before its section can be confirmed. */
+  /** Must be answered before the application can continue. */
   required?: boolean;
   multiline?: boolean;
+  /** When set, the field renders inside a collapsed Disclosure row. */
+  collapse?: { title: string; detail?: string };
 }
 
 export interface FilledSection {
@@ -54,28 +56,34 @@ export const filledSections: FilledSection[] = [
     fields: [
       {
         id: "job1",
-        label: "Most recent role",
-        value: "Senior Frontend Engineer, Blue Mesa Software, 2022 to now",
+        label: "What you did at Blue Mesa Software",
+        collapse: { title: "Senior Frontend Engineer, Blue Mesa Software", detail: "2022 to now" },
+        value:
+          "Led the component library used by four product teams.\nShipped the accessibility pass that took dashboards to WCAG 2.1 AA.\nCut the checkout bundle by a third and wrote up how.\nRan the frontend side of the hiring loop.",
         source: {
-          line: "Blue Mesa Software. Senior Frontend Engineer, 2022 to present. Led the component library used by four product teams.",
+          line: "Blue Mesa Software. Senior Frontend Engineer, 2022 to present.",
           where: "your resume, page 1",
         },
         multiline: true,
       },
       {
         id: "job2",
-        label: "Before that",
-        value: "Frontend Engineer, Cairn Analytics, 2018 to 2022",
+        label: "What you did at Cairn Analytics",
+        collapse: { title: "Frontend Engineer, Cairn Analytics", detail: "2018 to 2022" },
+        value:
+          "Built dashboard views in React and TypeScript.\nOwned the charting layer and its tests.\nIntroduced Vitest and got the frontend to 80 percent coverage.",
         source: {
-          line: "Cairn Analytics. Frontend Engineer, 2018 to 2022. Built dashboard views in React and TypeScript.",
+          line: "Cairn Analytics. Frontend Engineer, 2018 to 2022.",
           where: "your resume, page 2",
         },
         multiline: true,
       },
       {
         id: "job3",
-        label: "Earlier",
-        value: "Trail guide, Hogback Gear Works, 2016 to 2018",
+        label: "What you did at Hogback Gear Works",
+        collapse: { title: "Trail guide, Hogback Gear Works", detail: "2016 to 2018" },
+        value:
+          "Led day trips of up to twelve guests.\nKept the gear inventory and the booking calendar.",
         source: {
           line: "Hogback Gear Works. Trail guide, 2016 to 2018.",
           where: "your resume, page 2",

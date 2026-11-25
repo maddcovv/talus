@@ -19,16 +19,26 @@ export interface JobQuestion {
   id: string;
   label: string;
   hint?: string;
+  /** Optional questions never block the apply flow. */
+  optional?: boolean;
 }
 
 export interface Job {
   id: string;
   title: string;
+  /** Display location: a city or "Remote (US)". */
   location: string;
-  type: "Full time" | "Seasonal" | "Remote, US";
+  type: "Full time" | "Seasonal";
   pay: string;
+  /** One or two sentences on shift, hours and where the work happens. */
+  schedule: string;
   summary: string[];
+  responsibilities: string[];
   requirements: string[];
+  niceToHave: string[];
+  benefits: string[];
+  /** Working conditions, for roles that have them. */
+  conditions?: string[];
   questions: JobQuestion[];
 }
 

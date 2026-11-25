@@ -39,3 +39,4 @@ export {
   type BoardCardProps,
   type BoardColumnDef,
 } from "./Board/Board";
+export { Disclosure, type DisclosureProps } from "./Disclosure/Disclosure";

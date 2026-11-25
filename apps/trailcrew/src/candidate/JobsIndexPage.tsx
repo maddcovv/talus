@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Card, Tag } from "@talus/react";
+import { Card } from "@talus/react";
 import { employer, jobs } from "../fixtures/jobs";
 import styles from "./JobsIndexPage.module.css";
 
@@ -16,14 +16,7 @@ export function JobsIndexPage() {
               <div className={styles.jobRow}>
                 <span className={styles.jobTitle}>{job.title}</span>
                 <span className={styles.jobMeta}>
-                  {job.type === "Remote, US" ? (
-                    <Tag>{job.location}</Tag>
-                  ) : (
-                    <>
-                      <Tag>{job.type}</Tag>
-                      <Tag>{job.location}</Tag>
-                    </>
-                  )}
+                  {job.location} {"·"} {job.type}
                 </span>
                 <span className={styles.jobPay}>{job.pay}</span>
               </div>
