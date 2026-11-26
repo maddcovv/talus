@@ -38,7 +38,70 @@
   align-self: flex-end;
 }
 
+.boardWrap {
+  block-size: clamp(420px, calc(100vh - 360px), 860px);
+}
+
+.cardTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--talus-space-2);
+}
+
 .cardRole {
+  font-size: var(--talus-font-size-body-sm);
+}
+
+.cardTally {
+  font-size: var(--talus-font-size-body-sm);
+  flex: none;
+}
+
+.checkRow {
+  display: flex;
+  align-items: center;
+  gap: var(--talus-space-1);
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-caption);
+}
+
+.checkIcon {
+  inline-size: var(--talus-size-icon-sm);
+  block-size: var(--talus-size-icon-sm);
+  color: var(--talus-color-icon-secondary);
+  flex: none;
+}
+
+.cardFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--talus-space-2);
+  flex-wrap: wrap;
+}
+
+.cardSource {
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-caption);
+}
+
+.cardAsk {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--talus-space-1);
+  font-size: var(--talus-font-size-caption);
+  font-weight: var(--talus-font-weight-medium);
+}
+
+.cardBlaze {
+  inline-size: 7px;
+  block-size: 13px;
+}
+
+.emptyCol {
+  padding: var(--talus-space-3);
+  color: var(--talus-color-text-secondary);
   font-size: var(--talus-font-size-body-sm);
 }
 

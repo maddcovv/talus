@@ -1,15 +1,19 @@
 .board {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   gap: var(--talus-space-3);
   overflow-x: auto;
   padding-block-end: var(--talus-space-2);
+  block-size: 100%;
 }
 
 .column {
   flex: 1 1 0;
   min-inline-size: calc(var(--talus-space-20) * 3);
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-block-size: 0;
   background: var(--talus-color-bg-subtle);
   border: var(--talus-border-width-control) solid var(--talus-color-border-default);
   border-radius: var(--talus-radius-container);
@@ -51,6 +55,7 @@
   font-size: var(--talus-font-size-caption);
 }
 
+/* The header stays put while the cards scroll under it. */
 .cards {
   display: flex;
   flex-direction: column;
@@ -59,6 +64,8 @@
   padding: 0;
   list-style: none;
   min-block-size: var(--talus-space-10);
+  flex: 1;
+  overflow-y: auto;
 }
 
 .card {

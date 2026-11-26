@@ -1,5 +1,11 @@
 # @talus/react
 
+## 0.7.0
+
+### Minor Changes
+
+- AppShell grows a note bar, a sidebar footer, a sidebarClassName for app theming like an ink sidebar, and a phone menu that opens the sidebar as a full-screen panel. Board columns stretch together and scroll their cards under a fixed header.
+
 ## 0.6.0
 
 ### Minor Changes

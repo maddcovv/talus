@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
+  CircleDashed,
+  DeviceMobile,
+  EnvelopeSimple,
+  Robot,
+} from "@phosphor-icons/react";
+import {
   Badge,
   Board,
   BoardCard,
@@ -13,7 +19,6 @@ import {
   TabList,
   TabPanel,
   Tabs,
-  Tag,
   Toast,
   ToastRegion,
   type BadgeVariant,
@@ -21,6 +26,8 @@ import {
   type Selection,
   type SortDescriptor,
 } from "@talus/react";
+import { Blaze } from "../components/Blaze";
+import { Tally } from "../components/Tally";
 import { candidatesForJob } from "../fixtures/candidates";
 import { getJob, jobs } from "../fixtures/jobs";
 import {
@@ -51,6 +58,23 @@ const tableColumns: DataTableColumn[] = [
 ];
 
 const sources = ["Company site", "Referral", "Job board", "Career fair"];
+
+const checkIcons = {
+  "verified-text": DeviceMobile,
+  "verified-email": EnvelopeSimple,
+  "likely-automated": Robot,
+  "not-checked": CircleDashed,
+} as const;
+
+/** What fills an empty column, in words. */
+const emptyColumn: Record<StageId, string> = {
+  applied: "No new applications. The careers site sends them here.",
+  review: "Nothing in review. Dana moves applications here as she reads.",
+  interview: "No interviews on the books yet.",
+  offer: "No offers yet. People land here when Dana sends one.",
+  hired: "No hires yet this season.",
+  closed: "Nothing closed.",
+};
 
 function appliedDay(candidate: Candidate): number {
   return Number.parseInt(candidate.appliedOn.replace("Nov ", ""), 10);
@@ -185,50 +209,65 @@ export function PipelinePage() {
           <Tab id="table">Table</Tab>
         </TabList>
         <TabPanel id="board">
-          <Board
-            aria-label={`${job.title} pipeline`}
-            columns={stageOrder.map((stage) => ({ id: stage, title: stageTitles[stage] }))}
-            onMove={moveOne}
-          >
-            {stageOrder.map((stage) => {
-              const inStage = bySource.filter((candidate) => candidate.stage === stage);
-              const totalWait = inStage.reduce((sum, candidate) => sum + candidate.waitingDays, 0);
-              return (
-                <BoardColumn
-                  key={stage}
-                  id={stage}
-                  title={stageTitles[stage]}
-                  count={inStage.length}
-                  detail={inStage.length > 0 ? `${totalWait} days waiting in total` : undefined}
-                  headingLevel={2}
-                >
-                  {inStage.map((candidate) => (
-                    <BoardCard key={candidate.id} id={candidate.id} title={candidate.name}>
-                      <span className={styles.cardRole}>{candidate.currentRole}</span>
-                      <span className={styles.cardMeta}>
-                        Applied {candidate.appliedOn}, waiting {candidate.waitingDays}{" "}
-                        {candidate.waitingDays === 1 ? "day" : "days"}.
-                      </span>
-                      {candidate.personCheck !== "likely-automated" ? (
-                        <span className={styles.cardMeta}>
-                          {personCheckWords[candidate.personCheck]}.
-                        </span>
-                      ) : null}
-                      <span className={styles.cardTags}>
-                        <Tag>{candidate.source}</Tag>
-                        {candidate.personCheck === "likely-automated" ? (
-                          <Badge variant="warning">Likely automated</Badge>
-                        ) : null}
-                        {candidate.reviewRequested ? (
-                          <Badge variant="info">Asked for review</Badge>
-                        ) : null}
-                      </span>
-                    </BoardCard>
-                  ))}
-                </BoardColumn>
-              );
-            })}
-          </Board>
+          <div className={styles.boardWrap}>
+            <Board
+              aria-label={`${job.title} pipeline`}
+              columns={stageOrder.map((stage) => ({ id: stage, title: stageTitles[stage] }))}
+              onMove={moveOne}
+            >
+              {stageOrder.map((stage) => {
+                const inStage = bySource.filter((candidate) => candidate.stage === stage);
+                const totalWait = inStage.reduce(
+                  (sum, candidate) => sum + candidate.waitingDays,
+                  0,
+                );
+                return (
+                  <BoardColumn
+                    key={stage}
+                    id={stage}
+                    title={stageTitles[stage]}
+                    count={inStage.length}
+                    detail={
+                      inStage.length > 0 ? `${totalWait} days waiting in total` : undefined
+                    }
+                    headingLevel={2}
+                  >
+                    {inStage.length === 0 ? (
+                      <li className={styles.emptyCol}>{emptyColumn[stage]}</li>
+                    ) : (
+                      inStage.map((candidate) => {
+                        const CheckIcon = checkIcons[candidate.personCheck];
+                        return (
+                          <BoardCard key={candidate.id} id={candidate.id} title={candidate.name}>
+                            <span className={styles.cardTop}>
+                              <span className={styles.cardRole}>{candidate.currentRole}</span>
+                              <Tally
+                                days={candidate.waitingDays}
+                                className={styles.cardTally}
+                              />
+                            </span>
+                            <span className={styles.checkRow}>
+                              <CheckIcon aria-hidden className={styles.checkIcon} />
+                              {personCheckWords[candidate.personCheck]}
+                            </span>
+                            <span className={styles.cardFoot}>
+                              <span className={styles.cardSource}>{candidate.source}</span>
+                              {candidate.reviewRequested ? (
+                                <span className={styles.cardAsk}>
+                                  <Blaze variant="double" className={styles.cardBlaze} />
+                                  Asked for a review
+                                </span>
+                              ) : null}
+                            </span>
+                          </BoardCard>
+                        );
+                      })
+                    )}
+                  </BoardColumn>
+                );
+              })}
+            </Board>
+          </div>
         </TabPanel>
         <TabPanel id="table">
           {selectedCount > 0 ? (
