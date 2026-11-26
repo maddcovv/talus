@@ -346,6 +346,44 @@ export function evidenceFor(candidate: Candidate, requirements: string[]): Evide
   });
 }
 
+export interface RankedCandidate {
+  candidate: Candidate;
+  /** Requirements with at least one matched resume line. */
+  covered: number;
+  total: number;
+  /** The strongest matched line, for the why. */
+  top: string | null;
+}
+
+/**
+ * AI's reading order for a job, from resume evidence against the posting.
+ * Advice only: it includes everyone, hides no one, and decides nothing.
+ */
+export function rankedFor(jobId: string): RankedCandidate[] {
+  const job = jobs.find((entry) => entry.id === jobId);
+  if (!job) return [];
+  return candidatesForJob(jobId)
+    .map((candidate) => {
+      const rows = evidenceFor(candidate, job.requirements);
+      const matched = rows.filter((row) => row.quotes.length > 0);
+      return {
+        candidate,
+        covered: matched.length,
+        total: rows.length,
+        top: matched[0]?.quotes[0] ?? null,
+      };
+    })
+    .sort((a, b) => {
+      const day = (entry: RankedCandidate) =>
+        Number.parseInt(entry.candidate.appliedOn.replace("Nov ", ""), 10) || 0;
+      return (
+        b.covered - a.covered ||
+        day(b) - day(a) ||
+        a.candidate.name.localeCompare(b.candidate.name)
+      );
+    });
+}
+
 /** True when this application waits on a person's decision, not on time. */
 export function needsDana(candidate: Candidate): boolean {
   return needsDanaWhy(candidate) !== null;

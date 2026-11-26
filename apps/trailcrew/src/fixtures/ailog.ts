@@ -55,6 +55,16 @@ function build(): { rows: AiLogRow[]; touched: number; changed: number } {
       check: `${recruiters.hiringManager.name} rewrote the pay section and approved it`,
     });
     changed += 1;
+    const count = candidates.filter((candidate) => candidate.jobId === job.id).length;
+    rows.push({
+      id: `${job.id}-rank`,
+      day: "Nov 24",
+      when: timeFor(`${job.id}-rank`),
+      jobId: job.id,
+      job: job.title,
+      what: `Ranked ${count} candidates for ${job.title} by resume evidence`,
+      check: `${recruiters.recruiter.name} reads every application either way`,
+    });
   }
 
   for (const candidate of candidates) {

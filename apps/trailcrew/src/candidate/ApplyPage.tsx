@@ -1083,8 +1083,8 @@ export function ApplyPage() {
               <p>AI read your resume and filled 14 of 17 answers. You checked each one.</p>
               <p>AI did not write your answers to the team&apos;s questions.</p>
               <p>
-                AI doesn&apos;t score, rank or reject anyone at {employer.name}. Dana reads every
-                application.
+                AI can suggest Dana a reading order from that evidence. It never rejects or hides
+                anyone, and she reads every application.
               </p>
             </div>
           ) : null}

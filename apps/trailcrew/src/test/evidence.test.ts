@@ -1,4 +1,4 @@
-import { candidates, evidenceFor, june } from "../fixtures/candidates";
+import { candidates, candidatesForJob, evidenceFor, june, rankedFor } from "../fixtures/candidates";
 import { getJob } from "../fixtures/jobs";
 import { resumeLines, workEntries } from "../fixtures/resume";
 
@@ -44,6 +44,16 @@ describe("evidence quotes", () => {
     expect(testing.partial).toBe(true);
     expect(testing.quotes).toEqual(["Owned the charting layer and its tests."]);
     expect(testing.note).toContain("Integration testing isn't on the resume");
+  });
+
+  it("AI rank is advice over everyone: full coverage first, nobody hidden", () => {
+    const ranked = rankedFor("senior-frontend");
+    expect(ranked).toHaveLength(candidatesForJob("senior-frontend").length);
+    expect(ranked[0].candidate.id).toBe("june-halloran");
+    expect(ranked[0].covered).toBe(ranked[0].total);
+    for (let i = 1; i < ranked.length; i += 1) {
+      expect(ranked[i - 1].covered).toBeGreaterThanOrEqual(ranked[i].covered);
+    }
   });
 
   it("no candidate's evidence ever cites a page other than 1", () => {

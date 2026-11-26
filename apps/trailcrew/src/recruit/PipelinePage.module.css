@@ -41,6 +41,55 @@
   font-size: var(--talus-font-size-body-sm);
 }
 
+.rankList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rankRow {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  gap: var(--talus-space-3);
+  align-items: baseline;
+  padding-block: var(--talus-space-3);
+  border-block-start: var(--talus-border-width-control) solid var(--talus-color-border-default);
+}
+
+.rankNum {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--talus-font-weight-semibold);
+  color: var(--talus-color-text-secondary);
+  text-align: end;
+}
+
+.rankMain {
+  display: flex;
+  flex-direction: column;
+  gap: var(--talus-space-1);
+  min-inline-size: 0;
+}
+
+.rankHead {
+  display: flex;
+  align-items: baseline;
+  gap: var(--talus-space-3);
+  flex-wrap: wrap;
+}
+
+.rankStage {
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-body-sm);
+}
+
+.rankWhy {
+  font-size: var(--talus-font-size-body-sm);
+}
+
+.rankQuote {
+  color: var(--talus-color-text-secondary);
+}
+
 .aiHead {
   display: flex;
   align-items: center;

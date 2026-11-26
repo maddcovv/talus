@@ -55,6 +55,13 @@ describe("the job's candidates and AI views have no axe violations", () => {
     expect(await axe(container)).toHaveNoViolations();
   }, 30000);
 
+  it("ai rank tab", async () => {
+    const user = userEvent.setup();
+    const { container } = renderAt("/recruit/jobs/senior-frontend");
+    await user.click(screen.getByRole("tab", { name: "AI rank" }));
+    expect(await axe(container)).toHaveNoViolations();
+  }, 30000);
+
   it("ai activity tab", async () => {
     const user = userEvent.setup();
     const { container } = renderAt("/recruit/jobs/warehouse-lead");

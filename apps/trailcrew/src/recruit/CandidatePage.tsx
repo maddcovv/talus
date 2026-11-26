@@ -194,7 +194,8 @@ export function CandidatePage() {
                 </h2>
                 <p className={styles.sectionNote}>
                   AI matched resume lines to the posting. {recruiters.recruiter.name} keeps or
-                  removes each one; nothing is scored.
+                  removes each one; the AI rank view orders by this evidence, and no one is
+                  rejected by it.
                 </p>
                 <div className={styles.evidenceCols}>
                   <ul className={styles.evidenceList}>

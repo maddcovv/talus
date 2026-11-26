@@ -27,7 +27,7 @@ import {
 } from "@talus/react";
 import { Blaze } from "../components/Blaze";
 import { Tally } from "../components/Tally";
-import { candidatesForJob, evidenceFor, needsDanaWhy } from "../fixtures/candidates";
+import { candidatesForJob, evidenceFor, needsDanaWhy, rankedFor } from "../fixtures/candidates";
 import { aiLogCsv, aiLogForJob } from "../fixtures/ailog";
 import { getJob } from "../fixtures/jobs";
 import { ActivityTable } from "./AiActivityPage";
@@ -207,6 +207,7 @@ export function PipelinePage() {
         <TabList aria-label="Views of this job">
           <Tab id="board">Board</Tab>
           <Tab id="candidates">Candidates</Tab>
+          <Tab id="rank">AI rank</Tab>
           <Tab id="ai">AI activity</Tab>
         </TabList>
 
@@ -275,8 +276,8 @@ export function PipelinePage() {
 
         <TabPanel id="candidates">
           <p className={styles.coverageNote}>
-            Evidence counts requirements with a matched resume line. Coverage, not a score; Dana
-            decides.
+            Evidence counts requirements with a matched resume line. The AI rank view orders by
+            it; Dana decides.
           </p>
           {selectedCount > 0 ? (
             <div className={styles.bulkBar}>
@@ -339,6 +340,42 @@ export function PipelinePage() {
               }
             }}
           />
+        </TabPanel>
+
+        <TabPanel id="rank">
+          <p className={styles.coverageNote}>
+            AI&apos;s reading order, from resume evidence against the posting. Advice only:
+            everyone who applied is here, nobody is hidden or rejected by it, and Dana reads every
+            application either way.
+          </p>
+          <ol className={styles.rankList}>
+            {rankedFor(jobId).map((entry, index) => (
+              <li key={entry.candidate.id} className={styles.rankRow}>
+                <span className={styles.rankNum} aria-hidden="true">
+                  {index + 1}
+                </span>
+                <span className={styles.rankMain}>
+                  <span className={styles.rankHead}>
+                    <Link
+                      className={styles.nameLink}
+                      to={`/recruit/candidates/${entry.candidate.id}`}
+                    >
+                      {entry.candidate.name}
+                    </Link>
+                    <span className={styles.rankStage}>
+                      {stageTitles[entry.candidate.stage]}
+                    </span>
+                  </span>
+                  <span className={styles.rankWhy}>
+                    Matched {entry.covered} of {entry.total} requirements
+                    {entry.top ? (
+                      <span className={styles.rankQuote}> {"·"} "{entry.top}"</span>
+                    ) : null}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ol>
         </TabPanel>
 
         <TabPanel id="ai">
