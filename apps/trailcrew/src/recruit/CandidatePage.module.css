@@ -82,6 +82,25 @@
   color: var(--talus-color-text-primary);
 }
 
+.quoteLine {
+  display: block;
+}
+
+.howNote {
+  color: var(--talus-color-status-info-fg);
+  font-size: var(--talus-font-size-caption);
+  font-weight: var(--talus-font-weight-medium);
+}
+
+.partialNote {
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-body-sm);
+  border: var(--talus-border-width-control) dashed var(--talus-color-border-default);
+  border-radius: var(--talus-radius-control);
+  padding: var(--talus-space-1) var(--talus-space-3);
+  align-self: flex-start;
+}
+
 .cite {
   display: block;
   margin-block-start: var(--talus-space-1);

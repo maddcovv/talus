@@ -14,7 +14,7 @@ import {
   type SortDescriptor,
 } from "@talus/react";
 import { Blaze } from "../components/Blaze";
-import { candidates } from "../fixtures/candidates";
+import { candidates, needsDana } from "../fixtures/candidates";
 import { getJob, jobs } from "../fixtures/jobs";
 import {
   personCheckWords,
@@ -152,7 +152,7 @@ export function CandidatesPage() {
               return (
                 <span className={styles.stageCell}>
                   <Blaze
-                    variant={candidate.reviewRequested ? "double" : "single"}
+                    variant={needsDana(candidate) ? "double" : "single"}
                     className={styles.stageBlaze}
                   />
                   {stageTitles[candidate.stage]}

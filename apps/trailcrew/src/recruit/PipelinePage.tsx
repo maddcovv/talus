@@ -28,7 +28,7 @@ import {
 } from "@talus/react";
 import { Blaze } from "../components/Blaze";
 import { Tally } from "../components/Tally";
-import { candidatesForJob } from "../fixtures/candidates";
+import { candidatesForJob, needsDanaWhy } from "../fixtures/candidates";
 import { getJob, jobs } from "../fixtures/jobs";
 import {
   personCheckWords,
@@ -237,6 +237,7 @@ export function PipelinePage() {
                     ) : (
                       inStage.map((candidate) => {
                         const CheckIcon = checkIcons[candidate.personCheck];
+                        const why = needsDanaWhy(candidate);
                         return (
                           <BoardCard key={candidate.id} id={candidate.id} title={candidate.name}>
                             <span className={styles.cardTop}>
@@ -252,10 +253,10 @@ export function PipelinePage() {
                             </span>
                             <span className={styles.cardFoot}>
                               <span className={styles.cardSource}>{candidate.source}</span>
-                              {candidate.reviewRequested ? (
+                              {why ? (
                                 <span className={styles.cardAsk}>
                                   <Blaze variant="double" className={styles.cardBlaze} />
-                                  Asked for a review
+                                  {why}
                                 </span>
                               ) : null}
                             </span>

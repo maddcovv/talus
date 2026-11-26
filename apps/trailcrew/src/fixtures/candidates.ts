@@ -299,28 +299,39 @@ function hash(text: string): number {
 export function evidenceFor(candidate: Candidate, requirements: string[]): EvidenceRow[] {
   if (candidate.id === "june-halloran") {
     // Every quote is a verbatim line from her one-page resume in
-    // fixtures/resume.ts; the years requirement has no line, so it is a gap.
+    // fixtures/resume.ts. The years match is worked out from the two date
+    // lines; the testing match is partial, with the hole named in words.
     return [
-      { requirement: requirements[0], quote: null },
+      {
+        requirement: requirements[0],
+        quotes: [
+          "Blue Mesa Software. Senior Frontend Engineer, March 2022 to present.",
+          "Cairn Analytics. Frontend Engineer, June 2018 to March 2022.",
+        ],
+        where: "Resume, page 1",
+        note: "AI worked this out from the dates. Check it.",
+      },
       {
         requirement: requirements[1],
-        quote: "Built dashboard views in React and TypeScript.",
+        quotes: ["Built dashboard views in React and TypeScript."],
         where: "Resume, page 1",
       },
       {
         requirement: requirements[2],
-        quote: "Led the component library used by four product teams.",
+        quotes: ["Led the component library used by four product teams."],
         where: "Resume, page 1",
       },
       {
         requirement: requirements[3],
-        quote: "Shipped the accessibility pass that took dashboards to WCAG 2.1 AA.",
+        quotes: ["Shipped the accessibility pass that took dashboards to WCAG 2.1 AA."],
         where: "Resume, page 1",
       },
       {
         requirement: requirements[4],
-        quote: "Owned the charting layer and its tests.",
+        quotes: ["Owned the charting layer and its tests."],
         where: "Resume, page 1",
+        partial: true,
+        note: "Covers testing. Integration testing isn't on the resume. Ask about it in the interview.",
       },
     ];
   }
@@ -329,10 +340,29 @@ export function evidenceFor(candidate: Candidate, requirements: string[]): Evide
     const found = (hash(candidate.id) + index) % 3 !== 1;
     return {
       requirement,
-      quote: found ? (pool[index % pool.length] ?? null) : null,
+      quotes: found && pool[index % pool.length] ? [pool[index % pool.length]] : [],
       where: found ? "Resume, page 1" : undefined,
     };
   });
+}
+
+/** True when this application waits on a person's decision, not on time. */
+export function needsDana(candidate: Candidate): boolean {
+  return needsDanaWhy(candidate) !== null;
+}
+
+/** The first reason a person is being waited on, in words, or null. */
+export function needsDanaWhy(candidate: Candidate): string | null {
+  if (candidate.stage === "closed" || candidate.stage === "hired") return null;
+  if (candidate.reviewRequested) return "Asked for a review";
+  if (candidate.identityCheck === "needs") return "Identity check to clear";
+  if (candidate.stage === "offer" && candidate.offerNeedsApproval) {
+    return "Offer waiting on approval";
+  }
+  if (candidate.needsScorecard) return "Scorecard not filed";
+  if (candidate.personCheck === "likely-automated") return "A person decides";
+  if (candidate.waitingDays > 5) return "Waiting on a decision";
+  return null;
 }
 
 // Application answers shown on the recruiter's candidate page, in the order

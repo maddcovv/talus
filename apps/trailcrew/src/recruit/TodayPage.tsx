@@ -9,14 +9,14 @@ import { getJob, jobs, recruiters } from "../fixtures/jobs";
 import { stageOrder, type Candidate, type StageId } from "../fixtures/types";
 import styles from "./TodayPage.module.css";
 
-/** "Waiting in review", never "in In review". */
-const stagePhrase: Record<StageId, string> = {
-  applied: "in Applied",
-  review: "in review",
-  interview: "in Interview",
-  offer: "at Offer",
-  hired: "hired",
-  closed: "closed",
+/** The waiting line, in plain lowercase words. */
+const waitingReason: Record<StageId, string> = {
+  applied: "Applied, not read yet",
+  review: "Waiting in review",
+  interview: "Waiting in interview",
+  offer: "Waiting at offer",
+  hired: "Hired",
+  closed: "Closed",
 };
 
 const stageWord: Record<StageId, string> = {
@@ -147,11 +147,12 @@ export function TodayPage() {
   add({
     id: "waiting",
     title: "Waiting more than 5 days",
-    blaze: "single",
+    // They are waiting on Dana, so they carry the double blaze too.
+    blaze: "double",
     items: open
       .filter((candidate) => candidate.waitingDays > 5)
       .sort((a, b) => b.waitingDays - a.waitingDays),
-    reason: (candidate) => `Waiting ${stagePhrase[candidate.stage]}`,
+    reason: (candidate) => waitingReason[candidate.stage],
     actionLabel: "Open",
     shown: 5,
   });

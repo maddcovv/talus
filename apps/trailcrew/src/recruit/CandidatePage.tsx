@@ -96,9 +96,7 @@ function lineKeyFor(quote: string): string | null {
 }
 
 function GenericResume({ candidate, job }: { candidate: Candidate; job: Job }) {
-  const lines = evidenceFor(candidate, job.requirements)
-    .map((row) => row.quote)
-    .filter((quote): quote is string => quote !== null);
+  const lines = evidenceFor(candidate, job.requirements).flatMap((row) => row.quotes);
   return (
     <div className={styles.genericDoc}>
       <p className={styles.genericName}>{candidate.name}</p>
@@ -126,7 +124,7 @@ export function CandidatePage() {
   const [reason, setReason] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [marks, setMarks] = useState<Record<string, "kept" | "removed">>({});
-  const [litKey, setLitKey] = useState<string | null>(null);
+  const [litKeys, setLitKeys] = useState<string[]>([]);
 
   if (!candidate || !job) {
     return (
@@ -202,23 +200,36 @@ export function CandidatePage() {
                   <ul className={styles.evidenceList}>
                     {evidence.map((row) => {
                       const mark = marks[row.requirement];
-                      const key = row.quote ? lineKeyFor(row.quote) : null;
+                      const keys = row.quotes
+                        .map(lineKeyFor)
+                        .filter((key): key is string => key !== null);
                       return (
                         <li
                           key={row.requirement}
                           className={styles.evidenceRow}
-                          onMouseEnter={() => setLitKey(key)}
-                          onMouseLeave={() => setLitKey(null)}
+                          onMouseEnter={() => setLitKeys(keys)}
+                          onMouseLeave={() => setLitKeys([])}
                         >
                           <span className={styles.requirement}>{row.requirement}</span>
-                          {row.quote ? (
+                          {row.quotes.length > 0 ? (
                             <>
                               <blockquote className={styles.quote}>
-                                "{row.quote}"
+                                {row.quotes.map((quote) => (
+                                  <span key={quote} className={styles.quoteLine}>
+                                    "{quote}"
+                                  </span>
+                                ))}
                                 <cite className={styles.cite}>
                                   {row.where}. AI suggested.
                                 </cite>
                               </blockquote>
+                              {row.note ? (
+                                <span
+                                  className={row.partial ? styles.partialNote : styles.howNote}
+                                >
+                                  {row.note}
+                                </span>
+                              ) : null}
                               <div className={styles.markRow}>
                                 <button
                                   type="button"
@@ -226,7 +237,7 @@ export function CandidatePage() {
                                   className={`${styles.markBtn} ${
                                     mark === "kept" ? styles.markOn : ""
                                   }`}
-                                  onFocus={() => setLitKey(key)}
+                                  onFocus={() => setLitKeys(keys)}
                                   onClick={() =>
                                     setMarks((prev) => ({ ...prev, [row.requirement]: "kept" }))
                                   }
@@ -239,7 +250,7 @@ export function CandidatePage() {
                                   className={`${styles.markBtn} ${
                                     mark === "removed" ? styles.markOn : ""
                                   }`}
-                                  onFocus={() => setLitKey(key)}
+                                  onFocus={() => setLitKeys(keys)}
                                   onClick={() =>
                                     setMarks((prev) => ({
                                       ...prev,
@@ -267,7 +278,7 @@ export function CandidatePage() {
                   </ul>
                   <div className={styles.paperCol}>
                     {isJune ? (
-                      <ResumePaper lit={(key) => litKey !== null && key === litKey} />
+                      <ResumePaper lit={(key) => litKeys.includes(key)} />
                     ) : (
                       <GenericResume candidate={candidate} job={job} />
                     )}

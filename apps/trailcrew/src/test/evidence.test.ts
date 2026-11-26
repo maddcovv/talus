@@ -3,35 +3,47 @@ import { getJob } from "../fixtures/jobs";
 import { resumeLines, workEntries } from "../fixtures/resume";
 
 // June's resume is one page, defined in fixtures/resume.ts. Every evidence
-// quote the recruiter sees must be a verbatim line from it; anything the
-// resume does not say shows as a gap, never as an invented quote.
+// quote the recruiter sees must be a verbatim line from it; a match may cite
+// more than one line, and anything the resume does not say shows in words,
+// never as an invented quote.
 
 const corpus = [
   ...resumeLines.map((line) => line.text),
   ...workEntries.flatMap((entry) => entry.bullets.split("\n")),
 ];
 
+function juneRows() {
+  const job = getJob(june.jobId);
+  if (!job) throw new Error("June's job is missing");
+  return evidenceFor(june, job.requirements);
+}
+
 describe("evidence quotes", () => {
-  it("every quote for June is a verbatim line on her one-page resume", () => {
-    const job = getJob(june.jobId);
-    if (!job) throw new Error("June's job is missing");
-    const rows = evidenceFor(june, job.requirements);
-    for (const row of rows) {
-      if (row.quote === null) continue;
-      const quote = row.quote;
-      const found = corpus.filter((line) => line.includes(quote));
-      // On failure, the diff names the quote that is not on the resume.
-      expect({ quote, found: found.length > 0 }).toEqual({ quote, found: true });
-      expect(row.where).toBe("Resume, page 1");
+  it("every cited line for June is verbatim on her one-page resume", () => {
+    for (const row of juneRows()) {
+      for (const quote of row.quotes) {
+        const found = corpus.some((line) => line.includes(quote));
+        expect({ quote, found }).toEqual({ quote, found: true });
+      }
+      if (row.quotes.length > 0) {
+        expect(row.where).toBe("Resume, page 1");
+      }
     }
   });
 
-  it("the years requirement shows as a gap, because no line covers it", () => {
-    const job = getJob(june.jobId);
-    if (!job) throw new Error("June's job is missing");
-    const rows = evidenceFor(june, job.requirements);
-    expect(rows[0].quote).toBeNull();
-    expect(rows.filter((row) => row.quote !== null).length).toBeGreaterThanOrEqual(3);
+  it("the years match is worked out from both date lines, and says so", () => {
+    const years = juneRows()[0];
+    expect(years.quotes).toHaveLength(2);
+    expect(years.quotes[0]).toContain("March 2022 to present");
+    expect(years.quotes[1]).toContain("June 2018 to March 2022");
+    expect(years.note).toBe("AI worked this out from the dates. Check it.");
+  });
+
+  it("the testing match stays partial, with the hole named in words", () => {
+    const testing = juneRows()[4];
+    expect(testing.partial).toBe(true);
+    expect(testing.quotes).toEqual(["Owned the charting layer and its tests."]);
+    expect(testing.note).toContain("Integration testing isn't on the resume");
   });
 
   it("no candidate's evidence ever cites a page other than 1", () => {
