@@ -1,0 +1,21 @@
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--talus-space-4);
+  flex-wrap: wrap;
+  margin-block-end: var(--talus-space-5);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--talus-font-family-display);
+  font-weight: var(--talus-font-weight-display);
+  font-size: var(--talus-font-size-h1);
+  line-height: var(--talus-font-line-height-tight);
+}
+
+.meta {
+  margin: var(--talus-space-1) 0 0;
+  color: var(--talus-color-text-secondary);
+}

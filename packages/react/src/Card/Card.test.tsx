@@ -22,11 +22,30 @@ describe("Card", () => {
     expect(onPress).toHaveBeenCalledTimes(1);
   });
 
+  it("draws the feature variant and its accent tone", () => {
+    const { container } = render(
+      <>
+        <Card variant="feature">Featured</Card>
+        <Card variant="feature" tone="accent" padding={false}>
+          Accent
+        </Card>
+      </>,
+    );
+    const [feature, accent] = Array.from(container.children) as HTMLElement[];
+    expect(feature.className).toMatch(/feature/);
+    expect(accent.className).toMatch(/accent/);
+    expect(accent.className).toMatch(/noPadding/);
+  });
+
   it("has no axe violations in any variant", async () => {
     const { container } = render(
       <>
         <Card>Plain</Card>
         <Card elevated>Elevated</Card>
+        <Card variant="feature">Featured</Card>
+        <Card variant="feature" tone="accent">
+          Accent
+        </Card>
         <Card onPress={() => {}}>Clickable</Card>
       </>
     );

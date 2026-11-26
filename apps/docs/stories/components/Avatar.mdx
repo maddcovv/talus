@@ -1,0 +1,20 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as AvatarStories from "./Avatar.stories";
+
+<Meta of={AvatarStories} />
+
+# Avatar
+
+Initials in a circle. No photos; Trailcrew reviews applications, not faces.
+
+<Canvas of={AvatarStories.Default} />
+
+<Controls of={AvatarStories.Default} />
+
+## Usage notes
+
+- By default the avatar is decorative and hidden from assistive tech, because the name should appear in text next to it. When the avatar stands alone, set `withLabel` so it reads the name.
+- Initials come from the first and last word of `name`. One word gives one letter.
+- Three sizes from the spacing scale: sm (24), md (32), lg (40).
+
+<Stories />

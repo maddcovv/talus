@@ -37,6 +37,10 @@
       "control": {
         "$type": "dimension",
         "$value": "1px"
+      },
+      "feature": {
+        "$type": "dimension",
+        "$value": "1px"
       }
     }
   },
@@ -104,6 +108,21 @@
     "ring-offset": {
       "$type": "dimension",
       "$value": "2px"
+    }
+  },
+  "shadow": {
+    "feature": {
+      "$type": "shadow",
+      "$description": "Feature cards: the apply card, side cards, the postcard. Consumer is a printed offset in olive; enterprise stays soft.",
+      "$value": [
+        {
+          "color": "{color.shadow.feature}",
+          "offsetX": "0px",
+          "offsetY": "2px",
+          "blur": "8px",
+          "spread": "0px"
+        }
+      ]
     }
   }
 }

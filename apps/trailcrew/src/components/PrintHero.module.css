@@ -1,0 +1,128 @@
+.print {
+  margin: 0;
+  margin-block-start: -18vw;
+  position: relative;
+  z-index: 1;
+  aspect-ratio: 1260 / 740;
+  overflow: hidden;
+  /* The mask is alpha only; no visible color comes from it. */
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, rgba(0, 0, 0, 0.35) 16%, #000 34%);
+  mask-image: linear-gradient(180deg, transparent 0, rgba(0, 0, 0, 0.35) 16%, #000 34%);
+}
+
+.pan {
+  position: absolute;
+  inset: 0;
+  animation: pan 28s ease-in-out infinite alternate;
+  transform-origin: 40% 60%;
+}
+
+.img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: 50% 0;
+  display: block;
+}
+
+.glow {
+  position: absolute;
+  left: 42.5%;
+  top: 35.8%;
+  inline-size: 15%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--talus-color-bg-accent) 75%, transparent) 0,
+    color-mix(in srgb, var(--talus-color-bg-accent) 35%, transparent) 38%,
+    transparent 70%
+  );
+  mix-blend-mode: multiply;
+  animation: glow 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.dust {
+  position: absolute;
+  left: 27.5%;
+  top: 88%;
+  inline-size: 7%;
+  aspect-ratio: 1.6;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse,
+    color-mix(in srgb, var(--talus-color-bg-subtle) 95%, transparent) 0,
+    color-mix(in srgb, var(--talus-color-bg-subtle) 60%, transparent) 40%,
+    transparent 72%
+  );
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  animation: dust 2.7s ease-out infinite;
+  pointer-events: none;
+}
+
+.d2 {
+  animation-delay: 0.9s;
+}
+
+.d3 {
+  animation-delay: 1.8s;
+}
+
+@keyframes pan {
+  from {
+    transform: scale(1.02) translate(0, 0);
+  }
+  to {
+    transform: scale(1.07) translate(-1.2%, -0.8%);
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+  50% {
+    opacity: 0.85;
+    transform: translate(-50%, -50%) scale(1.12);
+  }
+}
+
+@keyframes dust {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  20% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-170%, -10%) scale(1.9);
+  }
+}
+
+@media (max-width: 900px) {
+  .print {
+    margin-block-start: -6vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pan,
+  .glow {
+    animation: none;
+  }
+
+  .pan {
+    transform: none;
+  }
+
+  .dust {
+    display: none;
+  }
+}

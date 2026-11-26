@@ -1,0 +1,86 @@
+.head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--talus-space-4);
+  flex-wrap: wrap;
+  margin-block-end: var(--talus-space-4);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--talus-font-family-display);
+  font-weight: var(--talus-font-weight-display);
+  font-size: var(--talus-font-size-h1);
+  line-height: var(--talus-font-line-height-tight);
+}
+
+.meta {
+  margin: var(--talus-space-1) 0 0;
+  color: var(--talus-color-text-secondary);
+}
+
+.headActions {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--talus-space-3);
+  flex-wrap: wrap;
+}
+
+.jobSwitch {
+  min-inline-size: 18rem;
+}
+
+.filterSwitch {
+  display: flex;
+  align-items: center;
+  min-block-size: var(--talus-control-height-md);
+  align-self: flex-end;
+}
+
+.cardRole {
+  font-size: var(--talus-font-size-body-sm);
+}
+
+.filters {
+  display: flex;
+  gap: var(--talus-space-4);
+  flex-wrap: wrap;
+  margin-block-end: var(--talus-space-5);
+}
+
+.filters > * {
+  min-inline-size: 14rem;
+}
+
+.cardMeta {
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-caption);
+}
+
+.cardTags {
+  display: flex;
+  gap: var(--talus-space-1);
+}
+
+.bulkBar {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--talus-space-3);
+  flex-wrap: wrap;
+  padding: var(--talus-space-3);
+  margin-block-end: var(--talus-space-3);
+  background: var(--talus-color-bg-selected);
+  border: var(--talus-border-width-control) solid var(--talus-color-border-selected);
+  border-radius: var(--talus-radius-container);
+}
+
+.bulkCount {
+  font-weight: var(--talus-font-weight-medium);
+  padding-block-end: var(--talus-space-2);
+}
+
+.nameLink {
+  color: var(--talus-color-text-primary);
+  font-weight: var(--talus-font-weight-medium);
+}

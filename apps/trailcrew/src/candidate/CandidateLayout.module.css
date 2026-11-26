@@ -1,0 +1,121 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100vh;
+}
+
+.header {
+  background: var(--talus-color-bg-surface);
+  border-block-end: var(--talus-border-width-control) solid var(--talus-color-border-default);
+}
+
+.headerInner {
+  max-inline-size: 1240px;
+  margin-inline: auto;
+  inline-size: 100%;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--talus-color-text-on-feature);
+  font-family: var(--talus-font-family-display);
+  font-weight: var(--talus-font-weight-display);
+  font-stretch: 112%;
+  font-size: var(--talus-font-size-h3);
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brand:hover {
+  color: var(--talus-color-text-on-feature);
+}
+
+.brand:focus-visible {
+  outline: var(--talus-focus-ring-width) solid var(--talus-color-border-focus);
+  outline-offset: var(--talus-focus-ring-offset);
+  border-radius: var(--talus-radius-control);
+}
+
+.mark {
+  inline-size: 34px;
+  block-size: 34px;
+  flex: none;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  font-size: var(--talus-font-size-body);
+  font-weight: var(--talus-font-weight-medium);
+  overflow-x: auto;
+}
+
+.nav a {
+  color: var(--talus-color-text-primary);
+  text-decoration: none;
+  min-block-size: var(--talus-size-touch-min);
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.nav a:hover {
+  color: var(--talus-color-text-link);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+
+.nav a:focus-visible {
+  outline: var(--talus-focus-ring-width) solid var(--talus-color-border-focus);
+  outline-offset: var(--talus-focus-ring-offset);
+  border-radius: var(--talus-radius-xs);
+}
+
+.nav a[aria-current="page"] {
+  color: var(--talus-color-text-link);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer {
+  border-block-start: var(--talus-border-width-control) solid var(--talus-color-border-default);
+  background: var(--talus-color-bg-surface);
+}
+
+.footerInner {
+  max-inline-size: 1240px;
+  margin-inline: auto;
+  inline-size: 100%;
+  padding: 28px 32px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-body-sm);
+}
+
+/* Matches the design's phone breakpoint. */
+@media (max-width: 640px) {
+  .headerInner,
+  .footerInner {
+    padding-inline: 20px;
+  }
+}

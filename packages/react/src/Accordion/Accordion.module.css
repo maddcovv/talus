@@ -1,0 +1,19 @@
+.group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Collapse the doubled border where two rows meet. */
+.group > * + * {
+  margin-block-start: calc(-1 * var(--talus-border-width-control));
+}
+
+.group > :not(:first-child) {
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
+}
+
+.group > :not(:last-child) {
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}

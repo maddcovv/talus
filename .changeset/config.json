@@ -6,6 +6,6 @@
   "access": "restricted",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["talus-docs"],
+  "ignore": ["talus-docs", "trailcrew"],
   "privatePackages": { "version": true, "tag": false }
 }

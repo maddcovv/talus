@@ -3,7 +3,7 @@
   "radius": {
     "control": {
       "$type": "dimension",
-      "$value": "{radius.xs}"
+      "$value": "{radius.sm}"
     },
     "container": {
       "$type": "dimension",
@@ -18,7 +18,7 @@
       },
       "md": {
         "$type": "dimension",
-        "$value": "44px"
+        "$value": "48px"
       },
       "lg": {
         "$type": "dimension",
@@ -35,6 +35,10 @@
   "border": {
     "width": {
       "control": {
+        "$type": "dimension",
+        "$value": "1px"
+      },
+      "feature": {
         "$type": "dimension",
         "$value": "2px"
       }
@@ -64,11 +68,11 @@
     "size": {
       "display": {
         "$type": "dimension",
-        "$value": "{font.size.56}"
+        "$value": "{font.size.64}"
       },
       "h1": {
         "$type": "dimension",
-        "$value": "{font.size.40}"
+        "$value": "{font.size.48}"
       },
       "h2": {
         "$type": "dimension",
@@ -76,7 +80,7 @@
       },
       "h3": {
         "$type": "dimension",
-        "$value": "{font.size.20}"
+        "$value": "{font.size.22}"
       },
       "body": {
         "$type": "dimension",
@@ -104,6 +108,21 @@
     "ring-offset": {
       "$type": "dimension",
       "$value": "2px"
+    }
+  },
+  "shadow": {
+    "feature": {
+      "$type": "shadow",
+      "$description": "Feature cards: the apply card, side cards, the postcard. Consumer is a printed offset in olive; enterprise stays soft.",
+      "$value": [
+        {
+          "color": "{color.shadow.feature}",
+          "offsetX": "6px",
+          "offsetY": "6px",
+          "blur": "0px",
+          "spread": "0px"
+        }
+      ]
     }
   }
 }

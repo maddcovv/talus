@@ -1,0 +1,22 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as TagStories from "./Tag.stories";
+
+<Meta of={TagStories} />
+
+# Tag
+
+A small, quiet label: a skill, a source, a category.
+
+<Canvas of={TagStories.Default} />
+
+<Controls of={TagStories.Default} />
+
+## Usage notes
+
+- Tags are for short labels, not facts. A fact a person must read, like pay, a location or a date,
+  belongs in a DescriptionList with a label, in plain text size.
+- When the color itself carries meaning (success, warning, danger), use Badge instead.
+- Keep the text to a word or three. A tag is scanned, not read.
+- Tags are not interactive. If removing or filtering is needed, wrap or pair them with a Button.
+
+<Stories />

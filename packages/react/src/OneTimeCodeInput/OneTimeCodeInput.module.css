@@ -1,0 +1,56 @@
+.wrap {
+  position: relative;
+  display: inline-flex;
+  align-self: flex-start;
+}
+
+/* The real input covers the whole row, invisible: the boxes draw its value. */
+.input {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: transparent;
+  opacity: 0;
+  outline: none;
+}
+
+.boxes {
+  display: flex;
+  gap: var(--talus-space-2);
+  pointer-events: none;
+}
+
+.box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: calc(var(--talus-input-height) * 0.85);
+  block-size: var(--talus-input-height);
+  border: var(--talus-input-border-width) solid var(--talus-color-border-input);
+  border-radius: var(--talus-input-radius);
+  background: var(--talus-color-bg-surface);
+  color: var(--talus-color-text-primary);
+  font-family: var(--talus-font-family-mono);
+  font-size: var(--talus-font-size-20);
+  transition: border-color var(--talus-motion-duration-fast) var(--talus-easing-standard);
+}
+
+.activeBox {
+  outline: var(--talus-focus-ring-width) solid var(--talus-color-border-focus);
+  outline-offset: var(--talus-focus-ring-offset);
+}
+
+.input[data-invalid] ~ .boxes .box {
+  border-color: var(--talus-color-status-danger-border);
+}
+
+.input[data-disabled] ~ .boxes .box {
+  background: var(--talus-color-bg-disabled);
+  border-color: var(--talus-color-border-disabled);
+  color: var(--talus-color-text-disabled);
+}

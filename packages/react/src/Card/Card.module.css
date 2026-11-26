@@ -15,6 +15,22 @@
   box-shadow: var(--talus-elevation-1);
 }
 
+.feature {
+  border: var(--talus-border-width-feature) solid var(--talus-color-border-strong);
+  box-shadow: var(--talus-shadow-feature);
+}
+
+/* The feature shadow's color comes through a variable, so the accent tone
+   only re-points it at the decorative yellow. */
+.accent {
+  --talus-color-shadow-feature: var(--talus-color-bg-accent);
+}
+
+.noPadding {
+  padding: 0;
+  overflow: hidden;
+}
+
 .clickable {
   inline-size: 100%;
   text-align: start;

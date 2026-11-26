@@ -1,0 +1,102 @@
+.title {
+  margin: 0;
+  font-family: var(--talus-font-family-display);
+  font-weight: var(--talus-font-weight-display);
+  font-size: var(--talus-font-size-h1);
+  line-height: var(--talus-font-line-height-tight);
+}
+
+.date {
+  margin: var(--talus-space-1) 0 var(--talus-space-6);
+  color: var(--talus-color-text-secondary);
+}
+
+.h2 {
+  margin: 0 0 var(--talus-space-3);
+  font-size: var(--talus-font-size-h2);
+  font-weight: var(--talus-font-weight-semibold);
+  line-height: var(--talus-font-line-height-snug);
+}
+
+.h3 {
+  margin: 0;
+  font-size: var(--talus-font-size-h3);
+  font-weight: var(--talus-font-weight-semibold);
+}
+
+.changed {
+  margin-block-end: var(--talus-space-8);
+}
+
+.changeList {
+  margin: 0;
+  padding-inline-start: var(--talus-space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--talus-space-2);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+  gap: var(--talus-space-4);
+  align-items: start;
+}
+
+.cardHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--talus-space-2);
+  margin-block-end: var(--talus-space-3);
+}
+
+.count {
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-h3);
+  font-weight: var(--talus-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--talus-space-3);
+  padding-block: var(--talus-space-2);
+  border-block-start: var(--talus-border-width-control) solid var(--talus-color-border-default);
+}
+
+.rowText {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.rowName {
+  font-weight: var(--talus-font-weight-medium);
+}
+
+.rowDetail {
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-body-sm);
+}
+
+.empty {
+  margin: 0;
+  color: var(--talus-color-text-secondary);
+}
+
+.more {
+  margin: var(--talus-space-2) 0 0;
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-body-sm);
+}

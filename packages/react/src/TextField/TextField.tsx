@@ -3,6 +3,7 @@ import {
   type TextFieldProps as AriaTextFieldProps,
   Label,
   Input,
+  TextArea,
   Text,
   FieldError,
 } from "react-aria-components";
@@ -19,6 +20,10 @@ export interface TextFieldProps extends Omit<AriaTextFieldProps, "className" | "
   /** Error text. Setting it marks the field invalid. Shown with an icon, never color alone. */
   errorMessage?: string;
   placeholder?: string;
+  /** Renders a textarea instead of a one-line input. */
+  multiline?: boolean;
+  /** Visible rows when multiline. */
+  rows?: number;
   className?: string;
 }
 
@@ -27,6 +32,8 @@ export function TextField({
   hint,
   errorMessage,
   placeholder,
+  multiline = false,
+  rows = 4,
   className,
   ...props
 }: TextFieldProps) {
@@ -37,7 +44,11 @@ export function TextField({
       className={cx(field.field, className)}
     >
       <Label className={field.label}>{label}</Label>
-      <Input className={styles.input} placeholder={placeholder} />
+      {multiline ? (
+        <TextArea className={cx(styles.input, styles.textarea)} placeholder={placeholder} rows={rows} />
+      ) : (
+        <Input className={styles.input} placeholder={placeholder} />
+      )}
       {hint ? (
         <Text slot="description" className={field.hint}>
           {hint}

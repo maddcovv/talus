@@ -1,5 +1,29 @@
 # @talus/react
 
+## 0.6.0
+
+### Minor Changes
+
+- Two Track consumer look: kraft primitive family, bg.accent, bg.feature, on-feature text, the feature shadow and border width, consumer remapped to olive and kraft with 48px controls. Card gains variant="feature" with tone="accent"; ErrorSummary scrolls itself and its targets into view, smooth unless reduced motion.
+
+## 0.5.0
+
+### Minor Changes
+
+- Add Accordion, AppShell, DescriptionList, ErrorSummary and OneTimeCodeInput, and give BoardColumn a detail line for things like total waiting time.
+
+## 0.4.0
+
+### Minor Changes
+
+- Add Disclosure: a collapsible summary row with a heading-level option, built on React Aria, used for work history entries in apply flows.
+
+## 0.3.0
+
+### Minor Changes
+
+- New components for product pages: DataTable (sortable, selectable, sticky header), Board with BoardColumn and BoardCard (drag and keyboard moves, announced), Avatar (initials only), Tag, and Header (sticky bar with a nav landmark). TextField gains a multiline mode, and BoardColumn headings can set their level.
+
 ## 0.2.1
 
 ### Patch Changes

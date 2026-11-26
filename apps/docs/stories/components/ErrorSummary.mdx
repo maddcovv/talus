@@ -1,0 +1,27 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as ErrorSummaryStories from "./ErrorSummary.stories";
+
+<Meta of={ErrorSummaryStories} />
+
+# ErrorSummary
+
+Everything blocking the next step, named in words, each item a link that moves focus to the field
+it names. The box takes focus when it appears, so a screen reader reads the reasons out.
+
+<Canvas of={ErrorSummaryStories.JumpsToTheField} />
+
+<Controls of={ErrorSummaryStories.Default} />
+
+## Usage notes
+
+- Never disable a continue or submit button without a reason. Leave the button enabled, and when it
+  cannot work yet, render this summary at the top of the form with every blocker.
+- Each `targetId` points at the input, or at a container that holds exactly one input; the link
+  focuses the first focusable thing inside it.
+- Write items as actions in plain words: "Add your phone number.", not "Phone is required".
+- Pair it with inline errors on the fields themselves; this list is the map, the field error is
+  the marker.
+- `autoFocus` is on by default and belongs on. It is off in these stories only so the docs page
+  does not steal focus.
+
+<Stories />

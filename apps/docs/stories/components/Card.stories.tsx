@@ -28,13 +28,25 @@ export const Default: Story = {};
 
 export const Elevated: Story = { args: { elevated: true } };
 
+/**
+ * The strong border and the brand's feature shadow: a printed offset in olive
+ * on consumer, a soft shadow on enterprise.
+ */
+export const Feature: Story = { args: { variant: "feature" } };
+
+/** Secondary feature cards cast the decorative yellow offset instead. */
+export const FeatureAccent: Story = { args: { variant: "feature", tone: "accent" } };
+
 /** One press target with a visible focus ring. */
 export const Clickable: Story = { args: { onPress: () => {} } };
 
 export const Modes: Story = {
   render: () => (
     <ModeSplit>
-      <Card onPress={() => {}}>{posting}</Card>
+      <div style={{ display: "flex", flexDirection: "column", gap: "var(--talus-space-5)" }}>
+        <Card onPress={() => {}}>{posting}</Card>
+        <Card variant="feature">{posting}</Card>
+      </div>
     </ModeSplit>
   ),
 };

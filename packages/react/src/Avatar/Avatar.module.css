@@ -1,0 +1,31 @@
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--talus-color-bg-inverse);
+  color: var(--talus-color-text-inverse);
+  border-radius: var(--talus-radius-full);
+  font-family: var(--talus-font-family-body);
+  font-weight: var(--talus-font-weight-semibold);
+  line-height: var(--talus-font-line-height-tight);
+  user-select: none;
+}
+
+.avatar[data-size="sm"] {
+  inline-size: var(--talus-space-6);
+  block-size: var(--talus-space-6);
+  font-size: calc(var(--talus-font-size-caption) - 2px);
+}
+
+.avatar[data-size="md"] {
+  inline-size: var(--talus-space-8);
+  block-size: var(--talus-space-8);
+  font-size: var(--talus-font-size-caption);
+}
+
+.avatar[data-size="lg"] {
+  inline-size: var(--talus-space-10);
+  block-size: var(--talus-space-10);
+  font-size: var(--talus-font-size-body);
+}

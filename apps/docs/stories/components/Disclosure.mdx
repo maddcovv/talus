@@ -1,0 +1,25 @@
+import { Meta, Canvas, Controls, Stories } from "@storybook/addon-docs/blocks";
+import * as DisclosureStories from "./Disclosure.stories";
+
+<Meta of={DisclosureStories} />
+
+# Disclosure
+
+A collapsible row: the summary stays visible, the detail opens on demand. Built on React Aria's
+Disclosure, so the trigger carries `aria-expanded` and `aria-controls`, and Enter and Space toggle.
+
+<Canvas of={DisclosureStories.Default} />
+
+<Controls of={DisclosureStories.Default} />
+
+## Usage notes
+
+- Use it when the summary is enough most of the time and the detail would crowd the page: a work
+  history entry, an order's line items, a long explanation behind a short answer.
+- `title` is the summary; keep it a scannable line. `detail` is for a quiet fact on the right,
+  like a date range.
+- Set `headingLevel` so the row sits correctly in the page outline. The default is 3.
+- Do not hide anything the person must act on. A required field belongs on the page, not in a
+  closed panel.
+
+<Stories />

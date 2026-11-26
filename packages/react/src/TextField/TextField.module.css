@@ -12,6 +12,14 @@
   transition: border-color var(--talus-motion-duration-fast) var(--talus-easing-standard);
 }
 
+.textarea {
+  block-size: auto;
+  min-block-size: calc(var(--talus-input-height) * 2);
+  padding-block: var(--talus-space-2);
+  line-height: var(--talus-font-line-height-normal);
+  resize: vertical;
+}
+
 .input::placeholder {
   color: var(--talus-color-text-placeholder);
 }
