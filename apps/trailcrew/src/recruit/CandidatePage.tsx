@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   Avatar,
   Badge,
@@ -12,12 +12,13 @@ import {
   TabList,
   TabPanel,
   Tabs,
+  TextField,
   Toast,
   ToastRegion,
   type BadgeVariant,
 } from "@talus/react";
-import { answersFor, evidenceFor, getCandidate } from "../fixtures/candidates";
-import { statusMessages } from "../fixtures/demo";
+import { answersFor, candidatesForJob, evidenceFor, getCandidate } from "../fixtures/candidates";
+import { demoTodayShort, statusMessages } from "../fixtures/demo";
 import { getJob, recruiters } from "../fixtures/jobs";
 import { resumeLines, workEntries } from "../fixtures/resume";
 import { ResumePaper } from "../components/ResumePaper";
@@ -115,24 +116,80 @@ function GenericResume({ candidate, job }: { candidate: Candidate; job: Job }) {
   );
 }
 
+/** The job's review order: newest application first. */
+function reviewOrderFor(jobId: string) {
+  return candidatesForJob(jobId)
+    .slice()
+    .sort((a, b) => {
+      const day = (candidate: Candidate) =>
+        Number.parseInt(candidate.appliedOn.replace("Nov ", ""), 10) || 0;
+      return day(b) - day(a) || a.name.localeCompare(b.name);
+    });
+}
+
+interface RecordProps {
+  candidate: Candidate;
+  job: Job;
+  notes: string[];
+  onAddNote: (text: string) => void;
+  prevId: string | null;
+  nextId: string | null;
+  position: number;
+  total: number;
+}
+
 export function CandidatePage() {
   const { id } = useParams();
+  const [notesByCandidate, setNotesByCandidate] = useState<Record<string, string[]>>({});
   const candidate = getCandidate(id);
   const job = candidate ? getJob(candidate.jobId) : undefined;
+  if (!candidate || !job) {
+    return (
+      <p>
+        No such candidate. <Link to="/recruit">Back to Jobs.</Link>
+      </p>
+    );
+  }
+  const siblings = reviewOrderFor(candidate.jobId);
+  const index = siblings.findIndex((entry) => entry.id === candidate.id);
+  return (
+    <CandidateRecord
+      key={candidate.id}
+      candidate={candidate}
+      job={job}
+      notes={notesByCandidate[candidate.id] ?? []}
+      onAddNote={(text) =>
+        setNotesByCandidate((prev) => ({
+          ...prev,
+          [candidate.id]: [...(prev[candidate.id] ?? []), text],
+        }))
+      }
+      prevId={index > 0 ? siblings[index - 1].id : null}
+      nextId={index >= 0 && index < siblings.length - 1 ? siblings[index + 1].id : null}
+      position={index + 1}
+      total={siblings.length}
+    />
+  );
+}
+
+function CandidateRecord({
+  candidate,
+  job,
+  notes,
+  onAddNote,
+  prevId,
+  nextId,
+  position,
+  total,
+}: RecordProps) {
+  const navigate = useNavigate();
   const [stage, setStage] = useState<StageId | null>(null);
   const [dialog, setDialog] = useState<"forward" | "decline" | null>(null);
   const [reason, setReason] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [marks, setMarks] = useState<Record<string, "kept" | "removed">>({});
   const [litKeys, setLitKeys] = useState<string[]>([]);
-
-  if (!candidate || !job) {
-    return (
-      <p>
-        No such candidate. <Link to="/recruit">Back to Today.</Link>
-      </p>
-    );
-  }
+  const [noteDraft, setNoteDraft] = useState("");
 
   const isJune = candidate.id === "june-halloran";
   const currentStage = stage ?? candidate.stage;
@@ -178,6 +235,27 @@ export function CandidatePage() {
           <p className={styles.meta}>
             {job.title}. Applied {candidate.appliedOn} via {candidate.source.toLowerCase()}.
           </p>
+        </div>
+        <div className={styles.pager}>
+          <Button
+            variant="secondary"
+            size="sm"
+            isDisabled={!prevId}
+            onPress={() => prevId && navigate(`/recruit/candidates/${prevId}`)}
+          >
+            Previous
+          </Button>
+          <span className={styles.pagerCount}>
+            {position} of {total}
+          </span>
+          <Button
+            variant="secondary"
+            size="sm"
+            isDisabled={!nextId}
+            onPress={() => nextId && navigate(`/recruit/candidates/${nextId}`)}
+          >
+            Next candidate
+          </Button>
         </div>
       </header>
 
@@ -395,14 +473,41 @@ export function CandidatePage() {
           </Card>
           <div className={styles.notes}>
             <h2 className={styles.notesH}>Notes</h2>
-            {candidate.id === "marisol-vega" ? (
-              <p className={styles.railNote}>
-                "Strong component library work, exactly our gap. Check the accessibility answer
-                against a work sample." {recruiters.recruiter.name}, Nov 14.
-              </p>
-            ) : (
-              <p className={styles.railNote}>No notes yet.</p>
-            )}
+            <ul className={styles.noteList}>
+              {candidate.id === "marisol-vega" ? (
+                <li className={styles.railNote}>
+                  "Strong component library work, exactly our gap. Check the accessibility answer
+                  against a work sample." {recruiters.recruiter.name}, Nov 14.
+                </li>
+              ) : null}
+              {notes.map((note) => (
+                <li key={note} className={styles.railNote}>
+                  "{note}" {recruiters.recruiter.name}, {demoTodayShort}.
+                </li>
+              ))}
+              {candidate.id !== "marisol-vega" && notes.length === 0 ? (
+                <li className={styles.railNote}>No notes yet.</li>
+              ) : null}
+            </ul>
+            <TextField
+              label="Add a note"
+              multiline
+              rows={3}
+              value={noteDraft}
+              onChange={setNoteDraft}
+            />
+            <Button
+              variant="secondary"
+              size="sm"
+              onPress={() => {
+                if (noteDraft.trim()) {
+                  onAddNote(noteDraft.trim());
+                  setNoteDraft("");
+                }
+              }}
+            >
+              Add note
+            </Button>
           </div>
         </aside>
       </div>

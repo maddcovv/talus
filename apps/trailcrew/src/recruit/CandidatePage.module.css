@@ -7,7 +7,22 @@
   display: flex;
   align-items: center;
   gap: var(--talus-space-4);
+  flex-wrap: wrap;
   margin-block-end: var(--talus-space-5);
+}
+
+.pager {
+  margin-inline-start: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--talus-space-2);
+}
+
+.pagerCount {
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-body-sm);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .headText {
@@ -335,6 +350,23 @@
 .notes {
   padding-block-start: var(--talus-space-4);
   border-block-start: var(--talus-border-width-control) solid var(--talus-color-border-default);
+  display: flex;
+  flex-direction: column;
+  gap: var(--talus-space-3);
+  align-items: flex-start;
+}
+
+.noteList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--talus-space-2);
+}
+
+.notes > * {
+  inline-size: 100%;
 }
 
 .notesH {
