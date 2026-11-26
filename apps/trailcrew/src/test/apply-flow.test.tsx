@@ -1,4 +1,4 @@
-import { screen, within } from "@testing-library/react";
+import { fireEvent, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderAt } from "./renderAt";
 
@@ -117,6 +117,21 @@ describe("apply flow", () => {
     expect(
       screen.getByText("Kept the gear inventory and the booking calendar."),
     ).toBeInTheDocument();
+  }, 40000);
+
+  it("takes a real file and says June's sample stands in", async () => {
+    const { container } = renderAt("/jobs/senior-frontend/apply");
+    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+    expect(input).not.toBeNull();
+    const file = new File(["resume"], "my-real-resume.pdf", { type: "application/pdf" });
+    fireEvent.change(input, { target: { files: [file] } });
+
+    // The reading pass runs, and the demo is honest about the swap.
+    expect(
+      await screen.findByText(/my-real-resume\.pdf stays on your computer/),
+    ).toBeInTheDocument();
+    await screen.findByRole("heading", { level: 1, name: "Your details" }, { timeout: 8000 });
+    expect(screen.getByText(/June's sample resume stands in/)).toBeInTheDocument();
   }, 40000);
 
   it("lets a person skip AI and fill the form themselves", async () => {
