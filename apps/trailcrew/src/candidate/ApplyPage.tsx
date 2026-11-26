@@ -12,14 +12,9 @@ import { useBrand } from "../lib/useBrand";
 import { TwoTrackMark } from "../components/TwoTrackMark";
 import { TrackProgress } from "../components/TrackProgress";
 import { Postmark } from "../components/Postmark";
+import { ResumePaper } from "../components/ResumePaper";
 import { employer, getJob } from "../fixtures/jobs";
-import {
-  contactFields,
-  resumeLines,
-  sampleResumeName,
-  sampleResumePages,
-  workEntries,
-} from "../fixtures/resume";
+import { contactFields, workEntries } from "../fixtures/resume";
 import { statusToken } from "../fixtures/candidates";
 import styles from "./ApplyPage.module.css";
 
@@ -1060,31 +1055,7 @@ export function ApplyPage() {
           ) : null}
 
           {(reading || stage === "details") && aiFilled ? (
-            <div>
-              <div className={styles.paperHead}>
-                <span>{sampleResumeName}</span>
-                <span>{sampleResumePages}</span>
-              </div>
-              <div className={styles.paperDoc}>
-                {resumeLines.map((line, index) => (
-                  <div
-                    key={`${line.key}-${line.text.slice(0, 12)}`}
-                    className={[
-                      styles.paperLine,
-                      line.variant === "name" ? styles.paperName : "",
-                      line.variant === "head" ? styles.paperHeadLine : "",
-                      line.gap === "loose" ? styles.paperGapLoose : "",
-                      line.gap === "none" ? styles.paperGapNone : "",
-                      lineLit(index, line.key) ? styles.paperLit : "",
-                    ]
-                      .filter(Boolean)
-                      .join(" ")}
-                  >
-                    {line.text}
-                  </div>
-                ))}
-              </div>
-            </div>
+            <ResumePaper lit={(key, index) => lineLit(index, key)} />
           ) : null}
 
           {stage === "questions" ? (

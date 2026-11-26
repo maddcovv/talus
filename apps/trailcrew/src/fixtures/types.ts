@@ -121,11 +121,3 @@ export interface EvidenceRow {
   where?: string;
 }
 
-export interface AiLogEntry {
-  id: string;
-  when: string;
-  where: string;
-  what: "Filled an application" | "Suggested evidence" | "Drafted job setup";
-  reviewedBy: string;
-  reviewedOn: string;
-}

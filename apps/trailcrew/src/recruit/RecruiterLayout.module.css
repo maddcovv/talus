@@ -1,10 +1,71 @@
+/* The ink sidebar: ink in both schemes. In light that is bg.inverse; in
+   dark, bg.inverse flips light, so the sidebar leans on the dark surface. */
+.ink {
+  --ink-fg: var(--talus-color-text-inverse);
+  background: var(--talus-color-bg-inverse);
+  color: var(--ink-fg);
+  border-inline-end: none;
+}
+
+:root[data-scheme="dark"] .ink {
+  --ink-fg: var(--talus-color-text-primary);
+  background: var(--talus-color-bg-surface);
+  border-inline-end: var(--talus-border-width-control) solid var(--talus-color-border-default);
+}
+
+.ink a {
+  color: var(--ink-fg);
+}
+
+.ink nav a {
+  color: color-mix(in srgb, var(--ink-fg) 72%, transparent);
+}
+
+.ink nav a svg {
+  color: inherit;
+}
+
+.ink nav a:hover {
+  background: color-mix(in srgb, var(--ink-fg) 10%, transparent);
+  color: var(--ink-fg);
+}
+
+.ink nav a[aria-current="page"] {
+  background: color-mix(in srgb, var(--ink-fg) 14%, transparent);
+  color: var(--ink-fg);
+  font-weight: var(--talus-font-weight-medium);
+}
+
+.ink nav a[aria-current="page"] svg {
+  color: inherit;
+}
+
+.ink button {
+  color: var(--ink-fg);
+  border-color: color-mix(in srgb, var(--ink-fg) 45%, transparent);
+}
+
 .user {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: var(--talus-space-2);
-  color: var(--talus-color-text-secondary);
+  gap: var(--talus-space-3);
+  padding: var(--talus-space-2) var(--talus-space-3);
+}
+
+.userText {
+  display: flex;
+  flex-direction: column;
+}
+
+.userName {
+  color: var(--ink-fg);
   font-size: var(--talus-font-size-body-sm);
-  white-space: nowrap;
+  font-weight: var(--talus-font-weight-medium);
+}
+
+.userRole {
+  color: color-mix(in srgb, var(--ink-fg) 65%, transparent);
+  font-size: var(--talus-font-size-caption);
 }
 
 .search {
@@ -61,4 +122,10 @@
   max-inline-size: 90rem;
   margin-inline: auto;
   padding: var(--talus-space-6) var(--talus-space-6) var(--talus-space-10);
+}
+
+@media (max-width: 640px) {
+  .content {
+    padding-inline: var(--talus-space-4);
+  }
 }

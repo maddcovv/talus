@@ -4,6 +4,7 @@ import {
   Avatar,
   Badge,
   Button,
+  Card,
   Dialog,
   Radio,
   RadioGroup,
@@ -11,14 +12,16 @@ import {
   TabList,
   TabPanel,
   Tabs,
-  Tag,
   Toast,
   ToastRegion,
   type BadgeVariant,
 } from "@talus/react";
 import { answersFor, evidenceFor, getCandidate } from "../fixtures/candidates";
+import { statusMessages } from "../fixtures/demo";
 import { getJob, recruiters } from "../fixtures/jobs";
-import { educationEntries, workEntries } from "../fixtures/resume";
+import { resumeLines, workEntries } from "../fixtures/resume";
+import { ResumePaper } from "../components/ResumePaper";
+import { Blaze } from "../components/Blaze";
 import {
   personCheckWords,
   stageOrder,
@@ -26,7 +29,6 @@ import {
   type Candidate,
   type IdentityCheck,
   type Job,
-  type PersonCheck,
   type StageId,
 } from "../fixtures/types";
 import styles from "./CandidatePage.module.css";
@@ -35,22 +37,6 @@ const identityWords: Record<IdentityCheck, { label: string; variant: BadgeVarian
   needs: { label: "Needs a check", variant: "warning" },
   checked: { label: "Checked", variant: "success" },
   "not-started": { label: "Not started", variant: "neutral" },
-};
-
-const checkVariant: Record<PersonCheck, BadgeVariant> = {
-  "verified-text": "success",
-  "verified-email": "success",
-  "likely-automated": "warning",
-  "not-checked": "neutral",
-};
-
-const stageVariant: Record<StageId, BadgeVariant> = {
-  applied: "neutral",
-  review: "info",
-  interview: "info",
-  offer: "warning",
-  hired: "success",
-  closed: "neutral",
 };
 
 const forwardReasons = [
@@ -72,11 +58,21 @@ const juneAnswers = [
   "Yes, it works",
 ];
 
+/** How many of the shared status messages this stage has earned. */
+const messagesForStage: Record<StageId, number> = {
+  applied: 1,
+  review: 2,
+  interview: 3,
+  offer: 5,
+  hired: 5,
+  closed: 1,
+};
+
 function nextStepFor(candidate: Candidate, stage: StageId): string {
   if (stage === "closed") {
     return candidate.closedReason ? `Closed: ${candidate.closedReason.toLowerCase()}` : "Closed";
   }
-  if (stage === "applied") return "Review the application and decide, with a reason";
+  if (stage === "applied") return "Read the application and decide, with a reason";
   if (stage === "review") return "Decide: interview or not, with a reason";
   if (stage === "interview") {
     return candidate.needsScorecard
@@ -91,61 +87,32 @@ function nextStepFor(candidate: Candidate, stage: StageId): string {
   return "Onboarding";
 }
 
-function ResumePreview({ candidate, job }: { candidate: Candidate; job: Job }) {
-  const isJune = candidate.id === "june-halloran";
-  const genericLines = evidenceFor(candidate, job.requirements)
+/** Which resume line a June quote lights up. */
+function lineKeyFor(quote: string): string | null {
+  const line = resumeLines.find((entry) => entry.text.includes(quote));
+  if (line) return line.key;
+  const entry = workEntries.find((work) => work.bullets.includes(quote));
+  return entry ? entry.lineKey : null;
+}
+
+function GenericResume({ candidate, job }: { candidate: Candidate; job: Job }) {
+  const lines = evidenceFor(candidate, job.requirements)
     .map((row) => row.quote)
     .filter((quote): quote is string => quote !== null);
   return (
-    <div className={styles.resumeDoc}>
-      <p className={styles.resumeName}>{candidate.name}</p>
-      <p className={styles.resumeContact}>
+    <div className={styles.genericDoc}>
+      <p className={styles.genericName}>{candidate.name}</p>
+      <p className={styles.genericContact}>
         {candidate.email}. {candidate.location}.
       </p>
-      {isJune ? (
-        <>
-          <h3 className={styles.resumeH}>Experience</h3>
-          {workEntries.map((entry) => (
-            <div key={entry.id} className={styles.resumeEntry}>
-              <p className={styles.resumeRole}>
-                {entry.title}, {entry.company}
-              </p>
-              <p className={styles.resumeDates}>
-                {entry.startMonth} {entry.startYear} to{" "}
-                {entry.current ? "now" : `${entry.endMonth} ${entry.endYear}`}. {entry.location}.
-              </p>
-              <ul className={styles.resumeList}>
-                {entry.bullets.split("\n").map((line) => (
-                  <li key={line}>{line}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-          <h3 className={styles.resumeH}>Education</h3>
-          {educationEntries.map((entry) => (
-            <p key={entry.id} className={styles.resumeRole}>
-              {entry.credential}, {entry.school}, {entry.year}
-            </p>
-          ))}
-          <h3 className={styles.resumeH}>Skills</h3>
-          <p className={styles.resumeRole}>
-            React, TypeScript, design systems, accessibility, testing
-          </p>
-        </>
-      ) : (
-        <>
-          <h3 className={styles.resumeH}>Experience</h3>
-          <p className={styles.resumeRole}>{candidate.currentRole}.</p>
-          <ul className={styles.resumeList}>
-            {genericLines.map((line) => (
-              <li key={line}>{line}</li>
-            ))}
-          </ul>
-        </>
-      )}
-      <p className={styles.resumeNote}>
-        Fictional resume, rendered from the uploaded file for this demo.
-      </p>
+      <h3 className={styles.genericH}>Experience</h3>
+      <p className={styles.genericRole}>{candidate.currentRole}.</p>
+      <ul className={styles.genericList}>
+        {lines.map((line) => (
+          <li key={line}>{line}</li>
+        ))}
+      </ul>
+      <p className={styles.genericNote}>Fictional resume, rendered for this demo.</p>
     </div>
   );
 }
@@ -158,6 +125,8 @@ export function CandidatePage() {
   const [dialog, setDialog] = useState<"forward" | "decline" | null>(null);
   const [reason, setReason] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [marks, setMarks] = useState<Record<string, "kept" | "removed">>({});
+  const [litKey, setLitKey] = useState<string | null>(null);
 
   if (!candidate || !job) {
     return (
@@ -167,50 +136,20 @@ export function CandidatePage() {
     );
   }
 
+  const isJune = candidate.id === "june-halloran";
   const currentStage = stage ?? candidate.stage;
   const evidence = evidenceFor(candidate, job.requirements);
   const answers =
-    candidate.id === "june-halloran" ? juneAnswers : answersFor(candidate, job.questions.length);
+    isJune ? juneAnswers : answersFor(candidate, job.questions.length);
   const identity = identityWords[candidate.identityCheck];
   const nextStage =
     currentStage === "closed"
       ? null
       : stageOrder[Math.min(stageOrder.indexOf(currentStage) + 1, stageOrder.length - 1)];
-
-  const activity: Array<{ when: string; what: string }> = [];
-  if (candidate.stageDates.applied) {
-    activity.push({
-      when: candidate.stageDates.applied,
-      what: `Applied via ${candidate.source.toLowerCase()}. Person check: ${personCheckWords[candidate.personCheck].toLowerCase()}.`,
-    });
-  }
-  if (candidate.stageDates.review) {
-    activity.push({
-      when: candidate.stageDates.review,
-      what: `Moved to In review by ${recruiters.recruiter.name}. AI suggested evidence the same day; ${recruiters.recruiter.name} reviewed it.`,
-    });
-  }
-  if (candidate.stageDates.interview) {
-    activity.push({
-      when: candidate.stageDates.interview,
-      what: `Moved to Interview by ${recruiters.recruiter.name}.`,
-    });
-  }
-  if (candidate.stageDates.offer) {
-    activity.push({
-      when: candidate.stageDates.offer,
-      what: `Moved to Offer. ${candidate.offerNeedsApproval ? `Waiting on ${recruiters.hiringManager.name}.` : "Approved."}`,
-    });
-  }
-  if (candidate.stageDates.hired) {
-    activity.push({ when: candidate.stageDates.hired, what: "Hired." });
-  }
-  if (candidate.stageDates.closed) {
-    activity.push({
-      when: candidate.stageDates.closed,
-      what: `Closed by ${recruiters.recruiter.name}: ${candidate.closedReason?.toLowerCase() ?? "no reason recorded"}.`,
-    });
-  }
+  const activity = statusMessages
+    .slice(0, messagesForStage[candidate.stage])
+    .slice()
+    .reverse();
 
   function decide() {
     if (!reason) return;
@@ -230,36 +169,15 @@ export function CandidatePage() {
 
   return (
     <article>
-      <div className={styles.head}>
+      <header className={styles.head}>
         <Avatar name={candidate.name} size="lg" />
         <div className={styles.headText}>
           <h1 className={styles.title}>{candidate.name}</h1>
           <p className={styles.meta}>
-            {job.title}. Applied {candidate.appliedOn} via {candidate.source.toLowerCase()}. Owner:{" "}
-            {recruiters.recruiter.name}.
+            {job.title}. Applied {candidate.appliedOn} via {candidate.source.toLowerCase()}.
           </p>
-          <div className={styles.tags}>
-            <Badge variant={stageVariant[currentStage]}>{stageTitles[currentStage]}</Badge>
-            <Tag>{candidate.location}</Tag>
-            <Tag>{candidate.email}</Tag>
-          </div>
         </div>
-        <div className={styles.decisions}>
-          <Button
-            isDisabled={currentStage === "closed" || currentStage === "hired"}
-            onPress={() => setDialog("forward")}
-          >
-            Move forward
-          </Button>
-          <Button
-            variant="secondary"
-            isDisabled={currentStage === "closed"}
-            onPress={() => setDialog("decline")}
-          >
-            Not moving forward
-          </Button>
-        </div>
-      </div>
+      </header>
 
       <div className={styles.layout}>
         <div className={styles.mainCol}>
@@ -277,24 +195,84 @@ export function CandidatePage() {
                   Evidence against the requirements
                 </h2>
                 <p className={styles.sectionNote}>
-                  AI suggested these matches from the resume. {recruiters.recruiter.name} reviews
-                  each one. There is no score.
+                  AI matched resume lines to the posting. {recruiters.recruiter.name} keeps or
+                  removes each one; nothing is scored.
                 </p>
-                <ul className={styles.evidenceList}>
-                  {evidence.map((row) => (
-                    <li key={row.requirement} className={styles.evidenceRow}>
-                      <span className={styles.requirement}>{row.requirement}</span>
-                      {row.quote ? (
-                        <blockquote className={styles.quote}>
-                          "{row.quote}"
-                          <cite className={styles.cite}>{row.where}. AI suggested.</cite>
-                        </blockquote>
-                      ) : (
-                        <span className={styles.noEvidence}>No evidence found.</span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+                <div className={styles.evidenceCols}>
+                  <ul className={styles.evidenceList}>
+                    {evidence.map((row) => {
+                      const mark = marks[row.requirement];
+                      const key = row.quote ? lineKeyFor(row.quote) : null;
+                      return (
+                        <li
+                          key={row.requirement}
+                          className={styles.evidenceRow}
+                          onMouseEnter={() => setLitKey(key)}
+                          onMouseLeave={() => setLitKey(null)}
+                        >
+                          <span className={styles.requirement}>{row.requirement}</span>
+                          {row.quote ? (
+                            <>
+                              <blockquote className={styles.quote}>
+                                "{row.quote}"
+                                <cite className={styles.cite}>
+                                  {row.where}. AI suggested.
+                                </cite>
+                              </blockquote>
+                              <div className={styles.markRow}>
+                                <button
+                                  type="button"
+                                  aria-pressed={mark === "kept"}
+                                  className={`${styles.markBtn} ${
+                                    mark === "kept" ? styles.markOn : ""
+                                  }`}
+                                  onFocus={() => setLitKey(key)}
+                                  onClick={() =>
+                                    setMarks((prev) => ({ ...prev, [row.requirement]: "kept" }))
+                                  }
+                                >
+                                  Keep
+                                </button>
+                                <button
+                                  type="button"
+                                  aria-pressed={mark === "removed"}
+                                  className={`${styles.markBtn} ${
+                                    mark === "removed" ? styles.markOn : ""
+                                  }`}
+                                  onFocus={() => setLitKey(key)}
+                                  onClick={() =>
+                                    setMarks((prev) => ({
+                                      ...prev,
+                                      [row.requirement]: "removed",
+                                    }))
+                                  }
+                                >
+                                  Remove
+                                </button>
+                                {mark === "removed" ? (
+                                  <span className={styles.markNote}>
+                                    The team won&apos;t see this match.
+                                  </span>
+                                ) : null}
+                              </div>
+                            </>
+                          ) : (
+                            <span className={styles.gap}>
+                              No line on the resume. Ask about it in the interview.
+                            </span>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  <div className={styles.paperCol}>
+                    {isJune ? (
+                      <ResumePaper lit={(key) => litKey !== null && key === litKey} />
+                    ) : (
+                      <GenericResume candidate={candidate} job={job} />
+                    )}
+                  </div>
+                </div>
               </section>
             </TabPanel>
 
@@ -322,7 +300,13 @@ export function CandidatePage() {
                 <h2 id="resume-heading" className={styles.h2}>
                   Resume
                 </h2>
-                <ResumePreview candidate={candidate} job={job} />
+                {isJune ? (
+                  <div className={styles.resumeWrap}>
+                    <ResumePaper />
+                  </div>
+                ) : (
+                  <GenericResume candidate={candidate} job={job} />
+                )}
               </section>
             </TabPanel>
 
@@ -332,35 +316,40 @@ export function CandidatePage() {
                   Activity
                 </h2>
                 <p className={styles.sectionNote}>
-                  Every move, who made it, and everything AI touched.
+                  The same messages the candidate sees on their status page, newest first.
                 </p>
-                <ol className={styles.timeline}>
-                  {activity.map((event) => (
-                    <li key={`${event.when}-${event.what.slice(0, 16)}`}>
-                      <span className={styles.when}>{event.when}</span>
-                      {event.what}
+                <ul className={styles.activityList}>
+                  {activity.map((message) => (
+                    <li key={message.when} className={styles.activityRow}>
+                      <span className={styles.activityWhen}>
+                        {message.when} {"·"} {message.how}
+                      </span>
+                      <span className={styles.activityTitle}>{message.title}</span>
+                      <span className={styles.activityBody}>{message.body}</span>
                     </li>
                   ))}
-                </ol>
+                </ul>
               </section>
             </TabPanel>
           </Tabs>
         </div>
 
         <aside className={styles.rail} aria-label="Where this stands">
-          <div className={styles.railCard}>
+          <Card variant="feature" className={styles.decisionPanel}>
             <dl className={styles.railList}>
               <dt>Stage</dt>
-              <dd>
-                <Badge variant={stageVariant[currentStage]}>{stageTitles[currentStage]}</Badge>
+              <dd className={styles.stageRow}>
+                <Blaze
+                  variant={candidate.reviewRequested ? "double" : "single"}
+                  className={styles.stageBlaze}
+                />
+                {stageTitles[currentStage]}
               </dd>
               <dt>Owner</dt>
               <dd>{recruiters.recruiter.name}</dd>
               <dt>Person check</dt>
               <dd className={styles.railStack}>
-                <Badge variant={checkVariant[candidate.personCheck]}>
-                  {personCheckWords[candidate.personCheck]}
-                </Badge>
+                <span>{personCheckWords[candidate.personCheck]}</span>
                 {candidate.personCheckNote ? (
                   <span className={styles.railNote}>{candidate.personCheckNote}.</span>
                 ) : null}
@@ -372,10 +361,25 @@ export function CandidatePage() {
               <dt>Next step</dt>
               <dd>{nextStepFor(candidate, currentStage)}</dd>
             </dl>
-          </div>
-          <div className={styles.railCard}>
-            <h2 className={styles.railHeading}>Notes</h2>
-            {candidate.id === "june-halloran" ? (
+            <div className={styles.decisions}>
+              <Button
+                isDisabled={currentStage === "closed" || currentStage === "hired"}
+                onPress={() => setDialog("forward")}
+              >
+                Move forward
+              </Button>
+              <Button
+                variant="secondary"
+                isDisabled={currentStage === "closed"}
+                onPress={() => setDialog("decline")}
+              >
+                Not moving forward
+              </Button>
+            </div>
+          </Card>
+          <div className={styles.notes}>
+            <h2 className={styles.notesH}>Notes</h2>
+            {candidate.id === "marisol-vega" ? (
               <p className={styles.railNote}>
                 "Strong component library work, exactly our gap. Check the accessibility answer
                 against a work sample." {recruiters.recruiter.name}, Nov 14.
@@ -408,7 +412,10 @@ export function CandidatePage() {
             </RadioGroup>
             <p className={styles.dialogNote}>
               Decided by {recruiters.recruiter.name}, {recruiters.recruiter.role.toLowerCase()}.
-              Logged on the job, visible to the candidate's status page.
+              Logged on the job.
+              {dialog === "decline"
+                ? " The reason goes to the candidate, because the careers site promises a decision with a reason."
+                : ""}
             </p>
             <div className={styles.dialogActions}>
               <Button variant="secondary" onPress={close}>

@@ -5,7 +5,7 @@ import { renderAt } from "./renderAt";
 describe("recruiter decision dialog", () => {
   it("requires a reason category before a decision is confirmed", async () => {
     const user = userEvent.setup();
-    renderAt("/recruit/candidates/june-halloran");
+    renderAt("/recruit/candidates/marisol-vega");
 
     await user.click(screen.getByRole("button", { name: "Move forward" }));
     await screen.findByRole("dialog");

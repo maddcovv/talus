@@ -1,0 +1,98 @@
+.head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--talus-space-4);
+  flex-wrap: wrap;
+  margin-block-end: var(--talus-space-5);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--talus-font-family-display);
+  font-weight: var(--talus-font-weight-display);
+  font-size: var(--talus-font-size-display);
+  line-height: var(--talus-font-line-height-tight);
+}
+
+.summary {
+  margin: var(--talus-space-1) 0 0;
+  max-inline-size: 48rem;
+  color: var(--talus-color-text-secondary);
+}
+
+.filters {
+  display: flex;
+  gap: var(--talus-space-4);
+  flex-wrap: wrap;
+  margin-block-end: var(--talus-space-6);
+}
+
+.filters > * {
+  min-inline-size: 14rem;
+}
+
+.day {
+  margin-block-end: var(--talus-space-5);
+}
+
+.dayHead {
+  margin: 0;
+  padding-block: var(--talus-space-2);
+  border-block-start: var(--talus-border-width-control) solid var(--talus-color-border-default);
+  font-size: var(--talus-font-size-body);
+  font-weight: var(--talus-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto;
+  gap: var(--talus-space-4);
+  padding-block: var(--talus-space-2);
+  min-block-size: var(--talus-density-row);
+  align-items: center;
+}
+
+.what {
+  font-weight: var(--talus-font-weight-medium);
+}
+
+.job {
+  color: var(--talus-color-text-secondary);
+  font-weight: var(--talus-font-weight-regular);
+}
+
+.check {
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-body-sm);
+}
+
+.when {
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-caption);
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+.empty {
+  margin: var(--talus-space-6) 0;
+  color: var(--talus-color-text-secondary);
+}
+
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--talus-space-1);
+  }
+
+  .when {
+    text-align: start;
+  }
+}

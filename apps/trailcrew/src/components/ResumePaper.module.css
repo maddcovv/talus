@@ -1,0 +1,49 @@
+.paperHead {
+  display: flex;
+  justify-content: space-between;
+  margin-block-end: 10px;
+  font-size: var(--talus-font-size-body-sm);
+  font-weight: var(--talus-font-weight-semibold);
+  color: var(--talus-color-text-secondary);
+}
+
+.paperDoc {
+  background: var(--talus-color-bg-surface);
+  border: var(--talus-border-width-control) solid var(--talus-color-border-default);
+  border-radius: var(--talus-radius-control);
+  box-shadow: 6px 6px 0 var(--talus-color-border-default);
+  padding: 32px 30px;
+  font-size: var(--talus-font-size-body-sm);
+  line-height: 1.5;
+}
+
+.paperLine {
+  border-radius: var(--talus-radius-xs);
+  margin-block-end: 3px;
+  color: var(--talus-color-text-primary);
+  transition:
+    background-color 0.25s var(--talus-easing-standard),
+    box-shadow 0.25s var(--talus-easing-standard);
+}
+
+.paperName {
+  font-weight: var(--talus-font-weight-bold);
+  font-size: var(--talus-font-size-20);
+}
+
+.paperHeadLine {
+  font-weight: var(--talus-font-weight-semibold);
+}
+
+.paperGapLoose {
+  margin-block-end: 14px;
+}
+
+.paperGapNone {
+  margin-block-end: 0;
+}
+
+.paperLit {
+  background: var(--talus-color-bg-highlight);
+  box-shadow: 0 0 0 4px var(--talus-color-bg-highlight);
+}

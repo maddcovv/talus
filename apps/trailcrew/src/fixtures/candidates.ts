@@ -201,12 +201,36 @@ function makeCandidate(name: string, index: number): Candidate {
   };
 }
 
+/**
+ * June applied today, through the flow on the careers site, so she lands on
+ * the recruiter side as a brand-new application: nothing reviewed, no notes.
+ */
 export const june: Candidate = {
   id: "june-halloran",
   name: "June Halloran",
   email: "june.halloran@example.com",
   location: "Fort Collins, Colorado",
   currentRole: "Senior Frontend Engineer at Blue Mesa Software",
+  jobId: "senior-frontend",
+  stage: "applied",
+  personCheck: "verified-text",
+  appliedOn: "Nov 25",
+  stageDates: { applied: "Nov 25" },
+  source: "Company site",
+  waitingDays: 0,
+  needsScorecard: false,
+  offerNeedsApproval: false,
+  identityCheck: "not-started",
+  reviewRequested: false,
+};
+
+/** The interview-stage story June used to carry lives with Marisol now. */
+export const marisol: Candidate = {
+  id: "marisol-vega",
+  name: "Marisol Vega",
+  email: "marisol.vega@example.com",
+  location: "Longmont, Colorado",
+  currentRole: "UI engineer at a mapping startup",
   jobId: "senior-frontend",
   stage: "interview",
   personCheck: "verified-text",
@@ -220,7 +244,7 @@ export const june: Candidate = {
   reviewRequested: false,
 };
 
-export const candidates: Candidate[] = [june, ...names.map(makeCandidate)];
+export const candidates: Candidate[] = [june, marisol, ...names.map(makeCandidate)];
 
 export function getCandidate(id: string | undefined): Candidate | undefined {
   return candidates.find((candidate) => candidate.id === id);
@@ -274,28 +298,30 @@ function hash(text: string): number {
 
 export function evidenceFor(candidate: Candidate, requirements: string[]): EvidenceRow[] {
   if (candidate.id === "june-halloran") {
+    // Every quote is a verbatim line from her one-page resume in
+    // fixtures/resume.ts; the years requirement has no line, so it is a gap.
     return [
-      {
-        requirement: requirements[0],
-        quote: "Eight years building for the web, senior for the last four",
-        where: "Resume, page 1",
-      },
+      { requirement: requirements[0], quote: null },
       {
         requirement: requirements[1],
-        quote: "React and TypeScript daily since 2018",
+        quote: "Built dashboard views in React and TypeScript.",
         where: "Resume, page 1",
       },
       {
         requirement: requirements[2],
-        quote: "Led the component library used by four product teams at Blue Mesa",
+        quote: "Led the component library used by four product teams.",
         where: "Resume, page 1",
       },
       {
         requirement: requirements[3],
-        quote: "Shipped the accessibility pass that took dashboards to WCAG 2.1 AA",
-        where: "Resume, page 2",
+        quote: "Shipped the accessibility pass that took dashboards to WCAG 2.1 AA.",
+        where: "Resume, page 1",
       },
-      { requirement: requirements[4], quote: null },
+      {
+        requirement: requirements[4],
+        quote: "Owned the charting layer and its tests.",
+        where: "Resume, page 1",
+      },
     ];
   }
   const pool = evidencePools[candidate.jobId] ?? [];
@@ -304,7 +330,7 @@ export function evidenceFor(candidate: Candidate, requirements: string[]): Evide
     return {
       requirement,
       quote: found ? (pool[index % pool.length] ?? null) : null,
-      where: found ? `Resume, page ${(index % 2) + 1}` : undefined,
+      where: found ? "Resume, page 1" : undefined,
     };
   });
 }

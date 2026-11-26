@@ -1,17 +1,9 @@
 import { Link, useParams } from "react-router-dom";
-import { Button, DataTable, type DataTableColumn } from "@talus/react";
+import { Button } from "@talus/react";
 import { aiLogCsv, aiLogForJob } from "../fixtures/ailog";
 import { getJob } from "../fixtures/jobs";
-import type { AiLogEntry } from "../fixtures/types";
-import styles from "./AiLogPage.module.css";
-
-const columns: DataTableColumn[] = [
-  { key: "when", label: "When" },
-  { key: "where", label: "Candidate or place" },
-  { key: "what", label: "What AI did" },
-  { key: "reviewedBy", label: "Reviewed by" },
-  { key: "reviewedOn", label: "Reviewed on" },
-];
+import { ActivityTable } from "./AiActivityPage";
+import styles from "./AiActivityPage.module.css";
 
 export function AiLogPage() {
   const { jobId = "" } = useParams();
@@ -23,10 +15,10 @@ export function AiLogPage() {
       </p>
     );
   }
-  const entries = aiLogForJob(jobId);
+  const rows = aiLogForJob(jobId);
 
   function exportCsv() {
-    const blob = new Blob([aiLogCsv(entries)], { type: "text/csv" });
+    const blob = new Blob([aiLogCsv(rows)], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
@@ -37,25 +29,19 @@ export function AiLogPage() {
 
   return (
     <article>
-      <div className={styles.head}>
+      <header className={styles.head}>
         <div>
           <h1 className={styles.title}>AI activity</h1>
-          <p className={styles.meta}>
-            {job.title}. Every place AI touched a candidate, and the person who reviewed it.{" "}
+          <p className={styles.summary}>
+            {job.title}. Every place AI touched a candidate, and the person who checked it.{" "}
             <Link to={`/recruit/jobs/${jobId}`}>Back to the pipeline.</Link>
           </p>
         </div>
         <Button variant="secondary" onPress={exportCsv}>
           Export CSV
         </Button>
-      </div>
-      <DataTable
-        aria-label={`AI activity for ${job.title}`}
-        columns={columns}
-        items={entries}
-        renderCell={(entry: AiLogEntry, key) => entry[key as keyof AiLogEntry]}
-        emptyState="AI has not touched this job."
-      />
+      </header>
+      <ActivityTable rows={rows} showJob={false} />
     </article>
   );
 }
