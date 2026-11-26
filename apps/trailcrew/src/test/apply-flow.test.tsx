@@ -89,6 +89,10 @@ describe("apply flow", () => {
       await screen.findByRole("heading", { name: /Sent\. Nice work, June\./ }),
     ).toBeInTheDocument();
     expect(screen.getByText("What happens next")).toBeInTheDocument();
+    // The confirmation stays unnamed and honest about the odds.
+    expect(screen.getByText("Our recruiter reads your application")).toBeInTheDocument();
+    expect(screen.getByText(/not everyone moves forward, but everyone hears back/)).toBeInTheDocument();
+    expect(screen.queryByText("Dana Ruiz reads your application")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "See where you stand" })).toBeInTheDocument();
   }, 40000);
 
