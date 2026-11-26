@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { CaretRight, Check } from "@phosphor-icons/react";
 import {
@@ -159,6 +159,9 @@ export function ApplyPage() {
   const [rShowErrors, setRShowErrors] = useState(false);
   const [resent, setResent] = useState("");
   const [nonce, setNonce] = useState(0);
+  const [dragOver, setDragOver] = useState(false);
+  const [demoSwapNote, setDemoSwapNote] = useState<string | null>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (stage !== "reading") return;
@@ -245,7 +248,7 @@ export function ApplyPage() {
       ? "Write a few sentences about a component other teams used."
       : "Write a few sentences in your own words.";
 
-  function useSample() {
+  function beginRead() {
     setAiFilled(true);
     setValues(
       Object.fromEntries(contactFields.map((field) => [field.id, field.value])),
@@ -253,6 +256,21 @@ export function ApplyPage() {
     setReadIdx(0);
     setStage("reading");
     toTop();
+  }
+
+  function useSample() {
+    setDemoSwapNote(null);
+    beginRead();
+  }
+
+  /** A real file from the picker or a drop: the demo never uploads it. */
+  function handleRealFile(name?: string) {
+    setDemoSwapNote(
+      name
+        ? `Demo: nothing is uploaded. ${name} stays on your computer, and June's sample resume stands in.`
+        : null,
+    );
+    beginRead();
   }
 
   function fillYourself() {
@@ -382,12 +400,46 @@ export function ApplyPage() {
                 AI reads it and fills the application for you. You&apos;ll see where every answer
                 came from, and you can change any of it.
               </p>
-              <div data-weave="" className={styles.drop}>
+              <div
+                data-weave=""
+                className={`${styles.drop} ${dragOver ? styles.dropActive : ""}`}
+                onDragOver={(event) => {
+                  event.preventDefault();
+                  setDragOver(true);
+                }}
+                onDragEnter={(event) => {
+                  event.preventDefault();
+                  setDragOver(true);
+                }}
+                onDragLeave={(event) => {
+                  if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                    setDragOver(false);
+                  }
+                }}
+                onDrop={(event) => {
+                  event.preventDefault();
+                  setDragOver(false);
+                  handleRealFile(event.dataTransfer.files?.[0]?.name);
+                }}
+              >
                 <img src="/img/tts-truck.jpg" alt="" aria-hidden="true" className={styles.dropImg} />
                 <div>
                   <div className={styles.dropTitle}>Drop your resume here</div>
                   <p className={styles.dropSub}>PDF or Word document, up to 10 MB.</p>
-                  <Button onPress={useSample}>Choose a file</Button>
+                  <Button onPress={() => fileInput.current?.click()}>Choose a file</Button>
+                  <input
+                    ref={fileInput}
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    className={styles.hiddenFile}
+                    aria-hidden="true"
+                    tabIndex={-1}
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (file) handleRealFile(file.name);
+                      event.target.value = "";
+                    }}
+                  />
                 </div>
               </div>
               <p className={styles.selfLine}>
@@ -403,6 +455,11 @@ export function ApplyPage() {
           {reading ? (
             <>
               <h1 className={styles.h}>Reading your resume</h1>
+              {demoSwapNote ? (
+                <p role="status" className={styles.demoSwap}>
+                  {demoSwapNote}
+                </p>
+              ) : null}
               <ul aria-live="polite" className={styles.readList}>
                 {readChecks.map((item) => {
                   const done = readIdx >= item.at;
@@ -444,6 +501,9 @@ export function ApplyPage() {
                     Focus any field to see the line it came from.
                   </span>
                 </div>
+              ) : null}
+              {demoSwapNote ? (
+                <p className={styles.demoSwap}>{demoSwapNote}</p>
               ) : null}
 
               <section className={styles.sec} aria-labelledby="contact-h">

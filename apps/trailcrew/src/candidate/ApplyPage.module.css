@@ -926,6 +926,23 @@
   grid-template-columns: 240px minmax(0, 1fr);
   gap: 36px;
   align-items: center;
+  transition: background-color var(--talus-motion-duration-fast) var(--talus-easing-standard);
+}
+
+.dropActive {
+  border-style: solid;
+  background-color: var(--talus-color-bg-selected);
+}
+
+.hiddenFile {
+  display: none;
+}
+
+.demoSwap {
+  margin: 0 0 16px;
+  font-size: var(--talus-font-size-body-sm);
+  font-weight: var(--talus-font-weight-medium);
+  color: var(--talus-color-status-info-fg);
 }
 
 .dropImg {
