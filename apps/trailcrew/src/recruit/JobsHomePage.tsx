@@ -3,55 +3,46 @@ import { Button } from "@talus/react";
 import { Blaze } from "../components/Blaze";
 import { candidatesForJob, needsDana } from "../fixtures/candidates";
 import { closedJobs, jobs } from "../fixtures/jobs";
-import { stageOrder, type StageId } from "../fixtures/types";
 import styles from "./JobsHomePage.module.css";
 
-const stageWord: Record<StageId, string> = {
-  applied: "applied",
-  review: "in review",
-  interview: "interviewing",
-  offer: "at offer",
-  hired: "hired",
-  closed: "closed",
-};
+/**
+ * The numbers a hiring manager actually asks for, and they add up:
+ * applied = not reviewed + in review + gotten through + rejected.
+ */
+function countsFor(jobId: string) {
+  const all = candidatesForJob(jobId);
+  return {
+    applied: all.length,
+    notReviewed: all.filter((candidate) => candidate.stage === "applied").length,
+    inReview: all.filter((candidate) => candidate.stage === "review").length,
+    through: all.filter(
+      (candidate) =>
+        candidate.stage === "interview" ||
+        candidate.stage === "offer" ||
+        candidate.stage === "hired",
+    ).length,
+    rejected: all.filter((candidate) => candidate.stage === "closed").length,
+  };
+}
 
-function RoleTracks({ jobId }: { jobId: string }) {
-  const inPlay = candidatesForJob(jobId).filter(
-    (candidate) => candidate.stage !== "closed" && candidate.stage !== "hired",
-  );
-  const counts = stageOrder
-    .filter((stage) => stage !== "hired")
-    .map((stage) => ({
-      stage,
-      count: inPlay.filter((candidate) => candidate.stage === stage).length,
-    }));
-  const words = counts
-    .filter((entry) => entry.count > 0)
-    .map((entry) => `${entry.count} ${stageWord[entry.stage]}`)
-    .join(", ");
+function StatStrip({ jobId, title }: { jobId: string; title: string }) {
+  const counts = countsFor(jobId);
+  const stats = [
+    { label: "Applied", value: counts.applied, lead: true },
+    { label: "Not reviewed", value: counts.notReviewed },
+    { label: "In review", value: counts.inReview },
+    { label: "Gotten through", value: counts.through },
+    { label: "Rejected", value: counts.rejected },
+  ];
   return (
-    <div>
-      <div className={styles.roleBar} aria-hidden="true">
-        {[0, 1].map((lane) => (
-          <div key={lane} className={styles.roleLane}>
-            {counts
-              .filter((entry) => entry.count > 0)
-              .map((entry) => (
-                <span
-                  key={entry.stage}
-                  className={styles.roleSeg}
-                  style={{ flexGrow: entry.count }}
-                />
-              ))}
-          </div>
-        ))}
-      </div>
-      <p className={styles.roleWords}>
-        {inPlay.length === 0
-          ? "No one in the running yet."
-          : `${inPlay.length} in the running: ${words}`}
-      </p>
-    </div>
+    <ul className={styles.stats} aria-label={`Where ${title} stands`}>
+      {stats.map((stat) => (
+        <li key={stat.label} className={`${styles.stat} ${stat.lead ? styles.statLead : ""}`}>
+          <span className={styles.statNum}>{stat.value}</span>
+          <span className={styles.statLabel}>{stat.label}</span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -63,8 +54,8 @@ export function JobsHomePage() {
         <div>
           <h1 className={styles.title}>Jobs</h1>
           <p className={styles.meta}>
-            {jobs.length} open roles on the careers site. The role decides who reads what, so
-            everything lives under one.
+            {jobs.length} open roles on the careers site. Pick the one you&apos;re reviewing
+            today.
           </p>
         </div>
         <Button variant="secondary" onPress={() => navigate("/recruit/jobs/new")}>
@@ -88,7 +79,6 @@ export function JobsHomePage() {
                       {job.department} {"·"} Posted {job.postedShort} {"·"}{" "}
                       {job.deadlineShort ? `Closes ${job.deadlineShort}` : "Open until filled"}
                     </span>
-                    <RoleTracks jobId={job.id} />
                   </span>
                   <span className={styles.rowNeeds}>
                     {needs > 0 ? (
@@ -100,6 +90,7 @@ export function JobsHomePage() {
                       <span className={styles.rowClear}>Nothing waiting</span>
                     )}
                   </span>
+                  <StatStrip jobId={job.id} title={job.title} />
                 </Link>
               </li>
             );

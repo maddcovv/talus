@@ -48,7 +48,7 @@
 .row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--talus-space-6);
+  gap: var(--talus-space-2) var(--talus-space-6);
   align-items: start;
   padding: var(--talus-space-4) var(--talus-space-2);
   color: inherit;
@@ -70,7 +70,7 @@
 .rowMain {
   display: flex;
   flex-direction: column;
-  gap: var(--talus-space-2);
+  gap: var(--talus-space-1);
   min-inline-size: 0;
 }
 
@@ -105,6 +105,58 @@
   font-size: var(--talus-font-size-body-sm);
 }
 
+/* The count strip: small labeled cells whose numbers add up. */
+.stats {
+  grid-column: 1 / -1;
+  margin: var(--talus-space-2) 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-inline-size: 7.5rem;
+  padding: var(--talus-space-2) var(--talus-space-4);
+  border: var(--talus-border-width-control) solid var(--talus-color-border-default);
+  margin-inline-end: calc(-1 * var(--talus-border-width-control));
+  background: var(--talus-color-bg-surface);
+}
+
+.stat:first-child {
+  border-start-start-radius: var(--talus-radius-control);
+  border-end-start-radius: var(--talus-radius-control);
+}
+
+.stat:last-child {
+  border-start-end-radius: var(--talus-radius-control);
+  border-end-end-radius: var(--talus-radius-control);
+  margin-inline-end: 0;
+}
+
+.statLead {
+  background: var(--talus-color-bg-subtle);
+}
+
+.statLead .statNum {
+  font-weight: var(--talus-font-weight-extrabold);
+}
+
+.statNum {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--talus-font-weight-semibold);
+  font-size: var(--talus-font-size-20);
+  line-height: var(--talus-font-line-height-tight);
+}
+
+.statLabel {
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-caption);
+}
+
 .closedRow {
   display: flex;
   flex-direction: column;
@@ -122,34 +174,13 @@
   color: var(--talus-color-text-secondary);
 }
 
-.roleBar {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  max-inline-size: 28rem;
-}
-
-.roleLane {
-  display: flex;
-  gap: 2px;
-  block-size: 2px;
-}
-
-.roleSeg {
-  display: block;
-  background: var(--talus-color-action-primary-bg);
-  min-inline-size: 2px;
-}
-
-.roleWords {
-  margin: var(--talus-space-1) 0 0;
-  color: var(--talus-color-text-secondary);
-  font-size: var(--talus-font-size-caption);
-}
-
 @media (max-width: 640px) {
   .row {
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--talus-space-2);
+  }
+
+  .stat {
+    min-inline-size: calc(50% - var(--talus-space-1));
+    flex: 1 1 auto;
   }
 }
