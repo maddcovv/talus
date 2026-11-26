@@ -7,12 +7,95 @@
   margin-block-end: var(--talus-space-4);
 }
 
+.crumbs {
+  margin: 0 0 var(--talus-space-2);
+  font-size: var(--talus-font-size-body-sm);
+}
+
 .title {
   margin: 0;
   font-family: var(--talus-font-family-display);
   font-weight: var(--talus-font-weight-display);
-  font-size: var(--talus-font-size-h1);
+  font-size: var(--talus-font-size-display);
   line-height: var(--talus-font-line-height-tight);
+}
+
+.stageCell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--talus-space-2);
+}
+
+.stageBlaze {
+  inline-size: 7px;
+  block-size: 13px;
+}
+
+.dateCell {
+  font-variant-numeric: tabular-nums;
+}
+
+.coverageNote {
+  margin: var(--talus-space-3) 0;
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-body-sm);
+}
+
+.rankList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rankRow {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  gap: var(--talus-space-3);
+  align-items: baseline;
+  padding-block: var(--talus-space-3);
+  border-block-start: var(--talus-border-width-control) solid var(--talus-color-border-default);
+}
+
+.rankNum {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--talus-font-weight-semibold);
+  color: var(--talus-color-text-secondary);
+  text-align: end;
+}
+
+.rankMain {
+  display: flex;
+  flex-direction: column;
+  gap: var(--talus-space-1);
+  min-inline-size: 0;
+}
+
+.rankHead {
+  display: flex;
+  align-items: baseline;
+  gap: var(--talus-space-3);
+  flex-wrap: wrap;
+}
+
+.rankStage {
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-body-sm);
+}
+
+.rankWhy {
+  font-size: var(--talus-font-size-body-sm);
+}
+
+.rankQuote {
+  color: var(--talus-color-text-secondary);
+}
+
+.aiHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--talus-space-4);
+  flex-wrap: wrap;
 }
 
 .meta {
@@ -38,7 +121,70 @@
   align-self: flex-end;
 }
 
+.boardWrap {
+  block-size: clamp(420px, calc(100vh - 360px), 860px);
+}
+
+.cardTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--talus-space-2);
+}
+
 .cardRole {
+  font-size: var(--talus-font-size-body-sm);
+}
+
+.cardTally {
+  font-size: var(--talus-font-size-body-sm);
+  flex: none;
+}
+
+.checkRow {
+  display: flex;
+  align-items: center;
+  gap: var(--talus-space-1);
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-caption);
+}
+
+.checkIcon {
+  inline-size: var(--talus-size-icon-sm);
+  block-size: var(--talus-size-icon-sm);
+  color: var(--talus-color-icon-secondary);
+  flex: none;
+}
+
+.cardFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--talus-space-2);
+  flex-wrap: wrap;
+}
+
+.cardSource {
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-caption);
+}
+
+.cardAsk {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--talus-space-1);
+  font-size: var(--talus-font-size-caption);
+  font-weight: var(--talus-font-weight-medium);
+}
+
+.cardBlaze {
+  inline-size: 7px;
+  block-size: 13px;
+}
+
+.emptyCol {
+  padding: var(--talus-space-3);
+  color: var(--talus-color-text-secondary);
   font-size: var(--talus-font-size-body-sm);
 }
 

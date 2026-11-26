@@ -5,6 +5,7 @@ import styles from "./SettingsPage.module.css";
 export function SettingsPage() {
   const [suggestEvidence, setSuggestEvidence] = useState(true);
   const [draftPostings, setDraftPostings] = useState(true);
+  const [rankByEvidence, setRankByEvidence] = useState(true);
   const [requireCheck, setRequireCheck] = useState(true);
   const [flagged, setFlagged] = useState("mark");
   const [waitingAlerts, setWaitingAlerts] = useState(true);
@@ -25,9 +26,13 @@ export function SettingsPage() {
         <Switch isSelected={draftPostings} onChange={setDraftPostings}>
           Draft job postings for review
         </Switch>
+        <Switch isSelected={rankByEvidence} onChange={setRankByEvidence}>
+          Suggest a reading order from resume evidence
+        </Switch>
         <p className={styles.note}>
-          AI never scores, ranks or rejects anyone, and these switches cannot make it. They only
-          control drafting help, and everything AI drafts lands in the activity log.
+          AI never rejects or hides anyone, and these switches cannot make it. Its suggestions,
+          ranking included, are advice a person can ignore, and everything it does lands in the
+          activity log.
         </p>
       </section>
 

@@ -1,0 +1,15 @@
+.tally {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--talus-font-weight-semibold);
+  text-align: end;
+  white-space: nowrap;
+  color: var(--talus-color-text-primary);
+}
+
+.warm {
+  color: var(--talus-color-status-warning-fg);
+}
+
+.hot {
+  color: var(--talus-color-status-danger-fg);
+}

@@ -1,0 +1,15 @@
+.referral {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--talus-space-1);
+  color: var(--talus-color-text-primary);
+  font-weight: var(--talus-font-weight-semibold);
+  white-space: nowrap;
+}
+
+.icon {
+  inline-size: var(--talus-size-icon-sm);
+  block-size: var(--talus-size-icon-sm);
+  color: var(--talus-color-status-success-fg);
+  flex: none;
+}

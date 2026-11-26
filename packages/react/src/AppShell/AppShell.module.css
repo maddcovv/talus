@@ -18,7 +18,17 @@
   border-inline-end: var(--talus-border-width-control) solid var(--talus-color-border-default);
 }
 
+.sidebarTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--talus-space-3);
+}
+
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--talus-space-2);
   padding-inline: var(--talus-space-3);
   color: var(--talus-color-text-primary);
   font-family: var(--talus-font-family-display);
@@ -80,10 +90,41 @@ a.brand:focus-visible {
   color: var(--talus-color-icon-default);
 }
 
+.sidebarFooter {
+  margin-block-start: auto;
+}
+
 .body {
   display: flex;
   flex-direction: column;
   min-inline-size: 0;
+}
+
+.mobileBar {
+  display: none;
+}
+
+.menuButton,
+.menuClose {
+  min-block-size: var(--talus-size-touch-min);
+  padding: var(--talus-space-2) var(--talus-space-4);
+  border: var(--talus-border-width-control) solid var(--talus-color-border-default);
+  border-radius: var(--talus-radius-control);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: var(--talus-font-weight-medium);
+  cursor: pointer;
+}
+
+.menuButton:focus-visible,
+.menuClose:focus-visible {
+  outline: var(--talus-focus-ring-width) solid var(--talus-color-border-focus);
+  outline-offset: var(--talus-focus-ring-offset);
+}
+
+.menuClose {
+  display: none;
 }
 
 .topBar {
@@ -115,6 +156,18 @@ a.brand:focus-visible {
   flex: none;
 }
 
+.note {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--talus-space-1) var(--talus-space-3);
+  padding: var(--talus-space-2) var(--talus-space-5);
+  background: var(--talus-color-bg-subtle);
+  border-block-end: var(--talus-border-width-control) solid var(--talus-color-border-default);
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-caption);
+}
+
 .main {
   flex: 1;
   display: flex;
@@ -128,16 +181,30 @@ a.brand:focus-visible {
   }
 
   .sidebar {
-    position: static;
-    max-block-size: none;
-    flex-direction: row;
-    align-items: center;
-    overflow-x: auto;
-    border-inline-end: none;
-    border-block-end: var(--talus-border-width-control) solid var(--talus-color-border-default);
+    display: none;
   }
 
-  .nav {
-    flex-direction: row;
+  .sidebar[data-open] {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: var(--talus-z-overlay);
+    max-block-size: none;
+    border-inline-end: none;
+  }
+
+  .sidebar[data-open] .menuClose {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .mobileBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--talus-space-3);
+    padding: var(--talus-space-2) var(--talus-space-4);
+    background: var(--talus-color-bg-surface);
+    border-block-end: var(--talus-border-width-control) solid var(--talus-color-border-default);
   }
 }

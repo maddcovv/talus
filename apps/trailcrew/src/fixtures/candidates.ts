@@ -201,12 +201,36 @@ function makeCandidate(name: string, index: number): Candidate {
   };
 }
 
+/**
+ * June applied today, through the flow on the careers site, so she lands on
+ * the recruiter side as a brand-new application: nothing reviewed, no notes.
+ */
 export const june: Candidate = {
   id: "june-halloran",
   name: "June Halloran",
   email: "june.halloran@example.com",
   location: "Fort Collins, Colorado",
   currentRole: "Senior Frontend Engineer at Blue Mesa Software",
+  jobId: "senior-frontend",
+  stage: "applied",
+  personCheck: "verified-text",
+  appliedOn: "Nov 25",
+  stageDates: { applied: "Nov 25" },
+  source: "Company site",
+  waitingDays: 0,
+  needsScorecard: false,
+  offerNeedsApproval: false,
+  identityCheck: "not-started",
+  reviewRequested: false,
+};
+
+/** The interview-stage story June used to carry lives with Marisol now. */
+export const marisol: Candidate = {
+  id: "marisol-vega",
+  name: "Marisol Vega",
+  email: "marisol.vega@example.com",
+  location: "Longmont, Colorado",
+  currentRole: "UI engineer at a mapping startup",
   jobId: "senior-frontend",
   stage: "interview",
   personCheck: "verified-text",
@@ -220,7 +244,7 @@ export const june: Candidate = {
   reviewRequested: false,
 };
 
-export const candidates: Candidate[] = [june, ...names.map(makeCandidate)];
+export const candidates: Candidate[] = [june, marisol, ...names.map(makeCandidate)];
 
 export function getCandidate(id: string | undefined): Candidate | undefined {
   return candidates.find((candidate) => candidate.id === id);
@@ -274,28 +298,41 @@ function hash(text: string): number {
 
 export function evidenceFor(candidate: Candidate, requirements: string[]): EvidenceRow[] {
   if (candidate.id === "june-halloran") {
+    // Every quote is a verbatim line from her one-page resume in
+    // fixtures/resume.ts. The years match is worked out from the two date
+    // lines; the testing match is partial, with the hole named in words.
     return [
       {
         requirement: requirements[0],
-        quote: "Eight years building for the web, senior for the last four",
+        quotes: [
+          "Blue Mesa Software. Senior Frontend Engineer, March 2022 to present.",
+          "Cairn Analytics. Frontend Engineer, June 2018 to March 2022.",
+        ],
         where: "Resume, page 1",
+        note: "AI worked this out from the dates. Check it.",
       },
       {
         requirement: requirements[1],
-        quote: "React and TypeScript daily since 2018",
+        quotes: ["Built dashboard views in React and TypeScript."],
         where: "Resume, page 1",
       },
       {
         requirement: requirements[2],
-        quote: "Led the component library used by four product teams at Blue Mesa",
+        quotes: ["Led the component library used by four product teams."],
         where: "Resume, page 1",
       },
       {
         requirement: requirements[3],
-        quote: "Shipped the accessibility pass that took dashboards to WCAG 2.1 AA",
-        where: "Resume, page 2",
+        quotes: ["Shipped the accessibility pass that took dashboards to WCAG 2.1 AA."],
+        where: "Resume, page 1",
       },
-      { requirement: requirements[4], quote: null },
+      {
+        requirement: requirements[4],
+        quotes: ["Owned the charting layer and its tests."],
+        where: "Resume, page 1",
+        partial: true,
+        note: "Covers testing. Integration testing isn't on the resume. Ask about it in the interview.",
+      },
     ];
   }
   const pool = evidencePools[candidate.jobId] ?? [];
@@ -303,10 +340,67 @@ export function evidenceFor(candidate: Candidate, requirements: string[]): Evide
     const found = (hash(candidate.id) + index) % 3 !== 1;
     return {
       requirement,
-      quote: found ? (pool[index % pool.length] ?? null) : null,
-      where: found ? `Resume, page ${(index % 2) + 1}` : undefined,
+      quotes: found && pool[index % pool.length] ? [pool[index % pool.length]] : [],
+      where: found ? "Resume, page 1" : undefined,
     };
   });
+}
+
+export interface RankedCandidate {
+  candidate: Candidate;
+  /** Requirements with at least one matched resume line. */
+  covered: number;
+  total: number;
+  /** The strongest matched line, for the why. */
+  top: string | null;
+}
+
+/**
+ * AI's reading order for a job, from resume evidence against the posting.
+ * Advice only: it includes everyone, hides no one, and decides nothing.
+ */
+export function rankedFor(jobId: string): RankedCandidate[] {
+  const job = jobs.find((entry) => entry.id === jobId);
+  if (!job) return [];
+  return candidatesForJob(jobId)
+    .map((candidate) => {
+      const rows = evidenceFor(candidate, job.requirements);
+      const matched = rows.filter((row) => row.quotes.length > 0);
+      return {
+        candidate,
+        covered: matched.length,
+        total: rows.length,
+        top: matched[0]?.quotes[0] ?? null,
+      };
+    })
+    .sort((a, b) => {
+      const day = (entry: RankedCandidate) =>
+        Number.parseInt(entry.candidate.appliedOn.replace("Nov ", ""), 10) || 0;
+      return (
+        b.covered - a.covered ||
+        day(b) - day(a) ||
+        a.candidate.name.localeCompare(b.candidate.name)
+      );
+    });
+}
+
+/** True when this application waits on a person's decision, not on time. */
+export function needsDana(candidate: Candidate): boolean {
+  return needsDanaWhy(candidate) !== null;
+}
+
+/** The first reason a person is being waited on, in words, or null. */
+export function needsDanaWhy(candidate: Candidate): string | null {
+  if (candidate.stage === "closed" || candidate.stage === "hired") return null;
+  if (candidate.reviewRequested) return "Asked for a review";
+  if (candidate.identityCheck === "needs") return "Identity check to clear";
+  if (candidate.stage === "offer" && candidate.offerNeedsApproval) {
+    return "Offer waiting on approval";
+  }
+  if (candidate.needsScorecard) return "Scorecard not filed";
+  if (candidate.personCheck === "likely-automated") return "A person decides";
+  if (candidate.waitingDays > 5) return "Waiting on a decision";
+  return null;
 }
 
 // Application answers shown on the recruiter's candidate page, in the order

@@ -116,16 +116,12 @@ export interface Candidate {
 
 export interface EvidenceRow {
   requirement: string;
-  /** The matching line quoted from the resume, or null when none was found. */
-  quote: string | null;
+  /** Verbatim lines quoted from the resume. Empty means no evidence found. */
+  quotes: string[];
   where?: string;
+  /** How the match came about, or what it leaves uncovered, in words. */
+  note?: string;
+  /** The quote covers part of the requirement and the note names the hole. */
+  partial?: boolean;
 }
 
-export interface AiLogEntry {
-  id: string;
-  when: string;
-  where: string;
-  what: "Filled an application" | "Suggested evidence" | "Drafted job setup";
-  reviewedBy: string;
-  reviewedOn: string;
-}

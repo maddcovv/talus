@@ -20,7 +20,10 @@ export function AiNoticePage() {
         <h2 className={styles.h2}>What AI never does</h2>
         <ul className={styles.list}>
           <li>It never sends anything. You review every field and nothing goes out without your sign off.</li>
-          <li>It never scores or ranks you. There is no number next to your name.</li>
+          <li>
+            It can suggest the recruiter a reading order from that evidence. The suggestion hides
+            no one; the full list is always there, and a person reads every application.
+          </li>
           <li>It never rejects anyone. A person makes every decision, and the decision is logged with that person's name.</li>
         </ul>
         <h2 className={styles.h2}>Your data</h2>

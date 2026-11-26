@@ -1,16 +1,9 @@
 import { useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import {
-  Briefcase,
-  GearSix,
-  MagnifyingGlass,
-  Robot,
-  Sun,
-  UsersThree,
-} from "@phosphor-icons/react";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Briefcase, GearSix, MagnifyingGlass, Robot, UsersThree } from "@phosphor-icons/react";
 import { AppShell, Avatar, Switch } from "@talus/react";
 import { useBrand } from "../lib/useBrand";
-import { DemoFooter } from "../components/DemoFooter";
+import { Blaze } from "../components/Blaze";
 import { recruiters } from "../fixtures/jobs";
 import styles from "./RecruiterLayout.module.css";
 
@@ -21,16 +14,18 @@ export function RecruiterLayout() {
   useBrand("enterprise", scheme);
   return (
     <AppShell
-      brand="Trailcrew"
+      brand={
+        <>
+          <Blaze tone="accent" />
+          Trailcrew
+        </>
+      }
       brandHref="/recruit"
+      sidebarClassName={styles.ink}
       navLabel="Trailcrew"
       nav={
         <>
           <NavLink to="/recruit" end>
-            <Sun aria-hidden />
-            Today
-          </NavLink>
-          <NavLink to="/recruit/jobs/warehouse-lead">
             <Briefcase aria-hidden />
             Jobs
           </NavLink>
@@ -47,6 +42,15 @@ export function RecruiterLayout() {
             Settings
           </NavLink>
         </>
+      }
+      sidebarFooter={
+        <span className={styles.user}>
+          <Avatar name={recruiters.recruiter.name} />
+          <span className={styles.userText}>
+            <span className={styles.userName}>{recruiters.recruiter.name}</span>
+            <span className={styles.userRole}>Recruiter</span>
+          </span>
+        </span>
       }
       topBar={
         <form
@@ -69,24 +73,23 @@ export function RecruiterLayout() {
         </form>
       }
       end={
+        <Switch
+          isSelected={scheme === "dark"}
+          onChange={(selected) => setScheme(selected ? "dark" : "light")}
+        >
+          Dark
+        </Switch>
+      }
+      note={
         <>
-          <Switch
-            isSelected={scheme === "dark"}
-            onChange={(selected) => setScheme(selected ? "dark" : "light")}
-          >
-            Dark
-          </Switch>
-          <span className={styles.user}>
-            <Avatar name={recruiters.recruiter.name} />
-            <span>{recruiters.recruiter.name}</span>
-          </span>
+          <span>You&apos;re looking at the recruiter side as Dana Ruiz. Demo data, all made up.</span>
+          <Link to="/">Back to the careers site</Link>
         </>
       }
     >
       <div className={styles.content}>
         <Outlet />
       </div>
-      <DemoFooter />
     </AppShell>
   );
 }

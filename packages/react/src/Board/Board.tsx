@@ -135,12 +135,14 @@ export interface BoardCardProps {
   id: string;
   /** The card's one-line name, used in the move menu and announcements. */
   title: string;
+  /** Opens the card's record; the title becomes a press target. */
+  onOpen?: () => void;
   /** Extra lines under the title: role, days waiting, tags. */
   children?: React.ReactNode;
   className?: string;
 }
 
-export function BoardCard({ id, title, children, className }: BoardCardProps) {
+export function BoardCard({ id, title, onOpen, children, className }: BoardCardProps) {
   const board = useContext(BoardContext);
   const columnId = useContext(ColumnContext);
   const [isDragging, setDragging] = useState(false);
@@ -158,7 +160,15 @@ export function BoardCard({ id, title, children, className }: BoardCardProps) {
       onDragEnd={() => setDragging(false)}
     >
       <div className={styles.cardBody}>
-        <p className={styles.cardTitle}>{title}</p>
+        {onOpen ? (
+          <p className={styles.cardTitle}>
+            <button type="button" className={styles.titleButton} onClick={onOpen}>
+              {title}
+            </button>
+          </p>
+        ) : (
+          <p className={styles.cardTitle}>{title}</p>
+        )}
         {children}
       </div>
       <MenuTrigger>

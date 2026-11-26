@@ -370,3 +370,19 @@ export const jobs: Job[] = [
 export function getJob(jobId: string | undefined): Job | undefined {
   return jobs.find((job) => job.id === jobId);
 }
+
+/** Roles that already ran their course, shown under the open list. */
+export const closedJobs = [
+  {
+    id: "gear-repair",
+    title: "Gear Repair Technician",
+    closedOn: "November 3, 2026",
+    note: "Filled. Sam Whitaker starts December 1.",
+  },
+  {
+    id: "ops-coordinator",
+    title: "Operations Coordinator",
+    closedOn: "October 18, 2026",
+    note: "Filled from the seasonal crew.",
+  },
+];

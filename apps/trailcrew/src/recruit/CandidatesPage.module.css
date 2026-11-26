@@ -2,7 +2,7 @@
   margin: 0;
   font-family: var(--talus-font-family-display);
   font-weight: var(--talus-font-weight-display);
-  font-size: var(--talus-font-size-h1);
+  font-size: var(--talus-font-size-display);
   line-height: var(--talus-font-line-height-tight);
 }
 
@@ -19,10 +19,44 @@
 }
 
 .filters > * {
-  min-inline-size: 14rem;
+  min-inline-size: 13rem;
+}
+
+/* Caps the table so its sticky header actually engages. */
+.tableWrap {
+  max-block-size: clamp(420px, calc(100vh - 380px), 860px);
 }
 
 .nameLink {
   color: var(--talus-color-text-primary);
   font-weight: var(--talus-font-weight-medium);
+}
+
+.stageCell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--talus-space-2);
+}
+
+.stageBlaze {
+  inline-size: 7px;
+  block-size: 13px;
+}
+
+.checkCell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--talus-space-1);
+  white-space: nowrap;
+}
+
+.checkIcon {
+  inline-size: var(--talus-size-icon-sm);
+  block-size: var(--talus-size-icon-sm);
+  color: var(--talus-color-icon-secondary);
+  flex: none;
+}
+
+.dateCell {
+  font-variant-numeric: tabular-nums;
 }

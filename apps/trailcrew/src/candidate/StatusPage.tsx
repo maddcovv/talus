@@ -4,6 +4,7 @@ import { Check } from "@phosphor-icons/react";
 import { Button } from "@talus/react";
 import { useBrand } from "../lib/useBrand";
 import { TwoTrackMark } from "../components/TwoTrackMark";
+import { statusMessages } from "../fixtures/demo";
 import styles from "./StatusPage.module.css";
 
 const order = ["applied", "read", "talk", "session", "decision"] as const;
@@ -49,38 +50,8 @@ const heads = [
   "You have an offer",
 ];
 
-const allMessages = [
-  {
-    when: "Nov 25, 5:14 PM",
-    how: "Email",
-    title: "We got your application",
-    body: "Thanks, June. Dana Ruiz reads it by Wednesday, December 2.",
-  },
-  {
-    when: "Dec 1, 9:40 AM",
-    how: "Email",
-    title: "Dana would like to talk",
-    body: "She read your application and would like a 30 minute call. She will text you to find a time.",
-  },
-  {
-    when: "Dec 4, 11:02 AM",
-    how: "Text",
-    title: "Call set for Monday at 10:00 AM",
-    body: "Monday, December 7, 10:00 AM Mountain. Reply to this text to change it.",
-  },
-  {
-    when: "Dec 8, 2:15 PM",
-    how: "Email",
-    title: "Your working session, topics inside",
-    body: "Thursday, December 10, 1:00 to 2:30 PM Mountain, on video.",
-  },
-  {
-    when: "Dec 11, 4:30 PM",
-    how: "Phone",
-    title: "Dana called with an offer",
-    body: "$164,000 a year. The written offer is in your email.",
-  },
-];
+// The messages themselves live in fixtures/demo.ts, shared with the
+// recruiter's activity tab so both sides of the product agree.
 
 export function StatusPage() {
   useBrand("consumer", "light");
@@ -91,7 +62,7 @@ export function StatusPage() {
   const [withdraw, setWithdraw] = useState<"closed" | "open" | "done">("closed");
   const [needNote, setNeedNote] = useState("");
 
-  const messages = allMessages.slice(0, cur + 1).reverse();
+  const messages = statusMessages.slice(0, cur + 1).reverse();
 
   return (
     <div className={styles.page}>

@@ -1,40 +1,37 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
-  Badge,
+  CircleDashed,
+  DeviceMobile,
+  EnvelopeSimple,
+  Robot,
+} from "@phosphor-icons/react";
+import {
   DataTable,
   Select,
   SelectItem,
-  type BadgeVariant,
   type DataTableColumn,
   type SortDescriptor,
 } from "@talus/react";
-import { candidates } from "../fixtures/candidates";
-import { getJob } from "../fixtures/jobs";
+import { Blaze } from "../components/Blaze";
+import { SourceMark } from "../components/SourceMark";
+import { candidates, needsDana } from "../fixtures/candidates";
+import { getJob, jobs } from "../fixtures/jobs";
 import {
   personCheckWords,
+  stageOrder,
   stageTitles,
   type Candidate,
-  type PersonCheck,
   type StageId,
 } from "../fixtures/types";
 import styles from "./CandidatesPage.module.css";
 
-const stageVariant: Record<StageId, BadgeVariant> = {
-  applied: "neutral",
-  review: "info",
-  interview: "info",
-  offer: "warning",
-  hired: "success",
-  closed: "neutral",
-};
-
-const checkVariant: Record<PersonCheck, BadgeVariant> = {
-  "verified-text": "success",
-  "verified-email": "success",
-  "likely-automated": "warning",
-  "not-checked": "neutral",
-};
+const checkIcons = {
+  "verified-text": DeviceMobile,
+  "verified-email": EnvelopeSimple,
+  "likely-automated": Robot,
+  "not-checked": CircleDashed,
+} as const;
 
 const columns: DataTableColumn[] = [
   { key: "name", label: "Name", sortable: true },
@@ -52,20 +49,24 @@ function appliedDay(candidate: Candidate): number {
 export function CandidatesPage() {
   const [searchParams] = useSearchParams();
   const query = (searchParams.get("q") ?? "").trim().toLowerCase();
+  const [jobFilter, setJobFilter] = useState("all");
+  const [stageFilter, setStageFilter] = useState("all");
   const [checkFilter, setCheckFilter] = useState("all");
-  const [sort, setSort] = useState<SortDescriptor>({ column: "name", direction: "ascending" });
+  const [sort, setSort] = useState<SortDescriptor>({ column: "applied", direction: "descending" });
 
   const rows = candidates
     .filter((candidate) => {
-      if (checkFilter !== "all" && candidate.personCheck !== checkFilter) {
+      if (jobFilter !== "all" && candidate.jobId !== jobFilter) return false;
+      if (stageFilter !== "all" && candidate.stage !== stageFilter) return false;
+      if (checkFilter === "verified") {
         if (
-          !(
-            checkFilter === "verified" &&
-            (candidate.personCheck === "verified-text" || candidate.personCheck === "verified-email")
-          )
+          candidate.personCheck !== "verified-text" &&
+          candidate.personCheck !== "verified-email"
         ) {
           return false;
         }
+      } else if (checkFilter !== "all" && candidate.personCheck !== checkFilter) {
+        return false;
       }
       if (query === "") return true;
       const haystack =
@@ -95,6 +96,30 @@ export function CandidatesPage() {
 
       <div className={styles.filters}>
         <Select
+          label="Job"
+          selectedKey={jobFilter}
+          onSelectionChange={(key) => setJobFilter(String(key))}
+        >
+          <SelectItem id="all">All jobs</SelectItem>
+          {jobs.map((job) => (
+            <SelectItem key={job.id} id={job.id}>
+              {job.title}
+            </SelectItem>
+          ))}
+        </Select>
+        <Select
+          label="Stage"
+          selectedKey={stageFilter}
+          onSelectionChange={(key) => setStageFilter(String(key))}
+        >
+          <SelectItem id="all">All stages</SelectItem>
+          {[...stageOrder, "closed" as StageId].map((stage) => (
+            <SelectItem key={stage} id={stage}>
+              {stageTitles[stage]}
+            </SelectItem>
+          ))}
+        </Select>
+        <Select
           label="Person check"
           selectedKey={checkFilter}
           onSelectionChange={(key) => setCheckFilter(String(key))}
@@ -108,6 +133,7 @@ export function CandidatesPage() {
 
       <DataTable
         aria-label="All candidates"
+        className={styles.tableWrap}
         columns={columns}
         items={rows}
         sortDescriptor={sort}
@@ -125,20 +151,27 @@ export function CandidatesPage() {
               return getJob(candidate.jobId)?.title ?? "";
             case "stage":
               return (
-                <Badge variant={stageVariant[candidate.stage]}>
+                <span className={styles.stageCell}>
+                  <Blaze
+                    variant={needsDana(candidate) ? "double" : "single"}
+                    className={styles.stageBlaze}
+                  />
                   {stageTitles[candidate.stage]}
-                </Badge>
+                </span>
               );
-            case "personCheck":
+            case "personCheck": {
+              const CheckIcon = checkIcons[candidate.personCheck];
               return (
-                <Badge variant={checkVariant[candidate.personCheck]}>
+                <span className={styles.checkCell}>
+                  <CheckIcon aria-hidden className={styles.checkIcon} />
                   {personCheckWords[candidate.personCheck]}
-                </Badge>
+                </span>
               );
+            }
             case "source":
-              return candidate.source;
+              return <SourceMark source={candidate.source} />;
             case "applied":
-              return candidate.appliedOn;
+              return <span className={styles.dateCell}>{candidate.appliedOn}</span>;
             default:
               return null;
           }
