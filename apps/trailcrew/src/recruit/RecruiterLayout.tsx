@@ -1,13 +1,6 @@
 import { useState } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
-import {
-  Briefcase,
-  GearSix,
-  MagnifyingGlass,
-  Robot,
-  Sun,
-  UsersThree,
-} from "@phosphor-icons/react";
+import { Briefcase, GearSix, MagnifyingGlass, Robot, UsersThree } from "@phosphor-icons/react";
 import { AppShell, Avatar, Switch } from "@talus/react";
 import { useBrand } from "../lib/useBrand";
 import { Blaze } from "../components/Blaze";
@@ -33,10 +26,6 @@ export function RecruiterLayout() {
       nav={
         <>
           <NavLink to="/recruit" end>
-            <Sun aria-hidden />
-            Today
-          </NavLink>
-          <NavLink to="/recruit/jobs/senior-frontend">
             <Briefcase aria-hidden />
             Jobs
           </NavLink>

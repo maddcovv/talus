@@ -7,12 +7,46 @@
   margin-block-end: var(--talus-space-4);
 }
 
+.crumbs {
+  margin: 0 0 var(--talus-space-2);
+  font-size: var(--talus-font-size-body-sm);
+}
+
 .title {
   margin: 0;
   font-family: var(--talus-font-family-display);
   font-weight: var(--talus-font-weight-display);
-  font-size: var(--talus-font-size-h1);
+  font-size: var(--talus-font-size-display);
   line-height: var(--talus-font-line-height-tight);
+}
+
+.stageCell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--talus-space-2);
+}
+
+.stageBlaze {
+  inline-size: 7px;
+  block-size: 13px;
+}
+
+.dateCell {
+  font-variant-numeric: tabular-nums;
+}
+
+.coverageNote {
+  margin: var(--talus-space-3) 0;
+  color: var(--talus-color-text-secondary);
+  font-size: var(--talus-font-size-body-sm);
+}
+
+.aiHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--talus-space-4);
+  flex-wrap: wrap;
 }
 
 .meta {

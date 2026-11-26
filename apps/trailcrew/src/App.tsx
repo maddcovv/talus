@@ -15,12 +15,11 @@ import { LifePage } from "./candidate/LifePage";
 import { BenefitsPage } from "./candidate/BenefitsPage";
 import { AiNoticePage } from "./candidate/AiNoticePage";
 import { RecruiterLayout } from "./recruit/RecruiterLayout";
-import { TodayPage } from "./recruit/TodayPage";
+import { JobsHomePage } from "./recruit/JobsHomePage";
 import { PipelinePage } from "./recruit/PipelinePage";
 import { CandidatePage } from "./recruit/CandidatePage";
 import { CandidatesPage } from "./recruit/CandidatesPage";
 import { JobSetupPage } from "./recruit/JobSetupPage";
-import { AiLogPage } from "./recruit/AiLogPage";
 import { AiActivityPage } from "./recruit/AiActivityPage";
 import { SettingsPage } from "./recruit/SettingsPage";
 
@@ -65,10 +64,9 @@ export function AppRoutes() {
       <Route path="/jobs/:jobId/apply" element={<ApplyPage />} />
       <Route path="/status/:token" element={<StatusPage />} />
       <Route path="/recruit" element={<RecruiterLayout />}>
-        <Route index element={<TodayPage />} />
+        <Route index element={<JobsHomePage />} />
         <Route path="jobs/new" element={<JobSetupPage />} />
         <Route path="jobs/:jobId" element={<PipelinePage />} />
-        <Route path="jobs/:jobId/ai-log" element={<AiLogPage />} />
         <Route path="candidates" element={<CandidatesPage />} />
         <Route path="candidates/:id" element={<CandidatePage />} />
         <Route path="ai-activity" element={<AiActivityPage />} />

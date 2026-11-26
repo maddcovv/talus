@@ -19,12 +19,11 @@ const candidatePages: Array<[string, string]> = [
 ];
 
 const recruiterPages: Array<[string, string]> = [
-  ["today", "/recruit"],
+  ["jobs home", "/recruit"],
   ["pipeline", "/recruit/jobs/warehouse-lead"],
   ["candidate", "/recruit/candidates/june-halloran"],
   ["candidates", "/recruit/candidates"],
   ["job setup", "/recruit/jobs/new"],
-  ["ai log", "/recruit/jobs/senior-frontend/ai-log"],
   ["ai activity", "/recruit/ai-activity"],
   ["settings", "/recruit/settings"],
 ];
@@ -47,12 +46,19 @@ describe("recruiter pages have no axe violations in light and dark", () => {
   }, 30000);
 });
 
-describe("pipeline table view has no axe violations", () => {
-  it("table tab", async () => {
+describe("the job's candidates and AI views have no axe violations", () => {
+  it("candidates tab", async () => {
     const user = userEvent.setup();
     const { container } = renderAt("/recruit/jobs/warehouse-lead");
-    await user.click(screen.getByRole("tab", { name: "Table" }));
+    await user.click(screen.getByRole("tab", { name: "Candidates" }));
     await screen.findByRole("grid");
+    expect(await axe(container)).toHaveNoViolations();
+  }, 30000);
+
+  it("ai activity tab", async () => {
+    const user = userEvent.setup();
+    const { container } = renderAt("/recruit/jobs/warehouse-lead");
+    await user.click(screen.getByRole("tab", { name: "AI activity" }));
     expect(await axe(container)).toHaveNoViolations();
   }, 30000);
 });
