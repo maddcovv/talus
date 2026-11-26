@@ -24,12 +24,13 @@ export function AppRoutes() {
       <Route element={<CandidateLayout />}>
         <Route path="/" element={<JobsIndexPage />} />
         <Route path="/jobs/:jobId" element={<JobPage />} />
-        <Route path="/jobs/:jobId/apply" element={<ApplyPage />} />
-        <Route path="/status/:token" element={<StatusPage />} />
         <Route path="/life" element={<LifePage />} />
         <Route path="/benefits" element={<BenefitsPage />} />
         <Route path="/how-ai-works" element={<AiNoticePage />} />
       </Route>
+      {/* The apply flow and the status page carry their own headers. */}
+      <Route path="/jobs/:jobId/apply" element={<ApplyPage />} />
+      <Route path="/status/:token" element={<StatusPage />} />
       <Route path="/recruit" element={<RecruiterLayout />}>
         <Route index element={<TodayPage />} />
         <Route path="jobs/new" element={<JobSetupPage />} />

@@ -1,12 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+// Fonts load from the Google Fonts link in index.html: the variable Archivo
+// carries the width axis the Two Track headings use, which the static
+// fontsource build does not.
 import "@talus/tokens/talus.css";
-import "@fontsource/ibm-plex-sans/400.css";
-import "@fontsource/ibm-plex-sans/500.css";
-import "@fontsource/ibm-plex-sans/600.css";
-import "@fontsource/ibm-plex-sans/700.css";
-import "@fontsource/ibm-plex-mono/400.css";
-import "@fontsource/archivo/800.css";
 import "./global.css";
 import { App } from "./App";
 

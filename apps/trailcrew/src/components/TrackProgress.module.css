@@ -1,0 +1,35 @@
+.road {
+  position: relative;
+  block-size: 14px;
+  margin: 6px 0 10px;
+}
+
+.dash {
+  position: absolute;
+  inset-inline: 0;
+  border-block-start: 2px dashed var(--talus-color-kraft-400);
+}
+
+.fill {
+  position: absolute;
+  inset-inline-start: 0;
+  inline-size: 100%;
+  block-size: 2px;
+  background: var(--talus-color-action-primary-bg);
+  transform-origin: 0 50%;
+  transition: transform 0.6s var(--talus-easing-standard);
+}
+
+.laneTop {
+  inset-block-start: 2px;
+}
+
+.laneBottom {
+  inset-block-start: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fill {
+    transition: none;
+  }
+}

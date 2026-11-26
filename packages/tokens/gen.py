@@ -10,6 +10,7 @@ P = {
  "lichen":  {"50":"#F0F6EA","100":"#DBEACB","200":"#B8D59A","300":"#92BD67","400":"#6EA23F","500":"#55862B","600":"#436A22","700":"#35531B","800":"#273D14","900":"#1A290E"},
  "ember":   {"50":"#FCEFEE","100":"#F8D7D4","200":"#F0AFA9","300":"#E5817A","400":"#D8574F","500":"#BF3B33","600":"#9E2F28","700":"#7F2621","800":"#5E1D19","900":"#3F1411"},
  "dusk":    {"50":"#F3F0F8","100":"#E2DBEE","200":"#C6B8DD","300":"#A592C9","400":"#8770B4","500":"#6E569C","600":"#58457D","700":"#45365F","800":"#322743","900":"#211A2C"},
+ "kraft":   {"50":"#F6F2E8","100":"#EFE9DC","200":"#E3DAC6","300":"#D8BC8D","400":"#C9B98E","800":"#3F3520"},
  "base":    {"white":"#FFFFFF","bone":"#FAF7F2","ink":"#151513","black":"#000000"},
  "alpha":   {"ink-8":"#15151314","ink-12":"#1515131F","ink-20":"#15151333","ink-48":"#1515137A","black-32":"#00000052","black-48":"#0000007A","black-64":"#000000A3","white-8":"#FFFFFF14"},
 }
@@ -35,6 +36,7 @@ light_common = {
  "chart.1":"sky.600","chart.2":"aspen.600","chart.3":"spruce.400","chart.4":"lichen.600","chart.5":"clay.500","chart.6":"dusk.500",
  "chart.grid":"granite.200","chart.axis":"granite.600",
  "shadow.ambient":"alpha.ink-8","shadow.key":"alpha.ink-12",
+ "bg.accent":"aspen.300","bg.feature":"granite.100","text.on-feature":"granite.900","text.on-feature-secondary":"granite.700","shadow.feature":"alpha.ink-12",
 }
 modes = {
  "enterprise-light": dict(light_common, **{
@@ -67,17 +69,21 @@ modes = {
    "chart.1":"sky.300","chart.2":"aspen.300","chart.3":"spruce.300","chart.4":"lichen.300","chart.5":"clay.300","chart.6":"dusk.300",
    "chart.grid":"granite.700","chart.axis":"granite.300",
    "shadow.ambient":"alpha.black-32","shadow.key":"alpha.black-48",
+   "bg.accent":"aspen.400","bg.feature":"granite.800","text.on-feature":"granite.50","text.on-feature-secondary":"granite.300","shadow.feature":"alpha.black-48",
  },
  "consumer-light": dict(light_common, **{
-   "bg.canvas":"base.white",
-   "action.primary.bg":"granite.900","action.primary.bg-hover":"granite.700","action.primary.bg-pressed":"granite.950",
-   "action.secondary.bg-hover":"aspen.50","action.secondary.border":"granite.900",
-   "action.ghost.bg-hover":"aspen.50",
-   "text.link":"granite.900","text.brand":"granite.900",
-   "bg.brand-subtle":"aspen.50","bg.selected":"aspen.50","border.selected":"granite.900","bg.highlight":"aspen.300",
-   "border.input":"granite.900",
+   "bg.canvas":"base.white","bg.subtle":"kraft.100","bg.hover":"kraft.50",
+   "action.primary.bg":"lichen.700","action.primary.bg-hover":"lichen.800","action.primary.bg-pressed":"lichen.900",
+   "action.secondary.bg-hover":"kraft.50","action.secondary.border":"granite.900",
+   "action.ghost.bg-hover":"kraft.50",
+   "text.link":"lichen.700","text.brand":"lichen.700",
+   "bg.brand-subtle":"kraft.100","bg.selected":"lichen.50","border.selected":"lichen.700","bg.highlight":"aspen.100",
+   "border.default":"kraft.200","border.strong":"granite.900","border.input":"granite.500",
    "border.focus":"sky.600",
+   "status.warning.fg":"aspen.700",
+   "bg.feature":"kraft.300","text.on-feature":"granite.950","text.on-feature-secondary":"kraft.800","shadow.feature":"lichen.700",
  }),
+
 }
 keys = set(modes["enterprise-light"])
 for m in modes.values(): assert set(m)==keys, set(m)^keys
@@ -99,7 +105,8 @@ pairs=[("text.primary","bg.canvas",T),("text.primary","bg.surface",T),("text.pri
  ("icon.default","bg.surface",N),("icon.secondary","bg.surface",N),("icon.on-action","action.primary.bg",N),
  ("border.input","bg.surface",N),("border.strong","bg.surface",N),("border.focus","bg.surface",N),("border.focus","bg.canvas",N),("border.focus","bg.raised",N),
  ("border.selected","bg.surface",N),("action.primary.bg","bg.surface",N),("action.primary.bg","bg.canvas",N),("action.secondary.border","bg.surface",N),
- ("chart.1","bg.surface",N),("chart.2","bg.surface",N),("chart.3","bg.surface",N),("chart.4","bg.surface",N),("chart.5","bg.surface",N),("chart.6","bg.surface",N),("chart.axis","bg.surface",T)]
+ ("chart.1","bg.surface",N),("chart.2","bg.surface",N),("chart.3","bg.surface",N),("chart.4","bg.surface",N),("chart.5","bg.surface",N),("chart.6","bg.surface",N),("chart.axis","bg.surface",T),
+ ("text.on-feature","bg.feature",T),("text.on-feature-secondary","bg.feature",T),("text.link","bg.feature",T),("action.primary.bg","bg.feature",N)]
 report=[]; fails=[]
 for t,m in modes.items():
     for f,b,mn in pairs:
@@ -129,7 +136,7 @@ prim={"$description":"Talus primitives. Raw values only. Products never use thes
      "plex-mono":{"$type":"fontFamily","$value":["IBM Plex Mono","ui-monospace","monospace"]},
      "archivo":{"$type":"fontFamily","$value":["Archivo","system-ui","sans-serif"]}},
    "weight":{k:{"$type":"fontWeight","$value":v} for k,v in {"regular":400,"medium":500,"semibold":600,"bold":700,"extrabold":800}.items()},
-   "size":{k:D(f"{v}px") for k,v in {"12":12,"13":13,"14":14,"16":16,"18":18,"20":20,"24":24,"28":28,"32":32,"40":40,"48":48,"56":56}.items()},
+   "size":{k:D(f"{v}px") for k,v in {"12":12,"13":13,"14":14,"16":16,"18":18,"20":20,"24":24,"28":28,"32":32,"22":22,"40":40,"48":48,"56":56,"64":64}.items()},
    "line-height":{k:{"$type":"number","$value":v} for k,v in {"tight":1.15,"snug":1.3,"normal":1.5}.items()}},
  "duration":{k:{"$type":"duration","$value":v} for k,v in {"fast":"120ms","base":"200ms","slow":"320ms"}.items()},
 }
@@ -149,17 +156,18 @@ glob={"$description":"Talus global tokens. Same in every brand and color mode.",
 json.dump(glob,open("src/global.json","w"),indent=2)
 
 shape={
- "enterprise":{"radius.control":"{radius.sm}","radius.container":"{radius.md}","control.height.sm":"28px","control.height.md":"32px","control.height.lg":"40px","density.row":"36px","border.width.control":"1px",
+ "enterprise":{"radius.control":"{radius.sm}","radius.container":"{radius.md}","control.height.sm":"28px","control.height.md":"32px","control.height.lg":"40px","density.row":"36px","border.width.control":"1px","border.width.feature":"1px",
    "font.family.display":"{font.family.plex-sans}","font.family.body":"{font.family.plex-sans}","font.family.mono":"{font.family.plex-mono}","font.weight.display":"{font.weight.semibold}",
    "font.size.display":"{font.size.32}","font.size.h1":"{font.size.28}","font.size.h2":"{font.size.20}","font.size.h3":"{font.size.16}","font.size.body":"{font.size.14}","font.size.body-sm":"{font.size.13}","font.size.label":"{font.size.13}","font.size.caption":"{font.size.12}"},
- "consumer":{"radius.control":"{radius.xs}","radius.container":"{radius.sm}","control.height.sm":"36px","control.height.md":"44px","control.height.lg":"52px","density.row":"56px","border.width.control":"2px",
+ "consumer":{"radius.control":"{radius.sm}","radius.container":"{radius.sm}","control.height.sm":"36px","control.height.md":"48px","control.height.lg":"52px","density.row":"56px","border.width.control":"1px","border.width.feature":"2px",
    "font.family.display":"{font.family.archivo}","font.family.body":"{font.family.plex-sans}","font.family.mono":"{font.family.plex-mono}","font.weight.display":"{font.weight.extrabold}",
-   "font.size.display":"{font.size.56}","font.size.h1":"{font.size.40}","font.size.h2":"{font.size.28}","font.size.h3":"{font.size.20}","font.size.body":"{font.size.16}","font.size.body-sm":"{font.size.14}","font.size.label":"{font.size.14}","font.size.caption":"{font.size.13}"},
+   "font.size.display":"{font.size.64}","font.size.h1":"{font.size.48}","font.size.h2":"{font.size.28}","font.size.h3":"{font.size.22}","font.size.body":"{font.size.16}","font.size.body-sm":"{font.size.14}","font.size.label":"{font.size.14}","font.size.caption":"{font.size.13}"},
 }
 typ=lambda k: "fontFamily" if "family" in k else "fontWeight" if "weight" in k else "dimension"
 for b,s in shape.items():
     d={k:{"$type":typ(k),"$value":v} for k,v in s.items()}
     d["focus.ring-width"]=D("2px"); d["focus.ring-offset"]=D("2px")
+    d["shadow.feature"]={"$type":"shadow","$description":"Feature cards: the apply card, side cards, the postcard. Consumer is a printed offset in olive; enterprise stays soft.","$value":([{"color":"{color.shadow.feature}","offsetX":"6px","offsetY":"6px","blur":"0px","spread":"0px"}] if b=="consumer" else [{"color":"{color.shadow.feature}","offsetX":"0px","offsetY":"2px","blur":"8px","spread":"0px"}])}
     json.dump({"$description":f"Talus {b} brand: type, size, density and shape. Pairs with a color mode.",**nest(d)},open(f"src/brand/{b}.json","w"),indent=2)
 for t,m in modes.items():
     sem={"color":nest({k:{"$type":"color","$value":"{color."+v+"}"} for k,v in sorted(m.items())})}
@@ -174,4 +182,4 @@ comp={"$description":"Talus component tokens. They alias brand, color and global
  "menu":{"radius":D("{radius.container}"),"shadow":{"$type":"shadow","$value":"{elevation.2}"}},
 }
 json.dump(comp,open("src/components.json","w"),indent=2)
-open("CONTRAST.md","w").write("# Talus contrast check\n\nWCAG 2.1 AA: text pairs need 4.5:1 (1.4.3); icons, borders, focus rings, control edges and chart marks need 3:1 (1.4.11). Chart colors: the order (sky, aspen, spruce, lichen, clay, dusk) keeps the first four apart under the two common red-green color-vision types; charts with five or six series must label lines and bars directly. Generated by gen.py; rerun after any color change.\n\n| Mode | Pair | Colors | Ratio | Needs | Result |\n|---|---|---|---|---|---|\n"+"\n".join(report)+"\n")
+open("CONTRAST.md","w").write("# Talus contrast check\n\nWCAG 2.1 AA: text pairs need 4.5:1 (1.4.3); icons, borders, focus rings, control edges and chart marks need 3:1 (1.4.11). bg.accent (the yellow) is decoration only: dots, flags, offset shadows on secondary cards. Never text, and never the only sign of a state. Chart colors: the order (sky, aspen, spruce, lichen, clay, dusk) keeps the first four apart under the two common red-green color-vision types; charts with five or six series must label lines and bars directly. Generated by gen.py; rerun after any color change.\n\n| Mode | Pair | Colors | Ratio | Needs | Result |\n|---|---|---|---|---|---|\n"+"\n".join(report)+"\n")

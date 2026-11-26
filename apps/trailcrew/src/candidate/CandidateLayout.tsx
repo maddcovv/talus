@@ -13,7 +13,7 @@ export function CandidateLayout() {
             <TwoTrackMark className={styles.mark} />
             Two Track Supply
           </Link>
-          <nav aria-label="Careers" className={styles.nav}>
+          <nav aria-label="Main" className={styles.nav}>
             <NavLink to="/" end>
               Jobs
             </NavLink>
@@ -27,10 +27,11 @@ export function CandidateLayout() {
       </main>
       <footer className={styles.footer}>
         <div className={styles.footerInner}>
+          <span>Two Track Supply, Salida, Colorado</span>
           <span>
-            Hiring runs on <Link to="/recruit">Trailcrew</Link>.
+            Hiring runs on <Link to="/recruit">Trailcrew</Link>. Demo product: all names and data
+            are made up.
           </span>
-          <span>Demo product. All names and data are made up.</span>
         </div>
       </footer>
     </div>

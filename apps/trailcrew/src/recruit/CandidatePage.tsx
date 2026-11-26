@@ -67,9 +67,9 @@ const declineReasons = [
 ];
 
 const juneAnswers = [
-  "I designed the form field wrapper at Blue Mesa. Label, help text and error were first class props, so every form the teams shipped came out accessible by default.",
-  "When a second team copies it, it belongs to the system. Before that it is still an experiment.",
-  "Keyboard first by hand, axe in CI on every story, and a screen reader pass before a component graduates.",
+  "At Blue Mesa I built the date picker in our component library. Four teams picked it up within a month, and their first bug reports were all about keyboard use inside data tables. I rewrote its focus handling, added a keyboard test to our release checklist, and wrote a short guide on using it inside grids.",
+  "Within a month",
+  "Yes, it works",
 ];
 
 function nextStepFor(candidate: Candidate, stage: StageId): string {

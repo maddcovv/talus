@@ -2,121 +2,153 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { CaretRight } from "@phosphor-icons/react";
 import { Select, SelectItem, TextField } from "@talus/react";
-import { departments, employer, jobs } from "../fixtures/jobs";
+import { departmentNotes, departments, jobs } from "../fixtures/jobs";
+import { PrintHero } from "../components/PrintHero";
+import type { Job } from "../fixtures/types";
 import styles from "./JobsIndexPage.module.css";
 
 const locations = [...new Set(jobs.map((job) => job.location))];
-const types = [...new Set(jobs.map((job) => job.type))];
+
+function metaLine(job: Job): string {
+  return [
+    job.location,
+    job.workplace === "On site" ? "On site" : null,
+    job.type,
+    `Posted ${job.postedShort}`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
 
 export function JobsIndexPage() {
-  const [department, setDepartment] = useState("all");
-  const [location, setLocation] = useState("all");
-  const [type, setType] = useState("all");
   const [query, setQuery] = useState("");
+  const [team, setTeam] = useState("all");
+  const [location, setLocation] = useState("all");
 
   const matches = jobs.filter(
     (job) =>
-      (department === "all" || job.department === department) &&
+      (team === "all" || job.department === team) &&
       (location === "all" || job.location === location) &&
-      (type === "all" || job.type === type) &&
       (query.trim() === "" ||
         `${job.title} ${job.department}`.toLowerCase().includes(query.trim().toLowerCase())),
   );
 
   return (
     <article>
-      <div className={styles.band}>
-        <div className={styles.bandInner}>
-          <h1 className={styles.title}>Work at {employer.name}</h1>
-          <p className={styles.blurb}>{employer.blurb}</p>
-          <p className={styles.count}>
-            {jobs.length} open roles. Real pay on every posting, and an answer to every applicant.
+      <section data-kraft="" className={styles.heroBand}>
+        <div className={styles.heroCopy}>
+          <h1 className={styles.headline}>Build gear people trust a long way from the road.</h1>
+          <p className={styles.sub}>
+            We make packs, dry bags and camp hardware, and ship them from the same building. Four
+            roles are open right now.
           </p>
+          <div className={styles.ctaRow}>
+            <a className={styles.cta} href="#roles">
+              See the {jobs.length} open roles
+            </a>
+            <Link className={styles.how} to="/jobs/senior-frontend#hiring">
+              How hiring works here
+            </Link>
+          </div>
+          <p className={styles.where}>Hiring in Salida, Colorado and remote across the US.</p>
         </div>
-      </div>
+        <PrintHero />
+      </section>
 
-      <div className={styles.container}>
-        <div className={styles.filters}>
-          <Select
-            label="Department"
-            selectedKey={department}
-            onSelectionChange={(key) => setDepartment(String(key))}
-          >
-            <SelectItem id="all">All departments</SelectItem>
-            {departments.map((dept) => (
-              <SelectItem key={dept} id={dept}>
-                {dept}
-              </SelectItem>
-            ))}
-          </Select>
-          <Select
-            label="Location"
-            selectedKey={location}
-            onSelectionChange={(key) => setLocation(String(key))}
-          >
-            <SelectItem id="all">All locations</SelectItem>
-            {locations.map((item) => (
-              <SelectItem key={item} id={item}>
-                {item}
-              </SelectItem>
-            ))}
-          </Select>
-          <Select label="Type" selectedKey={type} onSelectionChange={(key) => setType(String(key))}>
-            <SelectItem id="all">All types</SelectItem>
-            {types.map((item) => (
-              <SelectItem key={item} id={item}>
-                {item}
-              </SelectItem>
-            ))}
-          </Select>
-          <TextField
-            label="Search jobs"
-            value={query}
-            onChange={setQuery}
-            placeholder="Title or team"
-            className={styles.search}
-          />
+      <section id="roles" className={styles.container} aria-label="Open roles">
+        <div className={styles.rolesHead}>
+          <h2 className={styles.h2}>Open roles</h2>
+          <form className={styles.filters} onSubmit={(event) => event.preventDefault()}>
+            <TextField
+              label="Search"
+              value={query}
+              onChange={setQuery}
+              placeholder="Title or keyword"
+              className={styles.search}
+            />
+            <Select
+              label="Team"
+              selectedKey={team}
+              onSelectionChange={(key) => setTeam(String(key))}
+              className={styles.filterSelect}
+            >
+              <SelectItem id="all">All teams</SelectItem>
+              {departments.map((dept) => (
+                <SelectItem key={dept} id={dept}>
+                  {dept}
+                </SelectItem>
+              ))}
+            </Select>
+            <Select
+              label="Location"
+              selectedKey={location}
+              onSelectionChange={(key) => setLocation(String(key))}
+              className={styles.filterSelect}
+            >
+              <SelectItem id="all">Anywhere</SelectItem>
+              {locations.map((item) => (
+                <SelectItem key={item} id={item}>
+                  {item}
+                </SelectItem>
+              ))}
+            </Select>
+          </form>
         </div>
 
         {matches.length === 0 ? (
-          <p className={styles.empty}>
-            No roles match those filters. Clear one, or check back; new roles post here first.
-          </p>
+          <p className={styles.empty}>No roles match those filters. Clear one and look again.</p>
         ) : null}
 
         {departments.map((dept) => {
           const inDept = matches.filter((job) => job.department === dept);
           if (inDept.length === 0) return null;
-          const headingId = `dept-${dept.toLowerCase().replace(/[^a-z]+/g, "-")}`;
+          const headingId = `team-${dept.toLowerCase().replace(/[^a-z]+/g, "-")}`;
           return (
             <section key={dept} aria-labelledby={headingId} className={styles.group}>
-              <h2 id={headingId} className={styles.h2}>
-                {dept}
-              </h2>
-              <ul className={styles.rows}>
+              <div>
+                <h3 id={headingId} className={styles.groupName}>
+                  {dept}
+                </h3>
+                <p className={styles.groupNote}>{departmentNotes[dept]}</p>
+              </div>
+              <div className={styles.groupJobs}>
                 {inDept.map((job) => (
-                  <li key={job.id} className={styles.rowItem}>
-                    <Link to={`/jobs/${job.id}`} className={styles.row}>
-                      <span className={styles.rowMain}>
-                        <span className={styles.rowTitle}>{job.title}</span>
-                        <span className={styles.rowMeta}>
-                          {job.location} {"·"} {job.type} {"·"} Posted {job.postedOn}
-                        </span>
-                      </span>
-                      <span className={styles.rowPay}>{job.pay}</span>
-                      <CaretRight aria-hidden className={styles.chevron} />
-                    </Link>
-                  </li>
+                  <Link key={job.id} to={`/jobs/${job.id}`} className={styles.row}>
+                    <div className={styles.rowGrid}>
+                      <div>
+                        <div className={styles.rowTitle}>{job.title}</div>
+                        <div className={styles.rowMeta}>{metaLine(job)}</div>
+                      </div>
+                      <div>
+                        <div className={styles.rowPay}>{job.pay}</div>
+                        <div className={styles.rowDeadline}>
+                          {job.deadlineShort ? `Apply by ${job.deadlineShort}` : "Open until filled"}
+                        </div>
+                      </div>
+                      <CaretRight aria-hidden weight="bold" className={styles.chevron} />
+                    </div>
+                  </Link>
                 ))}
-              </ul>
+              </div>
             </section>
           );
         })}
+      </section>
 
-        <p className={styles.aside}>
-          Hiring here? See the <Link to="/recruit">recruiter side of Trailcrew</Link>.
-        </p>
-      </div>
+      <section className={styles.manifestoBand} aria-label="How we hire">
+        <div className={styles.manifestoInner}>
+          <p className={styles.manifesto}>
+            We post the <span className={styles.mark}>whole pay range</span>. We{" "}
+            <span className={styles.mark}>answer every applicant</span>, and you can check where
+            you stand any time. AI can fill out your form, but{" "}
+            <span className={styles.mark}>a person makes every call</span>.
+          </p>
+          <p className={styles.signed}>
+            Signed, the sixty people in Salida and around the country who&apos;d be working with
+            you.
+          </p>
+        </div>
+      </section>
     </article>
   );
 }

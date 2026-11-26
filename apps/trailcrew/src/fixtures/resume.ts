@@ -1,32 +1,25 @@
-// June Halloran's sample resume as the AI fill sees it: field values with the
-// source line each one came from. Phone, work authorization, sponsorship and
-// two links have no source, so the form marks them "Needs your answer."
+// June Halloran's sample resume as the AI fill sees it. The resume is one
+// page, so every source points at page 1, and every claim in the apply flow
+// maps to a line on the paper.
 
 export interface FieldSource {
-  /** The line the AI read, shown by the SourceChip. */
+  /** The line the AI read. */
   line: string;
   where: string;
 }
 
-export interface FilledField {
+/** One contact field on the details step. */
+export interface ContactField {
   id: string;
   label: string;
   value: string;
-  source?: FieldSource;
-  /** Must be answered before the application can continue. */
-  required?: boolean;
-  multiline?: boolean;
-  /** Short helper text under the field. */
-  hint?: string;
+  /** Which resume line lights up when the field has focus. */
+  lineKey: string | null;
+  /** AI filled it from the resume. */
+  filled: boolean;
 }
 
-export interface FilledSection {
-  id: string;
-  title: string;
-  fields: FilledField[];
-}
-
-/** One job on the resume, split into the fields a person can correct. */
+/** One job on the resume. */
 export interface WorkEntry {
   id: string;
   company: string;
@@ -36,10 +29,11 @@ export interface WorkEntry {
   startYear: string;
   endMonth: string;
   endYear: string;
-  /** "I work here now": clears the end date. */
   current: boolean;
   /** What you did there, one line per bullet. */
   bullets: string;
+  /** Which resume line lights up for this job. */
+  lineKey: string;
   source?: FieldSource;
 }
 
@@ -52,106 +46,24 @@ export interface EducationEntry {
 }
 
 export const sampleResumeName = "june-halloran-resume.pdf";
-export const sampleResumeSize = "84 KB";
+export const sampleResumePages = "1 page";
 
-export const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
-export const filledSections: FilledSection[] = [
+export const contactFields: ContactField[] = [
+  { id: "name", label: "Full name", value: "June Halloran", lineKey: "name", filled: true },
   {
-    id: "contact",
-    title: "Contact",
-    fields: [
-      {
-        id: "name",
-        label: "Full name",
-        value: "June Halloran",
-        source: { line: "June Halloran, frontend engineer", where: "your resume, page 1" },
-      },
-      {
-        id: "email",
-        label: "Email",
-        value: "june.halloran@example.com",
-        source: { line: "june.halloran@example.com", where: "your resume, page 1" },
-      },
-      { id: "phone", label: "Phone", value: "", required: true },
-      {
-        id: "location",
-        label: "Location",
-        value: "Fort Collins, Colorado",
-        source: { line: "Fort Collins, CO", where: "your resume, page 1" },
-      },
-    ],
+    id: "email",
+    label: "Email",
+    value: "june.halloran@example.com",
+    lineKey: "contact",
+    filled: true,
   },
+  { id: "phone", label: "Phone", value: "", lineKey: null, filled: false },
   {
-    id: "skills",
-    title: "Skills",
-    fields: [
-      {
-        id: "skills",
-        label: "Skills",
-        value: "React, TypeScript, design systems, accessibility, testing",
-        source: {
-          line: "Skills: React, TypeScript, design systems, accessibility, testing",
-          where: "your resume, page 1",
-        },
-      },
-    ],
-  },
-  {
-    id: "authorization",
-    title: "Work authorization",
-    fields: [
-      {
-        id: "authorized",
-        label: "Are you authorized to work in the United States?",
-        value: "",
-        required: true,
-      },
-      {
-        id: "sponsorship",
-        label: "Will you now or in the future need visa sponsorship?",
-        value: "",
-        required: true,
-      },
-    ],
-  },
-  {
-    id: "links",
-    title: "Links",
-    fields: [
-      {
-        id: "linkedin",
-        label: "LinkedIn",
-        value: "",
-        hint: "Optional.",
-      },
-      {
-        id: "portfolio",
-        label: "Portfolio",
-        value: "junehalloran.example",
-        hint: "Optional.",
-        source: { line: "junehalloran.example", where: "your resume, page 1" },
-      },
-      {
-        id: "github",
-        label: "GitHub",
-        value: "",
-        hint: "Optional.",
-      },
-    ],
+    id: "location",
+    label: "Location",
+    value: "Fort Collins, Colorado",
+    lineKey: "contact",
+    filled: true,
   },
 ];
 
@@ -167,7 +79,8 @@ export const workEntries: WorkEntry[] = [
     endYear: "",
     current: true,
     bullets:
-      "Led the component library used by four product teams.\nShipped the accessibility pass that took dashboards to WCAG 2.1 AA.\nCut the checkout bundle by a third and wrote up how.\nRan the frontend side of the hiring loop.",
+      "Led the component library used by four product teams.\nShipped the accessibility pass that took dashboards to WCAG 2.1 AA.\nCut the checkout bundle by a third and wrote up how.",
+    lineKey: "j1",
     source: {
       line: "Blue Mesa Software. Senior Frontend Engineer, March 2022 to present.",
       where: "your resume, page 1",
@@ -183,11 +96,11 @@ export const workEntries: WorkEntry[] = [
     endMonth: "March",
     endYear: "2022",
     current: false,
-    bullets:
-      "Built dashboard views in React and TypeScript.\nOwned the charting layer and its tests.\nIntroduced Vitest and got the frontend to 80 percent coverage.",
+    bullets: "Built dashboard views in React and TypeScript.\nOwned the charting layer and its tests.",
+    lineKey: "j2",
     source: {
       line: "Cairn Analytics. Frontend Engineer, June 2018 to March 2022.",
-      where: "your resume, page 2",
+      where: "your resume, page 1",
     },
   },
   {
@@ -201,9 +114,10 @@ export const workEntries: WorkEntry[] = [
     endYear: "2018",
     current: false,
     bullets: "Led day trips of up to twelve guests.\nKept the gear inventory and the booking calendar.",
+    lineKey: "j3",
     source: {
       line: "Hogback Gear Works. Trail guide, May 2016 to June 2018.",
-      where: "your resume, page 2",
+      where: "your resume, page 1",
     },
   },
 ];
@@ -216,7 +130,75 @@ export const educationEntries: EducationEntry[] = [
     year: "2016",
     source: {
       line: "Colorado State University, BS Computer Science, 2016",
-      where: "your resume, page 2",
+      where: "your resume, page 1",
     },
+  },
+];
+
+/** The paper beside the form, line by line, as AI reads it. */
+export interface ResumeLine {
+  key: string;
+  text: string;
+  variant: "name" | "plain" | "head";
+  /** Space to the next line. */
+  gap: "tight" | "loose" | "none";
+}
+
+export const resumeLines: ResumeLine[] = [
+  { key: "name", text: "June Halloran", variant: "name", gap: "tight" },
+  {
+    key: "contact",
+    text: "Frontend engineer · Fort Collins, CO · june.halloran@example.com",
+    variant: "plain",
+    gap: "tight",
+  },
+  { key: "contact", text: "junehalloran.example", variant: "plain", gap: "loose" },
+  {
+    key: "skills",
+    text: "Skills: React, TypeScript, design systems, accessibility, testing",
+    variant: "plain",
+    gap: "loose",
+  },
+  {
+    key: "j1",
+    text: "Blue Mesa Software. Senior Frontend Engineer, March 2022 to present.",
+    variant: "head",
+    gap: "tight",
+  },
+  {
+    key: "j1",
+    text: "Led the component library used by four product teams. Shipped the accessibility pass that took dashboards to WCAG 2.1 AA. Cut the checkout bundle by a third and wrote up how.",
+    variant: "plain",
+    gap: "loose",
+  },
+  {
+    key: "j2",
+    text: "Cairn Analytics. Frontend Engineer, June 2018 to March 2022.",
+    variant: "head",
+    gap: "tight",
+  },
+  {
+    key: "j2",
+    text: "Built dashboard views in React and TypeScript. Owned the charting layer and its tests.",
+    variant: "plain",
+    gap: "loose",
+  },
+  {
+    key: "j3",
+    text: "Hogback Gear Works. Trail guide, May 2016 to June 2018.",
+    variant: "head",
+    gap: "tight",
+  },
+  {
+    key: "j3",
+    text: "Led day trips of up to twelve guests. Kept the gear inventory and the booking calendar.",
+    variant: "plain",
+    gap: "loose",
+  },
+  {
+    key: "edu",
+    text: "Colorado State University, BS Computer Science, 2016",
+    variant: "head",
+    gap: "none",
   },
 ];

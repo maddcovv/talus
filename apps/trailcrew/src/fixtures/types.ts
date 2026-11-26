@@ -25,17 +25,17 @@ export const personCheckWords: Record<PersonCheck, string> = {
   "not-checked": "Not checked",
 };
 
-export type QuestionType = "short" | "long" | "yesno" | "select";
+export type QuestionType = "long" | "choice";
 
 export interface JobQuestion {
   id: string;
   label: string;
+  /** Short form for the review step, e.g. "A component other teams used". */
+  short?: string;
   type: QuestionType;
-  /** Choices, for select questions. */
+  /** The press-to-pick answers, for choice questions. */
   options?: string[];
   hint?: string;
-  /** Optional questions never block the apply flow. */
-  optional?: boolean;
 }
 
 export type Department = "Operations" | "Customer experience" | "Engineering";
@@ -51,16 +51,28 @@ export interface Job {
   flsa: "Exempt" | "Non-exempt";
   /** e.g. "November 7, 2026" */
   postedOn: string;
+  /** e.g. "Nov 7", for the jobs index rows. */
+  postedShort: string;
   jobCode: string;
   /** e.g. "December 15, 2026", or null when applications stay open. */
   deadline: string | null;
+  /** e.g. "Dec 15", or null when applications stay open. */
+  deadlineShort: string | null;
+  /** The deadline line on the feature card, e.g. "Apply by December 15 · 20 days left". */
+  applyLine: string;
   pay: string;
-  /** Bonus, overtime or premium pay, when the role has any. */
-  bonusNote?: string;
+  /** The range alone, for the feature card, e.g. "$150,000 to $175,000". */
+  payShort: string;
+  /** Under the range on the feature card, e.g. "a year, plus a 10 percent bonus target". */
+  payTail: string;
+  /** Finishes the pay sentence on the posting, e.g. "plus an annual bonus target...". */
+  payPlus?: string;
   /** One or two sentences on shift, hours and where the work happens. */
   schedule: string;
-  /** Short form for the summary card, e.g. "Mon to Fri, 7:00 am to 3:30 pm". */
+  /** Short form for the facts grid, e.g. "Full time, overlap 10 to 2 MT". */
   scheduleShort: string;
+  /** The Where fact, e.g. "Remote, anywhere in the US". */
+  whereLine: string;
   /** About the role: two short paragraphs. */
   summary: string[];
   /** Who you work with and who you report to. */
@@ -71,8 +83,6 @@ export interface Job {
   benefits: string[];
   /** Physical requirements, for roles that have them. */
   conditions?: string[];
-  /** The apply flow asks for an optional cover letter. */
-  coverLetter?: boolean;
   questions: JobQuestion[];
 }
 

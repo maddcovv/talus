@@ -309,24 +309,28 @@ export function evidenceFor(candidate: Candidate, requirements: string[]): Evide
   });
 }
 
-// Application answers shown on the recruiter's candidate page.
+// Application answers shown on the recruiter's candidate page, in the order
+// of the three questions every job asks: the opener, the start date, the pay.
 const answerPools: Record<string, string[]> = {
   "warehouse-lead": [
-    "Clear lanes, nothing staged in the walk path, and everyone knows who is spotting. The dock plate gets checked every morning, not just after something slips.",
     "We were double handling returns. I moved inspection to the receiving bench, which cut a day off restock and freed an afternoon of labor a week.",
+    "Within a month",
+    "Yes, it works",
   ],
   "customer-support": [
     "First I tell them what happens next: a replacement ships today and they keep the damaged one until the carrier decides on pickup. Then I file the claim so they never deal with the carrier.",
-    "It names the actual problem in the first line and makes one promise it keeps. No template smell, no fake apology stack.",
+    "Within 2 weeks",
+    "Yes, it works",
   ],
   "senior-frontend": [
     "I built the form field wrapper our teams use. The API took a label, help text and error as first class props, so skipping the label took effort instead of being the default.",
-    "When the third team asks for it, or when two implementations drift apart in a way users can see.",
-    "Keyboard first by hand, axe on every story in CI, and a screen reader pass before anything ships to the design system.",
+    "Within a month",
+    "Yes, it works",
   ],
   "seasonal-fulfillment": [
-    "Weekday mornings all season, plus weekends after December 15.",
     "Two seasons at a book warehouse: pick to cart, pack to carrier boxes, end of day counts.",
+    "Within 2 weeks",
+    "Yes, it works",
   ],
 };
 

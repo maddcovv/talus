@@ -56,6 +56,10 @@
       }
     },
     "bg": {
+      "accent": {
+        "$type": "color",
+        "$value": "{color.aspen.400}"
+      },
       "brand-subtle": {
         "$type": "color",
         "$value": "{color.spruce.900}"
@@ -65,6 +69,10 @@
         "$value": "{color.granite.950}"
       },
       "disabled": {
+        "$type": "color",
+        "$value": "{color.granite.800}"
+      },
+      "feature": {
         "$type": "color",
         "$value": "{color.granite.800}"
       },
@@ -180,6 +188,10 @@
         "$type": "color",
         "$value": "{color.alpha.black-32}"
       },
+      "feature": {
+        "$type": "color",
+        "$value": "{color.alpha.black-48}"
+      },
       "key": {
         "$type": "color",
         "$value": "{color.alpha.black-48}"
@@ -277,6 +289,14 @@
       "on-action": {
         "$type": "color",
         "$value": "{color.granite.950}"
+      },
+      "on-feature": {
+        "$type": "color",
+        "$value": "{color.granite.50}"
+      },
+      "on-feature-secondary": {
+        "$type": "color",
+        "$value": "{color.granite.300}"
       },
       "on-highlight": {
         "$type": "color",

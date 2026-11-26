@@ -15,8 +15,30 @@ a {
   color: var(--talus-color-text-link);
 }
 
+a:hover {
+  color: var(--talus-color-action-primary-bg-hover);
+}
+
 a:focus-visible {
   outline: var(--talus-focus-ring-width) solid var(--talus-color-border-focus);
   outline-offset: var(--talus-focus-ring-offset);
   border-radius: var(--talus-radius-xs);
+}
+
+:root[data-brand="consumer"] ::selection {
+  background: var(--talus-color-bg-accent);
+  color: var(--talus-color-text-on-feature);
+}
+
+/* Paper grain: the SVG is colorless noise; the paper color is the token.
+   data-weave is the woven paper (bg.subtle), data-kraft the kraft card
+   stock (bg.feature). */
+[data-weave] {
+  background-color: var(--talus-color-bg-subtle);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .2 0 0 0 0 .3 0 0 0 0 .1 0 0 0 .55 -.18'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+[data-kraft] {
+  background-color: var(--talus-color-bg-feature);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .2 0 0 0 0 .3 0 0 0 0 .1 0 0 0 .55 -.18'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }

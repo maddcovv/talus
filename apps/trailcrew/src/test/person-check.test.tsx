@@ -1,66 +1,62 @@
-import { act, fireEvent, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderAt } from "./renderAt";
 
-describe("person check resend", () => {
-  afterEach(() => {
-    vi.useRealTimers();
-  });
+async function reachReview(user: ReturnType<typeof userEvent.setup>) {
+  renderAt("/jobs/senior-frontend/apply");
+  await user.click(screen.getByRole("button", { name: "Use June's sample resume" }));
+  await screen.findByRole("heading", { level: 1, name: "Your details" }, { timeout: 8000 });
+  await user.type(screen.getByLabelText("Phone"), "9705550173");
+  const auth = screen.getByRole("group", { name: /Are you authorized to work/ });
+  await user.click(within(auth).getByRole("button", { name: "Yes" }));
+  const visa = screen.getByRole("group", { name: /visa sponsorship/ });
+  await user.click(within(visa).getByRole("button", { name: "No" }));
+  await user.click(screen.getByRole("button", { name: "Continue to job questions" }));
+  await user.click(screen.getByRole("button", { name: "Fill June's answers" }));
+  await user.click(screen.getByRole("button", { name: "Continue to review" }));
+  await screen.findByRole("heading", { level: 1, name: "Check it and send" });
+}
 
-  it("locks resend for 30 seconds, then sends a fresh code", async () => {
+describe("person check", () => {
+  it("texts and calls with a fresh code, in words", async () => {
     const user = userEvent.setup();
-    renderAt("/jobs/seasonal-fulfillment/apply");
+    await reachReview(user);
 
-    // Real timers up to the review step, like a person would get there.
-    await user.click(screen.getByRole("button", { name: "Use the sample resume" }));
-    await screen.findByText("Resume read.", undefined, { timeout: 8000 });
-    await user.click(screen.getByRole("button", { name: "Continue" }));
-
-    await user.type(screen.getByLabelText("Phone"), "555 0138");
-    const auth = screen.getByRole("radiogroup", {
-      name: "Are you authorized to work in the United States?",
-    });
-    await user.click(within(auth).getByRole("radio", { name: "Yes" }));
-    const visa = screen.getByRole("radiogroup", {
-      name: "Will you now or in the future need visa sponsorship?",
-    });
-    await user.click(within(visa).getByRole("radio", { name: "No" }));
-    await user.click(screen.getByRole("button", { name: "Continue" }));
-
-    await user.click(screen.getByRole("button", { name: /Which shift are you available for/ }));
-    await user.click(await screen.findByRole("option", { name: "Either works for me" }));
-    const pickPack = screen.getByRole("radiogroup", {
-      name: "Have you done pick and pack work before?",
-    });
-    await user.click(within(pickPack).getByRole("radio", { name: "Yes" }));
-    await user.click(screen.getByRole("button", { name: "Continue" }));
     expect(
-      screen.getByRole("heading", { level: 1, name: "Review and submit" }),
+      screen.getByText(/We texted a 6-digit code to \(970\) 555-0173/),
     ).toBeInTheDocument();
+    expect(screen.getByText("Demo: the code is 482913.")).toBeInTheDocument();
 
-    // Fake timers from here, so the 30 second window passes in milliseconds.
-    // fireEvent keeps the clicks synchronous while the clock is fake.
-    vi.useFakeTimers();
+    await user.click(screen.getByRole("button", { name: "Text me a new code" }));
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "New code sent to (970) 555-0173. It can take a minute to arrive.",
+    );
 
-    fireEvent.click(screen.getByRole("button", { name: "Email me a code" }));
+    await user.click(screen.getByRole("button", { name: "Call me with the code instead" }));
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "We're calling (970) 555-0173 now. A recording reads the code twice.",
+    );
+  }, 40000);
+
+  it("explains a short code and a wrong code differently", async () => {
+    const user = userEvent.setup();
+    await reachReview(user);
+
+    const send = () => screen.getByRole("button", { name: "Send my application" });
+    const codeInput = screen.getByLabelText("Code from the text");
+
+    await user.click(codeInput);
+    await user.keyboard("482");
+    await user.click(send());
+    expect(await screen.findByText("Enter all 6 digits from the text.")).toBeInTheDocument();
+
+    await user.click(codeInput);
+    await user.keyboard("999");
+    await user.click(send());
     expect(
-      screen.getByText(/We sent a 6 digit code to june.halloran@example.com/),
+      await screen.findByText(
+        "That code doesn't match. Check the latest text from Two Track Supply, or get a new code.",
+      ),
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Resend code (30s)" })).toBeDisabled();
-
-    act(() => {
-      vi.advanceTimersByTime(31000);
-    });
-    const resend = screen.getByRole("button", { name: "Resend code" });
-    expect(resend).toBeEnabled();
-    fireEvent.click(resend);
-    expect(screen.getByRole("button", { name: "Resend code (30s)" })).toBeDisabled();
-
-    // The code still verifies after a resend.
-    fireEvent.change(screen.getByLabelText("Enter the 6 digit code"), {
-      target: { value: "482913" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: "Verify code" }));
-    expect(screen.getByText("Person check passed")).toBeInTheDocument();
   }, 40000);
 });

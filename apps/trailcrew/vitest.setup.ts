@@ -36,3 +36,7 @@ if (typeof window !== "undefined" && !window.matchMedia) {
 if (typeof HTMLElement !== "undefined" && !HTMLElement.prototype.scrollIntoView) {
   HTMLElement.prototype.scrollIntoView = () => {};
 }
+
+if (typeof window !== "undefined") {
+  window.scrollTo = (() => {}) as typeof window.scrollTo;
+}

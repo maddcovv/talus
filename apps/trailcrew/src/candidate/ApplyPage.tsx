@@ -1,1026 +1,1085 @@
-import { useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { CaretRight, Check } from "@phosphor-icons/react";
 import {
-  Accordion,
-  Badge,
   Button,
   Checkbox,
-  Disclosure,
   ErrorSummary,
-  FileUpload,
-  InlineAlert,
   OneTimeCodeInput,
-  Radio,
-  RadioGroup,
-  Select,
-  SelectItem,
-  SourceChip,
-  Stepper,
-  TextField,
   type ErrorSummaryItem,
 } from "@talus/react";
+import { useBrand } from "../lib/useBrand";
+import { TwoTrackMark } from "../components/TwoTrackMark";
+import { TrackProgress } from "../components/TrackProgress";
+import { Postmark } from "../components/Postmark";
 import { employer, getJob } from "../fixtures/jobs";
 import {
-  educationEntries,
-  filledSections,
-  months,
+  contactFields,
+  resumeLines,
   sampleResumeName,
+  sampleResumePages,
   workEntries,
-  type EducationEntry,
-  type FilledField,
-  type WorkEntry,
 } from "../fixtures/resume";
 import { statusToken } from "../fixtures/candidates";
 import styles from "./ApplyPage.module.css";
 
 const DEMO_CODE = "482913";
 
-const steps = [
-  { label: "Resume" },
-  { label: "Your details" },
-  { label: "Job questions" },
-  { label: "Review and submit" },
-];
+type Stage = "upload" | "reading" | "details" | "questions" | "review" | "sent";
 
-const stepTitles = ["Upload your resume", "Your details", "Job questions", "Review and submit"];
-
-const fillLines = ["Reading your resume", "Found 3 jobs and 1 degree", "Filling your details"];
-
-const selfIdQuestions = [
-  { id: "gender", label: "Gender", options: ["Woman", "Man", "Non-binary"] },
-  {
-    id: "ethnicity",
-    label: "Race or ethnicity",
-    options: [
-      "American Indian or Alaska Native",
-      "Asian",
-      "Black or African American",
-      "Hispanic or Latino",
-      "Native Hawaiian or Pacific Islander",
-      "White",
-      "Two or more races",
-    ],
-  },
-  { id: "veteran", label: "Veteran status", options: ["I am a veteran", "I am not a veteran"] },
-  {
-    id: "disability",
-    label: "Disability status",
-    options: ["Yes, I have or have had a disability", "No"],
-  },
-];
-
-const DECLINE = "I don't wish to answer";
-
-type UploadState = {
-  status: "idle" | "uploading" | "success";
-  progress: number;
-  fileName?: string;
+const stepLabels = ["Resume", "Your details", "Job questions", "Review and submit"];
+const stepIndexFor: Record<Stage, number> = {
+  upload: 0,
+  reading: 0,
+  details: 1,
+  questions: 2,
+  review: 3,
+  sent: 4,
+};
+const progressFor: Record<Stage, number> = {
+  upload: 0.06,
+  reading: 0.12,
+  details: 0.38,
+  questions: 0.62,
+  review: 0.88,
+  sent: 1,
 };
 
+const READ_TICK_MS = 260;
+const READ_TICKS = 11;
+const readChecks = [
+  { at: 3, text: "Reading your resume" },
+  { at: 7, text: "Found 3 jobs and 1 degree" },
+  { at: 11, text: "Filling your details" },
+];
+
+const nextSteps = [
+  {
+    when: "Right now",
+    how: "Email",
+    title: "A confirmation in your inbox",
+    body: "From jobs@twotracksupply.example, with a link to your status page. Not there in 10 minutes? Check spam.",
+  },
+  {
+    when: "By Wednesday, Dec 2",
+    how: "Email, either way",
+    title: "Dana Ruiz reads your application",
+    body: "A person, not a filter. Yes or not this time, you hear back by email. Never silence.",
+  },
+  {
+    when: "Within a week after",
+    how: "Phone or video, your pick",
+    title: "A 30 minute conversation",
+    body: "If it's a match, Dana texts first to find a time, then calls. Come with questions.",
+  },
+  {
+    when: "About a week later",
+    how: "Video, 90 minutes",
+    title: "A working session with the team",
+    body: "We send the topics three days ahead. No trick questions, no whiteboard puzzles.",
+  },
+  {
+    when: "Within 3 days of that",
+    how: "Phone call",
+    title: "A decision, with a reason",
+    body: "From a person, with our pay number if it's a yes.",
+  },
+];
+
+const calendarIcs = `data:text/calendar;charset=utf-8,${encodeURIComponent(
+  [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Two Track Supply//Trailcrew demo//EN",
+    "BEGIN:VEVENT",
+    "UID:trailcrew-demo-reply@twotracksupply.example",
+    "DTSTART;VALUE=DATE:20261202",
+    "DTEND;VALUE=DATE:20261203",
+    "SUMMARY:Two Track Supply replies about your application",
+    "DESCRIPTION:Dana Ruiz reads your application by Wednesday\\, December 2.",
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\n"),
+)}`;
+
+function toTop() {
+  if (typeof window.scrollTo === "function") {
+    try {
+      window.scrollTo(0, 0);
+    } catch {
+      // not implemented in some test environments
+    }
+  }
+}
+
+function shortMonth(month: string): string {
+  return month.slice(0, 3);
+}
+
+function workDates(entry: (typeof workEntries)[number]): string {
+  const start = `${shortMonth(entry.startMonth)} ${entry.startYear}`;
+  const end = entry.current ? "now" : `${shortMonth(entry.endMonth)} ${entry.endYear}`;
+  return `${start} to ${end}`;
+}
+
+function clip(text: string, max: number): string {
+  if (text.length <= max) return text;
+  return `${text.slice(0, max).replace(/\s+\S*$/, "")}…`;
+}
+
+function wordCount(text: string): number {
+  return text.trim() ? text.trim().split(/\s+/).length : 0;
+}
+
 export function ApplyPage() {
+  useBrand("consumer", "light");
   const { jobId } = useParams();
   const job = getJob(jobId);
-  const [step, setStep] = useState(0);
-  const [upload, setUpload] = useState<UploadState>({ status: "idle", progress: 0 });
-  const [fill, setFill] = useState<{ stage: "idle" | "running" | "done"; line: number }>({
-    stage: "idle",
-    line: 0,
-  });
-  const [values, setValues] = useState<Record<string, string>>(() =>
-    Object.fromEntries(
-      filledSections.flatMap((section) => section.fields.map((field) => [field.id, field.value])),
-    ),
-  );
-  const [work, setWork] = useState<WorkEntry[]>(() => workEntries.map((entry) => ({ ...entry })));
-  const [education, setEducation] = useState<EducationEntry[]>(() =>
-    educationEntries.map((entry) => ({ ...entry })),
-  );
-  const [openWork, setOpenWork] = useState<Set<string | number>>(new Set());
-  const [openEducation, setOpenEducation] = useState<Set<string | number>>(new Set());
-  const [coverLetter, setCoverLetter] = useState("");
-  const [coverUpload, setCoverUpload] = useState<UploadState>({ status: "idle", progress: 0 });
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [selfId, setSelfId] = useState<Record<string, string>>({});
-  const [personChannel, setPersonChannel] = useState<"text" | "email" | null>(null);
-  const [personCheck, setPersonCheck] = useState<"idle" | "sent" | "passed">("idle");
-  const [code, setCode] = useState("");
-  const [codeError, setCodeError] = useState<string | undefined>();
-  const [resendLeft, setResendLeft] = useState(0);
-  const [certify, setCertify] = useState(false);
-  const [aiNotice, setAiNotice] = useState(false);
-  const [attempted, setAttempted] = useState<Record<number, boolean>>({});
-  const [attemptNonce, setAttemptNonce] = useState(0);
-  const [submitted, setSubmitted] = useState(false);
-  const uploadTimer = useRef<number | null>(null);
-  const fillTimer = useRef<number | null>(null);
-  const resendTimer = useRef<number | null>(null);
-  const newEntryCount = useRef(0);
+  const navigate = useNavigate();
 
-  useEffect(
-    () => () => {
-      for (const timer of [uploadTimer, fillTimer, resendTimer]) {
-        if (timer.current !== null) {
-          window.clearInterval(timer.current);
-          window.clearTimeout(timer.current);
-        }
-      }
-    },
-    [],
+  const [stage, setStage] = useState<Stage>("upload");
+  const [aiFilled, setAiFilled] = useState(false);
+  const [readIdx, setReadIdx] = useState(0);
+  const [focusKey, setFocusKey] = useState<string | null>(null);
+  const [values, setValues] = useState<Record<string, string>>(() =>
+    Object.fromEntries(contactFields.map((field) => [field.id, ""])),
   );
+  const [auth, setAuth] = useState<string | null>(null);
+  const [spons, setSpons] = useState<string | null>(null);
+  const [openJob, setOpenJob] = useState(0);
+  const [showErrors, setShowErrors] = useState(false);
+  const [opener, setOpener] = useState("");
+  const [startAnswer, setStartAnswer] = useState<string | null>(null);
+  const [payAnswer, setPayAnswer] = useState<string | null>(null);
+  const [noteOpen, setNoteOpen] = useState(false);
+  const [note, setNote] = useState("");
+  const [qShowErrors, setQShowErrors] = useState(false);
+  const [code, setCode] = useState("");
+  const [attest, setAttest] = useState(false);
+  const [rShowErrors, setRShowErrors] = useState(false);
+  const [resent, setResent] = useState("");
+  const [nonce, setNonce] = useState(0);
 
   useEffect(() => {
-    if (upload.status === "success" && fill.stage === "idle") {
-      setFill({ stage: "running", line: 0 });
-      let line = 0;
-      const tick = () => {
-        line += 1;
-        if (line < fillLines.length) {
-          setFill({ stage: "running", line });
-          fillTimer.current = window.setTimeout(tick, 600);
-        } else {
-          setFill({ stage: "done", line });
-        }
-      };
-      fillTimer.current = window.setTimeout(tick, 600);
+    if (stage !== "reading") return;
+    const timer = window.setInterval(() => setReadIdx((n) => n + 1), READ_TICK_MS);
+    return () => window.clearInterval(timer);
+  }, [stage]);
+
+  useEffect(() => {
+    if (stage === "reading" && readIdx > READ_TICKS) {
+      setStage("details");
+      toTop();
     }
-  }, [upload.status, fill.stage]);
+  }, [stage, readIdx]);
+
+  const phone = values.phone ?? "";
+  const digits = phone.replace(/\D/g, "");
+  const phoneFmt =
+    digits.length === 10
+      ? `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`
+      : phone.trim() || "your phone";
+
+  const detailMissing: ErrorSummaryItem[] = useMemo(() => {
+    const missing: ErrorSummaryItem[] = [];
+    if (!phone.trim()) missing.push({ targetId: "phone", label: "Add your phone number" });
+    if (auth === null)
+      missing.push({ targetId: "auth", label: "Answer whether you can work in the US" });
+    if (spons === null) missing.push({ targetId: "auth", label: "Answer the sponsorship question" });
+    return missing;
+  }, [phone, auth, spons]);
+  const n = detailMissing.length;
+  const detailErrors = showErrors && n > 0;
+
+  const openerWords = wordCount(opener);
+  const qMissing: ErrorSummaryItem[] = useMemo(() => {
+    const missing: ErrorSummaryItem[] = [];
+    if (!openerWords)
+      missing.push({
+        targetId: "q1",
+        label:
+          job?.id === "senior-frontend"
+            ? "Answer the question about a component you built"
+            : "Answer the first question from the team",
+      });
+    if (startAnswer === null) missing.push({ targetId: "q2", label: "Say when you could start" });
+    if (payAnswer === null) missing.push({ targetId: "q3", label: "Answer the pay question" });
+    return missing;
+  }, [openerWords, startAnswer, payAnswer, job?.id]);
+  const qn = qMissing.length;
+  const qErrors = qShowErrors && qn > 0;
+
+  const codeOk = code === DEMO_CODE;
+  const rMissing: ErrorSummaryItem[] = useMemo(() => {
+    const missing: ErrorSummaryItem[] = [];
+    if (!codeOk)
+      missing.push({
+        targetId: "code",
+        label:
+          code.length === 6
+            ? "That code doesn't match the text we sent"
+            : "Enter the 6-digit code from the text",
+      });
+    if (!attest)
+      missing.push({ targetId: "attest", label: "Check the box to confirm your application" });
+    return missing;
+  }, [codeOk, code.length, attest]);
+  const rn = rMissing.length;
+  const rErrors = rShowErrors && rn > 0;
 
   if (!job) {
     return (
-      <div className={styles.container}>
+      <div className={styles.missing}>
         <p>
-          That job is not open. <Link to="/">See all open jobs.</Link>
+          That job is not open. <Link to="/">See all open roles.</Link>
         </p>
       </div>
     );
   }
 
-  function setField(fieldId: string, value: string) {
-    setValues((prev) => ({ ...prev, [fieldId]: value }));
+  const stepIdx = stepIndexFor[stage];
+  const reading = stage === "reading";
+  const [openerQ, startQ, payQ] = job.questions;
+  const openerErrorHint =
+    job.id === "senior-frontend"
+      ? "Write a few sentences about a component other teams used."
+      : "Write a few sentences in your own words.";
+
+  function useSample() {
+    setAiFilled(true);
+    setValues(
+      Object.fromEntries(contactFields.map((field) => [field.id, field.value])),
+    );
+    setReadIdx(0);
+    setStage("reading");
+    toTop();
   }
 
-  function isMissing(field: FilledField) {
-    return Boolean(field.required) && (values[field.id] ?? "").trim() === "";
+  function fillYourself() {
+    setAiFilled(false);
+    setStage("details");
+    toTop();
   }
 
-  function problemsFor(stepIndex: number): ErrorSummaryItem[] {
-    if (stepIndex === 0) {
-      if (upload.status !== "success") {
-        return [
-          { targetId: "resume-upload", label: "Upload your resume, or use the sample resume." },
-        ];
-      }
-      if (fill.stage !== "done") {
-        return [
-          { targetId: "resume-upload", label: "Give AI a moment to finish reading your resume." },
-        ];
-      }
-      return [];
-    }
-    if (stepIndex === 1) {
-      const problems: ErrorSummaryItem[] = [];
-      if ((values.phone ?? "").trim() === "") {
-        problems.push({ targetId: "field-phone", label: "Add your phone number." });
-      }
-      if ((values.authorized ?? "") === "") {
-        problems.push({
-          targetId: "field-authorized",
-          label: "Answer: Are you authorized to work in the United States?",
-        });
-      }
-      if ((values.sponsorship ?? "") === "") {
-        problems.push({
-          targetId: "field-sponsorship",
-          label: "Answer: Will you now or in the future need visa sponsorship?",
-        });
-      }
-      return problems;
-    }
-    if (stepIndex === 2) {
-      return (job?.questions ?? [])
-        .filter((question) => !question.optional && (answers[question.id] ?? "").trim() === "")
-        .map((question) => ({
-          targetId: `field-q-${question.id}`,
-          label: `Answer: ${question.label}`,
-        }));
-    }
-    const problems: ErrorSummaryItem[] = [];
-    if (personCheck !== "passed") {
-      problems.push({ targetId: "person-check", label: "Finish the person check." });
-    }
-    if (!certify) {
-      problems.push({ targetId: "field-certify", label: "Check the certification box." });
-    }
-    if (!aiNotice) {
-      problems.push({
-        targetId: "field-ai-notice",
-        label: "Confirm you have read how Trailcrew uses AI.",
-      });
-    }
-    return problems;
-  }
-
-  // Recomputed on every render, so the list shrinks as each problem is fixed.
-  const problems = attempted[step] ? problemsFor(step) : [];
-  const problemTitle =
-    problems.length === 1 ? "There is 1 thing to fix" : `There are ${problems.length} things to fix`;
-
-  function tryAdvance() {
-    if (problemsFor(step).length > 0) {
-      setAttempted((prev) => ({ ...prev, [step]: true }));
-      setAttemptNonce((nonce) => nonce + 1);
+  function continueDetails() {
+    if (n > 0) {
+      setShowErrors(true);
+      setNonce((x) => x + 1);
       return;
     }
-    if (step === 3) {
-      setSubmitted(true);
+    setShowErrors(false);
+    setStage("questions");
+    toTop();
+  }
+
+  function continueQuestions() {
+    if (qn > 0) {
+      setQShowErrors(true);
+      setNonce((x) => x + 1);
       return;
     }
-    setStep(step + 1);
+    setQShowErrors(false);
+    setStage("review");
+    toTop();
   }
 
-  function goToStep(next: number) {
-    setStep(next);
-  }
-
-  function simulateUpload(fileName: string) {
-    setFill({ stage: "idle", line: 0 });
-    setUpload({ status: "uploading", progress: 0, fileName });
-    uploadTimer.current = window.setInterval(() => {
-      setUpload((prev) => {
-        const progress = Math.min(prev.progress + 12, 100);
-        if (progress === 100) {
-          if (uploadTimer.current !== null) window.clearInterval(uploadTimer.current);
-          return { status: "success", progress, fileName: prev.fileName };
-        }
-        return { ...prev, progress };
-      });
-    }, 140);
-  }
-
-  function updateWork(id: string, patch: Partial<WorkEntry>) {
-    setWork((all) => all.map((entry) => (entry.id === id ? { ...entry, ...patch } : entry)));
-  }
-
-  function updateEducation(id: string, patch: Partial<EducationEntry>) {
-    setEducation((all) => all.map((entry) => (entry.id === id ? { ...entry, ...patch } : entry)));
-  }
-
-  function addJob() {
-    newEntryCount.current += 1;
-    const id = `new-job-${newEntryCount.current}`;
-    setWork((all) => [
-      ...all,
-      {
-        id,
-        company: "",
-        title: "",
-        location: "",
-        startMonth: "",
-        startYear: "",
-        endMonth: "",
-        endYear: "",
-        current: false,
-        bullets: "",
-      },
-    ]);
-    setOpenWork((prev) => new Set([...prev, id]));
-  }
-
-  function addEducation() {
-    newEntryCount.current += 1;
-    const id = `new-education-${newEntryCount.current}`;
-    setEducation((all) => [...all, { id, school: "", credential: "", year: "" }]);
-    setOpenEducation((prev) => new Set([...prev, id]));
-  }
-
-  function startCountdown() {
-    setResendLeft(30);
-    if (resendTimer.current !== null) window.clearInterval(resendTimer.current);
-    resendTimer.current = window.setInterval(() => {
-      setResendLeft((left) => {
-        if (left <= 1) {
-          if (resendTimer.current !== null) window.clearInterval(resendTimer.current);
-          return 0;
-        }
-        return left - 1;
-      });
-    }, 1000);
-  }
-
-  function sendCode(channel: "text" | "email") {
-    setPersonChannel(channel);
-    setPersonCheck("sent");
-    setCode("");
-    setCodeError(undefined);
-    startCountdown();
-  }
-
-  function verifyCode(value: string) {
-    if (value === DEMO_CODE) {
-      setPersonCheck("passed");
-      setCodeError(undefined);
-      if (resendTimer.current !== null) window.clearInterval(resendTimer.current);
-    } else {
-      setCodeError("That code did not match. Check the newest message, or resend the code.");
+  function submit() {
+    if (rn > 0) {
+      setRShowErrors(true);
+      setNonce((x) => x + 1);
+      return;
     }
+    setRShowErrors(false);
+    setStage("sent");
+    toTop();
   }
 
-  function workTitleFor(entry: WorkEntry) {
-    const title = entry.title.trim() || "New job";
-    const company = entry.company.trim();
-    return company ? `${title}, ${company}` : title;
+  function goTo(next: Stage) {
+    setStage(next);
+    toTop();
   }
 
-  function workDetailFor(entry: WorkEntry) {
-    if (!entry.startYear.trim()) return "Add the dates";
-    const start = `${entry.startMonth} ${entry.startYear}`.trim();
-    const end = entry.current ? "now" : `${entry.endMonth} ${entry.endYear}`.trim() || "?";
-    return `${start} to ${end}`;
-  }
-
-  function renderField(field: FilledField) {
-    if (field.id === "authorized" || field.id === "sponsorship") {
-      return (
-        <div key={field.id} id={`field-${field.id}`} className={styles.fieldWrap}>
-          <RadioGroup
-            label={field.label}
-            value={values[field.id] === "" ? null : values[field.id]}
-            onChange={(value) => setField(field.id, value)}
-            errorMessage={attempted[1] && isMissing(field) ? "Needs your answer." : undefined}
-          >
-            <Radio value="Yes">Yes</Radio>
-            <Radio value="No">No</Radio>
-          </RadioGroup>
-          {!attempted[1] && isMissing(field) ? (
-            <div className={styles.chipRow}>
-              <Badge variant="warning">Needs your answer</Badge>
-            </div>
-          ) : null}
-        </div>
-      );
-    }
-    return (
-      <div key={field.id} id={`field-${field.id}`} className={styles.fieldWrap}>
-        <TextField
-          label={field.label}
-          value={values[field.id] ?? ""}
-          onChange={(value) => setField(field.id, value)}
-          multiline={field.multiline}
-          rows={field.multiline ? 4 : undefined}
-          hint={field.hint}
-          errorMessage={attempted[1] && isMissing(field) ? "Needs your answer." : undefined}
-        />
-        <div className={styles.chipRow}>
-          {field.source ? (
-            <>
-              <span className={styles.aiLabel}>AI filled</span>
-              <SourceChip source={field.source.where}>{field.source.line}</SourceChip>
-            </>
-          ) : isMissing(field) ? (
-            <Badge variant="warning">Needs your answer</Badge>
-          ) : null}
-        </div>
-      </div>
+  function fillJuneAnswers() {
+    setOpener(
+      "At Blue Mesa I built the date picker in our component library. Four teams picked it up within a month, and their first bug reports were all about keyboard use inside data tables. I rewrote its focus handling, added a keyboard test to our release checklist, and wrote a short guide on using it inside grids.",
     );
+    setStartAnswer("Within a month");
+    setPayAnswer("Yes, it works");
   }
 
-  if (submitted) {
-    return (
-      <article className={styles.container}>
-        <h1 className={styles.title}>Application sent</h1>
-        <div className={styles.stepBody}>
-          <InlineAlert variant="success" title={`Your application went to ${employer.name}.`}>
-            A person reviews every application. Nothing is decided by AI.
-          </InlineAlert>
-          <p className={styles.body}>
-            You can see where you stand at any time, including whether a person has reviewed your
-            application and what happens next.
-          </p>
-          <p className={styles.body}>
-            <Link to={`/status/${statusToken}`}>See where you stand</Link>
-          </p>
-        </div>
-      </article>
-    );
-  }
+  const lineLit = (index: number, key: string) =>
+    reading
+      ? index < readIdx && index >= readIdx - 2
+      : stage === "details" && focusKey !== null && focusKey === key;
 
-  const answeredCount = job.questions.filter(
-    (question) => (answers[question.id] ?? "").trim() !== "",
-  ).length;
-  const linkCount = ["linkedin", "portfolio", "github"].filter(
-    (id) => (values[id] ?? "").trim() !== "",
-  ).length;
-  const coverAdded = coverLetter.trim() !== "" || coverUpload.status === "success";
+  const detailNote = detailErrors
+    ? n === 1
+      ? "1 answer still needs you. It is marked above."
+      : `${n} answers still need you. They are marked above.`
+    : "Next: 3 questions from the team";
+  const qNote = qErrors
+    ? qn === 1
+      ? "1 answer still needs you. It is marked above."
+      : `${qn} answers still need you. They are marked above.`
+    : "Next: check everything and send";
+  const rNote = rErrors
+    ? rn === 1
+      ? "1 thing still needs you. It is marked above."
+      : `${rn} things still need you. They are marked above.`
+    : "Goes straight to Dana Ruiz.";
+
+  const reviewQuestions: Array<{ k: string; v: string }> = [
+    { k: openerQ.short ?? openerQ.label, v: clip(opener, 220) },
+    { k: startQ.short ?? startQ.label, v: startAnswer ?? "" },
+    { k: payQ.short ?? payQ.label, v: payAnswer ?? "" },
+    ...(note.trim() ? [{ k: "Note to Dana", v: clip(note, 160) }] : []),
+  ];
+
+  const firstName = values.name?.trim().split(/\s+/)[0] || "there";
 
   return (
-    <article className={styles.container}>
-      <p className={styles.stepCount}>Step {step + 1} of 4</p>
-      <h1 className={styles.title}>{stepTitles[step]}</h1>
-      <p className={styles.employer}>
-        Applying for {job.title} at {employer.name}
-      </p>
-      <Stepper label="Application steps" steps={steps} current={step} onStepClick={goToStep} />
-
-      {problems.length > 0 ? (
-        <ErrorSummary
-          key={`problems-${step}-${attemptNonce}`}
-          className={styles.problems}
-          title={problemTitle}
-          items={problems}
-        />
-      ) : null}
-
-      {step === 0 ? (
-        <section id="resume-upload" aria-label="Upload your resume" className={styles.stepBody}>
-          <FileUpload
-            label="Resume"
-            accept={["pdf", "docx"]}
-            maxSizeMb={10}
-            status={upload.status}
-            progress={upload.progress}
-            fileName={upload.fileName}
-            onSelect={(files) => simulateUpload(files[0]?.name ?? sampleResumeName)}
-          />
-          <div className={styles.sampleRow}>
-            <Button variant="secondary" onPress={() => simulateUpload(sampleResumeName)}>
-              Use the sample resume
-            </Button>
-            <span className={styles.sampleNote}>June Halloran, Senior Frontend Engineer</span>
-          </div>
-          <p aria-live="polite" className={styles.fillLine}>
-            {fill.stage === "running" ? `${fillLines[fill.line]}...` : ""}
-          </p>
-          {upload.status === "success" && fill.stage === "done" ? (
-            <InlineAlert variant="success" title="Resume read.">
-              AI filled the application from it: 3 jobs, 1 degree, your contact details and your
-              skills. Next, check every field; nothing is sent without your sign off.
-            </InlineAlert>
-          ) : null}
-          {upload.status === "idle" ? (
-            <InlineAlert variant="info" title="How this works">
-              AI can fill the application from your resume. You review every field before anything
-              is sent. A person reviews every application.
-            </InlineAlert>
-          ) : null}
-        </section>
-      ) : null}
-
-      {step === 1 ? (
-        <section aria-label="Your details" className={styles.stepBody}>
-          <InlineAlert variant="info" title="AI filled these fields from your resume.">
-            Go down the list and fix anything wrong. Fields it could not read are marked "Needs
-            your answer." Sending the application counts as your sign-off on every field.
-          </InlineAlert>
-
-          <section aria-labelledby="contact-heading" className={styles.formSection}>
-            <h2 id="contact-heading" className={styles.h2}>
-              Contact
-            </h2>
-            {filledSections
-              .find((section) => section.id === "contact")!
-              .fields.map(renderField)}
-          </section>
-
-          <section aria-labelledby="work-heading" className={styles.formSection}>
-            <h2 id="work-heading" className={styles.h2}>
-              Work history
-            </h2>
-            <p className={styles.sectionNote}>
-              AI pulled these from your resume, newest first. Open each job to check the details.
-              Everything is editable.
-            </p>
-            <Accordion
-              expandedKeys={openWork}
-              onExpandedChange={(keys) => setOpenWork(new Set(keys))}
-            >
-              {work.map((entry) => (
-                <Disclosure
-                  key={entry.id}
-                  id={entry.id}
-                  title={workTitleFor(entry)}
-                  detail={workDetailFor(entry)}
-                  headingLevel={3}
-                >
-                  <div className={styles.entryGrid}>
-                    <TextField
-                      label="Job title"
-                      value={entry.title}
-                      onChange={(value) => updateWork(entry.id, { title: value })}
-                    />
-                    <TextField
-                      label="Company"
-                      value={entry.company}
-                      onChange={(value) => updateWork(entry.id, { company: value })}
-                    />
-                    <div className={styles.span2}>
-                      <TextField
-                        label="Location"
-                        value={entry.location}
-                        onChange={(value) => updateWork(entry.id, { location: value })}
-                      />
-                    </div>
-                    <Select
-                      label="Start month"
-                      selectedKey={entry.startMonth || null}
-                      onSelectionChange={(key) => updateWork(entry.id, { startMonth: String(key) })}
-                    >
-                      {months.map((month) => (
-                        <SelectItem key={month} id={month}>
-                          {month}
-                        </SelectItem>
-                      ))}
-                    </Select>
-                    <TextField
-                      label="Start year"
-                      value={entry.startYear}
-                      onChange={(value) => updateWork(entry.id, { startYear: value })}
-                    />
-                    {!entry.current ? (
-                      <>
-                        <Select
-                          label="End month"
-                          selectedKey={entry.endMonth || null}
-                          onSelectionChange={(key) =>
-                            updateWork(entry.id, { endMonth: String(key) })
-                          }
-                        >
-                          {months.map((month) => (
-                            <SelectItem key={month} id={month}>
-                              {month}
-                            </SelectItem>
-                          ))}
-                        </Select>
-                        <TextField
-                          label="End year"
-                          value={entry.endYear}
-                          onChange={(value) => updateWork(entry.id, { endYear: value })}
-                        />
-                      </>
-                    ) : null}
-                    <div className={styles.span2}>
-                      <Checkbox
-                        isSelected={entry.current}
-                        onChange={(selected) => updateWork(entry.id, { current: selected })}
-                      >
-                        I work here now
-                      </Checkbox>
-                    </div>
-                    <div className={styles.span2}>
-                      <TextField
-                        label={`What you did at ${entry.company.trim() || "this job"}`}
-                        multiline
-                        rows={4}
-                        hint="One line per bullet."
-                        value={entry.bullets}
-                        onChange={(value) => updateWork(entry.id, { bullets: value })}
-                      />
-                    </div>
-                    {entry.source ? (
-                      <div className={styles.span2}>
-                        <div className={styles.chipRow}>
-                          <span className={styles.aiLabel}>AI filled</span>
-                          <SourceChip source={entry.source.where}>{entry.source.line}</SourceChip>
-                        </div>
-                      </div>
-                    ) : null}
-                    <div className={styles.span2}>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onPress={() => setWork((all) => all.filter((e) => e.id !== entry.id))}
-                      >
-                        Remove this job
-                      </Button>
-                    </div>
-                  </div>
-                </Disclosure>
-              ))}
-            </Accordion>
-            <div className={styles.sectionActions}>
-              <Button variant="secondary" onPress={addJob}>
-                Add a job
-              </Button>
-            </div>
-          </section>
-
-          <section aria-labelledby="education-heading" className={styles.formSection}>
-            <h2 id="education-heading" className={styles.h2}>
-              Education
-            </h2>
-            <Accordion
-              expandedKeys={openEducation}
-              onExpandedChange={(keys) => setOpenEducation(new Set(keys))}
-            >
-              {education.map((entry) => (
-                <Disclosure
-                  key={entry.id}
-                  id={entry.id}
-                  title={
-                    entry.credential.trim() || entry.school.trim()
-                      ? `${entry.credential.trim() || "Add the credential"}, ${entry.school.trim() || "add the school"}`
-                      : "New education"
-                  }
-                  detail={entry.year.trim() || "Add the year"}
-                  headingLevel={3}
-                >
-                  <div className={styles.entryGrid}>
-                    <TextField
-                      label="School"
-                      value={entry.school}
-                      onChange={(value) => updateEducation(entry.id, { school: value })}
-                    />
-                    <TextField
-                      label="Degree or credential"
-                      value={entry.credential}
-                      onChange={(value) => updateEducation(entry.id, { credential: value })}
-                    />
-                    <TextField
-                      label="Year finished"
-                      value={entry.year}
-                      onChange={(value) => updateEducation(entry.id, { year: value })}
-                    />
-                    {entry.source ? (
-                      <div className={styles.span2}>
-                        <div className={styles.chipRow}>
-                          <span className={styles.aiLabel}>AI filled</span>
-                          <SourceChip source={entry.source.where}>{entry.source.line}</SourceChip>
-                        </div>
-                      </div>
-                    ) : null}
-                    <div className={styles.span2}>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onPress={() => setEducation((all) => all.filter((e) => e.id !== entry.id))}
-                      >
-                        Remove this entry
-                      </Button>
-                    </div>
-                  </div>
-                </Disclosure>
-              ))}
-            </Accordion>
-            <div className={styles.sectionActions}>
-              <Button variant="secondary" onPress={addEducation}>
-                Add education
-              </Button>
-            </div>
-          </section>
-
-          <section aria-labelledby="skills-heading" className={styles.formSection}>
-            <h2 id="skills-heading" className={styles.h2}>
-              Skills
-            </h2>
-            {filledSections.find((section) => section.id === "skills")!.fields.map(renderField)}
-          </section>
-
-          <section aria-labelledby="links-heading" className={styles.formSection}>
-            <h2 id="links-heading" className={styles.h2}>
-              Links
-            </h2>
-            {filledSections.find((section) => section.id === "links")!.fields.map(renderField)}
-          </section>
-
-          {job.coverLetter ? (
-            <section aria-labelledby="cover-heading" className={styles.formSection}>
-              <h2 id="cover-heading" className={styles.h2}>
-                Cover letter
-              </h2>
-              <p className={styles.sectionNote}>
-                Optional. The hiring team reads it if you send one, and skipping it does not count
-                against you.
-              </p>
-              <TextField
-                label="Cover letter"
-                multiline
-                rows={6}
-                hint="Paste it here, or attach a file below."
-                value={coverLetter}
-                onChange={setCoverLetter}
-              />
-              <FileUpload
-                label="Or attach a file"
-                accept={["pdf", "docx"]}
-                maxSizeMb={5}
-                status={coverUpload.status}
-                progress={coverUpload.progress}
-                fileName={coverUpload.fileName}
-                onSelect={(files) =>
-                  setCoverUpload({
-                    status: "success",
-                    progress: 100,
-                    fileName: files[0]?.name ?? "cover-letter.pdf",
-                  })
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <div className={styles.headerTop}>
+          <Link to={`/jobs/${job.id}`} className={styles.headerBrand}>
+            <TwoTrackMark className={styles.headerMark} />
+            <span className={styles.headerTitle}>
+              {job.title} <span className={styles.headerAt}>at {employer.name}</span>
+            </span>
+          </Link>
+          <Link to={`/jobs/${job.id}`} className={styles.saveLink}>
+            Save and finish later
+          </Link>
+        </div>
+        <div className={styles.headerRoad}>
+          <TrackProgress progress={progressFor[stage]} />
+          <ol className={styles.steps}>
+            {stepLabels.map((label, index) => (
+              <li
+                key={label}
+                className={
+                  index < stepIdx
+                    ? styles.stepDone
+                    : index === stepIdx
+                      ? styles.stepNow
+                      : styles.stepAhead
                 }
-              />
-            </section>
-          ) : null}
-
-          <section aria-labelledby="authorization-heading" className={styles.formSection}>
-            <h2 id="authorization-heading" className={styles.h2}>
-              Work authorization
-            </h2>
-            {filledSections
-              .find((section) => section.id === "authorization")!
-              .fields.map(renderField)}
-          </section>
-        </section>
-      ) : null}
-
-      {step === 2 ? (
-        <section aria-label="Job questions" className={styles.stepBody}>
-          <p className={styles.body}>
-            From the hiring team at {employer.name}. These are yours to answer; AI does not write
-            them for you.
-          </p>
-          {job.questions.map((question) => {
-            const missing =
-              attempted[2] && !question.optional && (answers[question.id] ?? "").trim() === "";
-            const error = missing ? "Needs your answer." : undefined;
-            return (
-              <div key={question.id} id={`field-q-${question.id}`} className={styles.fieldWrap}>
-                {question.type === "yesno" ? (
-                  <RadioGroup
-                    label={question.label}
-                    hint={question.hint}
-                    value={answers[question.id] ?? null}
-                    onChange={(value) =>
-                      setAnswers((prev) => ({ ...prev, [question.id]: value }))
-                    }
-                    errorMessage={error}
-                  >
-                    <Radio value="Yes">Yes</Radio>
-                    <Radio value="No">No</Radio>
-                  </RadioGroup>
-                ) : question.type === "select" ? (
-                  <Select
-                    label={question.label}
-                    hint={question.hint}
-                    placeholder="Pick one"
-                    selectedKey={answers[question.id] ?? null}
-                    onSelectionChange={(key) =>
-                      setAnswers((prev) => ({ ...prev, [question.id]: String(key) }))
-                    }
-                    errorMessage={error}
-                  >
-                    {(question.options ?? []).map((option) => (
-                      <SelectItem key={option} id={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </Select>
-                ) : (
-                  <TextField
-                    label={question.label}
-                    hint={question.hint}
-                    value={answers[question.id] ?? ""}
-                    onChange={(value) =>
-                      setAnswers((prev) => ({ ...prev, [question.id]: value }))
-                    }
-                    multiline={question.type === "long"}
-                    rows={question.type === "long" ? 4 : undefined}
-                    errorMessage={error}
-                  />
-                )}
-              </div>
-            );
-          })}
-        </section>
-      ) : null}
-
-      {step === 3 ? (
-        <section aria-label="Review and submit" className={styles.stepBody}>
-          <section aria-labelledby="review-resume-heading" className={styles.formSection}>
-            <div className={styles.reviewHead}>
-              <h2 id="review-resume-heading" className={styles.h2}>
-                Resume
-              </h2>
-              <Button
-                variant="secondary"
-                size="sm"
-                aria-label="Edit your resume"
-                onPress={() => goToStep(0)}
+                aria-current={index === stepIdx ? "step" : undefined}
               >
-                Edit
-              </Button>
-            </div>
-            <dl className={styles.summary}>
-              <dt>File</dt>
-              <dd>{upload.fileName ?? "none"}</dd>
-            </dl>
-          </section>
-
-          <section aria-labelledby="review-details-heading" className={styles.formSection}>
-            <div className={styles.reviewHead}>
-              <h2 id="review-details-heading" className={styles.h2}>
-                Your details
-              </h2>
-              <Button
-                variant="secondary"
-                size="sm"
-                aria-label="Edit your details"
-                onPress={() => goToStep(1)}
-              >
-                Edit
-              </Button>
-            </div>
-            <dl className={styles.summary}>
-              <dt>Name</dt>
-              <dd>{values.name}</dd>
-              <dt>Email</dt>
-              <dd>{values.email}</dd>
-              <dt>Phone</dt>
-              <dd>{(values.phone ?? "").trim() || "Not added"}</dd>
-              <dt>Location</dt>
-              <dd>{values.location}</dd>
-              <dt>Authorized to work in the US</dt>
-              <dd>{values.authorized || "Not answered"}</dd>
-              <dt>Needs visa sponsorship</dt>
-              <dd>{values.sponsorship || "Not answered"}</dd>
-              <dt>Work history</dt>
-              <dd>
-                {work.length === 1 ? "1 job" : `${work.length} jobs`}:{" "}
-                {work
-                  .map((entry) => entry.company.trim())
-                  .filter(Boolean)
-                  .join(", ") || "none named"}
-              </dd>
-              <dt>Education</dt>
-              <dd>
-                {education.length === 0
-                  ? "None added"
-                  : education
-                      .map((entry) =>
-                        `${entry.credential.trim()} ${entry.school.trim()}`.trim(),
-                      )
-                      .filter(Boolean)
-                      .join("; ")}
-              </dd>
-              <dt>Links</dt>
-              <dd>{linkCount === 0 ? "None added" : `${linkCount} added`}</dd>
-              {job.coverLetter ? (
-                <>
-                  <dt>Cover letter</dt>
-                  <dd>{coverAdded ? "Added" : "Skipped"}</dd>
-                </>
-              ) : null}
-            </dl>
-          </section>
-
-          <section aria-labelledby="review-questions-heading" className={styles.formSection}>
-            <div className={styles.reviewHead}>
-              <h2 id="review-questions-heading" className={styles.h2}>
-                Job questions
-              </h2>
-              <Button
-                variant="secondary"
-                size="sm"
-                aria-label="Edit your answers"
-                onPress={() => goToStep(2)}
-              >
-                Edit
-              </Button>
-            </div>
-            <p className={styles.sectionNote}>
-              {answeredCount} of {job.questions.length} answered.
-            </p>
-            <dl className={styles.summary}>
-              {job.questions.map((question) => (
-                <div key={question.id} className={styles.summaryRow}>
-                  <dt>{question.label}</dt>
-                  <dd>
-                    {(answers[question.id] ?? "").trim() ||
-                      (question.optional ? "Skipped" : "Not answered")}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </section>
-
-          <section aria-labelledby="selfid-heading" className={styles.formSection}>
-            <h2 id="selfid-heading" className={styles.h2}>
-              Voluntary self identification
-            </h2>
-            <p className={styles.sectionNote}>
-              Optional, and separate from your application. The hiring team never sees these
-              answers; they become counts in aggregate reports only. "{DECLINE}" is a full answer
-              to every question.
-            </p>
-            {selfIdQuestions.map((question) => (
-              <Select
-                key={question.id}
-                label={question.label}
-                placeholder={DECLINE}
-                selectedKey={selfId[question.id] ?? null}
-                onSelectionChange={(key) =>
-                  setSelfId((prev) => ({ ...prev, [question.id]: String(key) }))
-                }
-              >
-                {[...question.options, DECLINE].map((option) => (
-                  <SelectItem key={option} id={option}>
-                    {option}
-                  </SelectItem>
-                ))}
-              </Select>
+                {label}
+              </li>
             ))}
-          </section>
+          </ol>
+        </div>
+      </header>
 
-          <section id="person-check" aria-labelledby="person-check-heading" className={styles.formSection}>
-            <h2 id="person-check-heading" className={styles.h2}>
-              Person check
-            </h2>
-            <p className={styles.body}>
-              Bots and AI agents apply to jobs at volume. This quick check keeps them out, so a
-              person reads your application sooner.
-            </p>
-            <div aria-live="polite" className={styles.personBody}>
-              {personCheck === "idle" ? (
-                <div className={styles.personRow}>
-                  <Button variant="secondary" onPress={() => sendCode("text")}>
-                    Text me a code
-                  </Button>
-                  <Button variant="secondary" onPress={() => sendCode("email")}>
-                    Email me a code
-                  </Button>
+      <div className={styles.cols}>
+        <main className={styles.main}>
+          {stage === "upload" ? (
+            <>
+              <h1 className={styles.h}>Start with your resume</h1>
+              <p className={styles.lede}>
+                AI reads it and fills the application for you. You&apos;ll see where every answer
+                came from, and you can change any of it.
+              </p>
+              <div data-weave="" className={styles.drop}>
+                <img src="/img/tts-truck.jpg" alt="" aria-hidden="true" className={styles.dropImg} />
+                <div>
+                  <div className={styles.dropTitle}>Drop your resume here</div>
+                  <p className={styles.dropSub}>PDF or Word document, up to 10 MB.</p>
+                  <Button onPress={useSample}>Choose a file</Button>
                 </div>
+              </div>
+              <p className={styles.selfLine}>
+                No resume?{" "}
+                <button type="button" className={styles.selfLink} onClick={fillYourself}>
+                  Fill in the form yourself
+                </button>
+                . It takes about 10 minutes.
+              </p>
+            </>
+          ) : null}
+
+          {reading ? (
+            <>
+              <h1 className={styles.h}>Reading your resume</h1>
+              <ul aria-live="polite" className={styles.readList}>
+                {readChecks.map((item) => {
+                  const done = readIdx >= item.at;
+                  return (
+                    <li key={item.text} className={done ? styles.readDone : styles.readAhead}>
+                      <span className={done ? styles.readDotDone : styles.readDot} aria-hidden="true">
+                        {done ? <Check weight="bold" /> : null}
+                      </span>
+                      {item.text}
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
+          ) : null}
+
+          {stage === "details" ? (
+            <>
+              <h1 className={styles.h}>Your details</h1>
+              {detailErrors ? (
+                <ErrorSummary
+                  key={`d-${nonce}`}
+                  className={styles.errorBox}
+                  title={n === 1 ? "There is 1 thing to fix" : `There are ${n} things to fix`}
+                  items={detailMissing}
+                />
               ) : null}
-              {personCheck === "sent" ? (
-                <>
-                  <p className={styles.body}>
-                    We sent a 6 digit code to{" "}
-                    {personChannel === "text"
-                      ? (values.phone ?? "").trim() || "your phone"
-                      : values.email}
-                    .
-                  </p>
-                  <OneTimeCodeInput
-                    label="Enter the 6 digit code"
-                    value={code}
-                    onChange={(value) => {
-                      setCode(value);
-                      if (codeError) setCodeError(undefined);
-                    }}
-                    errorMessage={codeError}
-                  />
-                  <div className={styles.personRow}>
-                    <Button onPress={() => verifyCode(code)}>Verify code</Button>
-                    <Button
-                      variant="secondary"
-                      isDisabled={resendLeft > 0}
-                      onPress={() => sendCode(personChannel ?? "text")}
-                    >
-                      {resendLeft > 0 ? `Resend code (${resendLeft}s)` : "Resend code"}
-                    </Button>
-                  </div>
-                </>
-              ) : null}
-              {personCheck === "passed" ? (
-                <div className={styles.personRow}>
-                  <Badge variant="success">Person check passed</Badge>
-                  <span className={styles.sampleNote}>
-                    Verified by {personChannel === "email" ? "email" : "text"} code. Quiet signals
-                    agree: typed answers, normal time on the form.
+              {aiFilled ? (
+                <div className={styles.aiBar}>
+                  <span className={styles.aiBarStrong}>AI filled 14 of 17 answers.</span>
+                  <span className={styles.aiBarNeed}>
+                    {n === 0
+                      ? "Everything is answered."
+                      : n === 1
+                        ? "1 answer needs you."
+                        : `${n} answers need you.`}
+                  </span>
+                  <span className={styles.aiBarHint}>
+                    Focus any field to see the line it came from.
                   </span>
                 </div>
               ) : null}
-            </div>
-            <p className={styles.demoNote}>
-              In this demo the check is simulated and the code is always {DEMO_CODE}.
-            </p>
-          </section>
 
-          <section aria-labelledby="attest-heading" className={styles.attest}>
-            <h2 id="attest-heading" className={styles.h2}>
-              Certification
-            </h2>
-            <div id="field-certify">
-              <Checkbox isSelected={certify} onChange={setCertify}>
-                I certify that the information in this application is true and complete to the best
-                of my knowledge. I understand that false or misleading information, or leaving out
-                important facts, may remove me from consideration or end my employment if hired. I
-                authorize Two Track Supply to verify the information I have provided.
-              </Checkbox>
-            </div>
-            <p className={styles.noticeLink}>
-              <Link to="/how-ai-works">Read how Trailcrew uses AI and how your data is handled.</Link>
-            </p>
-            <div id="field-ai-notice">
-              <Checkbox isSelected={aiNotice} onChange={setAiNotice}>
-                I have read how Trailcrew uses AI and how my data is handled.
-              </Checkbox>
-            </div>
-          </section>
-        </section>
-      ) : null}
+              <section className={styles.sec} aria-labelledby="contact-h">
+                <h2 id="contact-h" className={styles.secH}>
+                  Contact
+                </h2>
+                <div className={styles.two}>
+                  {contactFields.map((field) => {
+                    const isPhone = field.id === "phone";
+                    const missingPhone = isPhone && !phone.trim();
+                    const phoneError = detailErrors && missingPhone;
+                    const subId = `sub-${field.id}`;
+                    const sub = isPhone
+                      ? phoneError
+                        ? "Enter a phone number so Dana can reach you."
+                        : "Not on your resume. Dana uses it to set up a call."
+                      : aiFilled && field.filled
+                        ? "From your resume, page 1"
+                        : "";
+                    return (
+                      <div key={field.id} id={field.id}>
+                        <div className={styles.fieldHead}>
+                          <label htmlFor={`in-${field.id}`} className={styles.fieldLabel}>
+                            {field.label}
+                          </label>
+                          {isPhone ? (
+                            <span className={styles.tagWarn}>Needs your answer</span>
+                          ) : aiFilled && field.filled ? (
+                            <span className={styles.tagAi}>AI filled</span>
+                          ) : null}
+                        </div>
+                        <input
+                          id={`in-${field.id}`}
+                          className={`${styles.fld} ${phoneError ? styles.fldError : ""} ${
+                            isPhone && !phoneError ? styles.fldWarn : ""
+                          } ${missingPhone ? styles.fldWarnBg : ""}`}
+                          value={values[field.id] ?? ""}
+                          onChange={(event) =>
+                            setValues((prev) => ({ ...prev, [field.id]: event.target.value }))
+                          }
+                          onFocus={() => setFocusKey(field.lineKey)}
+                          aria-describedby={sub ? subId : undefined}
+                          aria-invalid={phoneError || undefined}
+                        />
+                        {sub ? (
+                          <div
+                            id={subId}
+                            className={phoneError ? styles.fieldSubError : styles.fieldSub}
+                          >
+                            {sub}
+                          </div>
+                        ) : null}
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
 
-      <div className={styles.navRow}>
-        {step > 0 ? (
-          <Button variant="secondary" onPress={() => setStep(step - 1)}>
-            Back
-          </Button>
-        ) : null}
-        <Button onPress={tryAdvance}>{step < 3 ? "Continue" : "Submit application"}</Button>
+              <section className={styles.sec} aria-labelledby="work-h">
+                <h2 id="work-h" className={styles.secH}>
+                  Work history
+                </h2>
+                <p className={styles.secNote}>Open a job to check the dates and what you did there.</p>
+                {workEntries.map((entry, index) => {
+                  const open = openJob === index;
+                  return (
+                    <div key={entry.id} className={styles.jobRow}>
+                      <button
+                        type="button"
+                        className={styles.jobToggle}
+                        aria-expanded={open}
+                        onClick={() => {
+                          setOpenJob(open ? -1 : index);
+                          setFocusKey(entry.lineKey);
+                        }}
+                        onFocus={() => setFocusKey(entry.lineKey)}
+                      >
+                        <CaretRight
+                          aria-hidden
+                          weight="bold"
+                          className={`${styles.jobCaret} ${open ? styles.jobCaretOpen : ""}`}
+                        />
+                        <span className={styles.jobText}>
+                          <span className={styles.jobTitle}>{entry.title}</span>
+                          <span className={styles.jobCompany}>{entry.company}</span>
+                        </span>
+                        <span className={styles.jobDates}>{workDates(entry)}</span>
+                      </button>
+                      {open ? (
+                        <div className={styles.jobPanel}>
+                          <ul className={styles.jobBullets}>
+                            {entry.bullets.split("\n").map((line) => (
+                              <li key={line}>{line}</li>
+                            ))}
+                          </ul>
+                          {aiFilled ? (
+                            <span className={styles.sourceChip}>From your resume, page 1</span>
+                          ) : null}
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </section>
+
+              <section id="auth" className={styles.sec} aria-labelledby="auth-h">
+                <h2 id="auth-h" className={styles.secH}>
+                  Work authorization
+                </h2>
+                {[
+                  {
+                    key: "auth",
+                    label: "Are you authorized to work in the United States?",
+                    value: auth,
+                    set: setAuth,
+                  },
+                  {
+                    key: "spons",
+                    label: "Will you now or in the future need visa sponsorship?",
+                    value: spons,
+                    set: setSpons,
+                  },
+                ].map((question) => {
+                  const miss = question.value === null;
+                  return (
+                    <fieldset key={question.key} className={styles.ynSet}>
+                      <legend className={styles.ynLegend}>
+                        {question.label}{" "}
+                        {miss ? <span className={styles.tagWarn}>Needs your answer</span> : null}
+                      </legend>
+                      <div className={styles.ynRow}>
+                        {["Yes", "No"].map((option) => {
+                          const on = question.value === option;
+                          return (
+                            <button
+                              key={option}
+                              type="button"
+                              aria-pressed={on}
+                              onClick={() => question.set(option)}
+                              className={`${styles.choice} ${on ? styles.choiceOn : ""} ${
+                                detailErrors && miss ? styles.choiceError : ""
+                              }`}
+                            >
+                              {option}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </fieldset>
+                  );
+                })}
+              </section>
+
+              <div className={styles.continueRow}>
+                <Button size="lg" onPress={continueDetails}>
+                  Continue to job questions
+                </Button>
+                <span className={detailErrors ? styles.noteError : styles.noteQuiet}>
+                  {detailNote}
+                </span>
+              </div>
+            </>
+          ) : null}
+
+          {stage === "questions" ? (
+            <>
+              <h1 className={styles.h}>Three questions from the team</h1>
+              <p className={styles.lede}>
+                Dana Ruiz and the engineering lead wrote these. AI leaves them to you, so answer in
+                your own words. A few sentences is plenty.
+              </p>
+              {qErrors ? (
+                <ErrorSummary
+                  key={`q-${nonce}`}
+                  className={styles.errorBox}
+                  title={qn === 1 ? "There is 1 thing to fix" : `There are ${qn} things to fix`}
+                  items={qMissing}
+                />
+              ) : null}
+
+              <section className={styles.sec} id="q1">
+                <label htmlFor="in-q1" className={styles.qLabel}>
+                  {openerQ.label}
+                </label>
+                {openerQ.hint ? <p className={styles.qHint}>{openerQ.hint}</p> : null}
+                <textarea
+                  id="in-q1"
+                  rows={7}
+                  className={`${styles.fld} ${styles.area} ${
+                    qErrors && !openerWords ? styles.fldError : ""
+                  }`}
+                  value={opener}
+                  onChange={(event) => setOpener(event.target.value)}
+                  aria-describedby="q1-sub"
+                  aria-invalid={(qErrors && !openerWords) || undefined}
+                />
+                <div className={styles.qUnder}>
+                  <span
+                    id="q1-sub"
+                    className={qErrors && !openerWords ? styles.fieldSubError : styles.fieldSub}
+                  >
+                    {qErrors && !openerWords
+                      ? openerErrorHint
+                      : "Plain words are fine. No need to polish it."}
+                  </span>
+                  <span className={styles.qCount}>
+                    {openerWords === 1 ? "1 word" : `${openerWords} words`}
+                  </span>
+                </div>
+              </section>
+
+              <section className={styles.sec} id="q2">
+                <fieldset className={styles.qSet}>
+                  <legend className={styles.qLegend}>{startQ.label}</legend>
+                  <div className={styles.choiceRow}>
+                    {(startQ.options ?? []).map((option) => {
+                      const on = startAnswer === option;
+                      return (
+                        <button
+                          key={option}
+                          type="button"
+                          aria-pressed={on}
+                          onClick={() => setStartAnswer(option)}
+                          className={`${styles.choice} ${on ? styles.choiceOn : ""} ${
+                            qErrors && startAnswer === null ? styles.choiceError : ""
+                          }`}
+                        >
+                          {option}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+              </section>
+
+              <section className={styles.sec} id="q3">
+                <fieldset className={styles.qSet}>
+                  <legend className={styles.qLegend}>{payQ.label}</legend>
+                  {payQ.hint ? <p className={styles.qHint}>{payQ.hint}</p> : null}
+                  <div className={styles.choiceRow}>
+                    {(payQ.options ?? []).map((option) => {
+                      const on = payAnswer === option;
+                      return (
+                        <button
+                          key={option}
+                          type="button"
+                          aria-pressed={on}
+                          onClick={() => setPayAnswer(option)}
+                          className={`${styles.choice} ${on ? styles.choiceOn : ""} ${
+                            qErrors && payAnswer === null ? styles.choiceError : ""
+                          }`}
+                        >
+                          {option}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+              </section>
+
+              <section className={styles.sec}>
+                <div className={styles.qLabel}>
+                  A note to Dana <span className={styles.qOptional}>(optional)</span>
+                </div>
+                <p className={styles.qHint}>
+                  A cover letter is never required here. Add one if there&apos;s something your
+                  resume doesn&apos;t say.
+                </p>
+                {noteOpen ? (
+                  <>
+                    <label htmlFor="in-note" className={styles.fieldLabel}>
+                      Your note
+                    </label>
+                    <textarea
+                      id="in-note"
+                      rows={5}
+                      autoFocus
+                      className={`${styles.fld} ${styles.area}`}
+                      value={note}
+                      onChange={(event) => setNote(event.target.value)}
+                    />
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    className={styles.choice}
+                    onClick={() => setNoteOpen(true)}
+                  >
+                    Add a note or cover letter
+                  </button>
+                )}
+              </section>
+
+              <div className={styles.continueRow}>
+                <Button size="lg" onPress={continueQuestions}>
+                  Continue to review
+                </Button>
+                <button type="button" className={styles.backLink} onClick={() => goTo("details")}>
+                  Back to your details
+                </button>
+                <span className={qErrors ? styles.noteError : styles.noteQuiet}>{qNote}</span>
+              </div>
+            </>
+          ) : null}
+
+          {stage === "review" ? (
+            <>
+              <h1 className={styles.h}>Check it and send</h1>
+              <p className={styles.lede}>
+                Dana Ruiz gets exactly what you see here. Change anything you like before you send
+                it.
+              </p>
+              {rErrors ? (
+                <ErrorSummary
+                  key={`r-${nonce}`}
+                  className={styles.errorBox}
+                  title={rn === 1 ? "There is 1 thing to fix" : `There are ${rn} things to fix`}
+                  items={rMissing}
+                />
+              ) : null}
+
+              <section className={styles.sec}>
+                <div className={styles.reviewHead}>
+                  <h2 className={styles.secH}>Contact</h2>
+                  <button type="button" className={styles.editLink} onClick={() => goTo("details")}>
+                    Edit<span className={styles.srOnly}> contact</span>
+                  </button>
+                </div>
+                <dl className={styles.reviewList}>
+                  {[
+                    { k: "Full name", v: values.name },
+                    { k: "Email", v: values.email },
+                    { k: "Phone", v: phoneFmt },
+                    { k: "Location", v: values.location },
+                  ].map((row) => (
+                    <div key={row.k} className={styles.reviewRow}>
+                      <dt>{row.k}</dt>
+                      <dd>{row.v}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
+
+              <section className={styles.sec}>
+                <div className={styles.reviewHead}>
+                  <h2 className={styles.secH}>Work history</h2>
+                  <button type="button" className={styles.editLink} onClick={() => goTo("details")}>
+                    Edit<span className={styles.srOnly}> work history</span>
+                  </button>
+                </div>
+                <ul className={styles.reviewPlain}>
+                  {workEntries.map((entry) => (
+                    <li key={entry.id} className={styles.reviewRow}>
+                      <span className={styles.reviewKey}>{workDates(entry)}</span>
+                      <span className={styles.reviewVal}>
+                        {entry.title}, {entry.company}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+
+              <section className={styles.sec}>
+                <div className={styles.reviewHead}>
+                  <h2 className={styles.secH}>Work authorization</h2>
+                  <button type="button" className={styles.editLink} onClick={() => goTo("details")}>
+                    Edit<span className={styles.srOnly}> work authorization</span>
+                  </button>
+                </div>
+                <dl className={styles.reviewList}>
+                  <div className={styles.reviewRow}>
+                    <dt>Authorized to work in the US</dt>
+                    <dd>{auth ?? ""}</dd>
+                  </div>
+                  <div className={styles.reviewRow}>
+                    <dt>Needs visa sponsorship</dt>
+                    <dd>{spons ?? ""}</dd>
+                  </div>
+                </dl>
+              </section>
+
+              <section className={styles.sec}>
+                <div className={styles.reviewHead}>
+                  <h2 className={styles.secH}>Job questions</h2>
+                  <button
+                    type="button"
+                    className={styles.editLink}
+                    onClick={() => goTo("questions")}
+                  >
+                    Edit<span className={styles.srOnly}> job questions</span>
+                  </button>
+                </div>
+                <dl className={styles.reviewList}>
+                  {reviewQuestions.map((row) => (
+                    <div key={row.k} className={styles.reviewRow}>
+                      <dt>{row.k}</dt>
+                      <dd>{row.v}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
+
+              <section className={styles.sec} id="code">
+                <h2 className={styles.secH}>One quick check that you&apos;re a person</h2>
+                <p className={styles.codeLede}>
+                  We texted a 6-digit code to {phoneFmt}. It keeps bots and mass-apply tools out of
+                  Dana&apos;s inbox, so she has time to read yours.
+                </p>
+                <OneTimeCodeInput
+                  label="Code from the text"
+                  value={code}
+                  onChange={setCode}
+                  hint="Demo: the code is 482913."
+                  errorMessage={
+                    rErrors && !codeOk
+                      ? code.length === 6
+                        ? "That code doesn't match. Check the latest text from Two Track Supply, or get a new code."
+                        : "Enter all 6 digits from the text."
+                      : undefined
+                  }
+                />
+                <div className={styles.resendRow}>
+                  <button
+                    type="button"
+                    className={styles.backLink}
+                    onClick={() =>
+                      setResent(`New code sent to ${phoneFmt}. It can take a minute to arrive.`)
+                    }
+                  >
+                    Text me a new code
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.backLink}
+                    onClick={() =>
+                      setResent(`We're calling ${phoneFmt} now. A recording reads the code twice.`)
+                    }
+                  >
+                    Call me with the code instead
+                  </button>
+                </div>
+                {resent ? (
+                  <p role="status" className={styles.resentNote}>
+                    {resent}
+                  </p>
+                ) : null}
+              </section>
+
+              <section className={styles.sec} id="attest">
+                <h2 className={styles.secH}>Before you send</h2>
+                <div
+                  className={`${styles.attestBox} ${rErrors && !attest ? styles.attestError : ""} ${
+                    attest ? styles.attestOn : ""
+                  }`}
+                >
+                  <Checkbox isSelected={attest} onChange={setAttest}>
+                    I confirm that what&apos;s in this application is true and complete as far as I
+                    know. I understand that false or misleading answers can end the hiring process,
+                    or my employment if I&apos;m hired. AI filled parts of this form from my
+                    resume, and I checked every answer.
+                  </Checkbox>
+                </div>
+                <p className={styles.attestLinks}>
+                  Read <Link to="/how-ai-works">how Two Track Supply uses AI in hiring</Link> and{" "}
+                  <Link to="/how-ai-works">how we use and keep your information</Link>. Two Track
+                  Supply is an equal opportunity employer.
+                </p>
+              </section>
+
+              <div className={styles.continueRow}>
+                <Button size="lg" onPress={submit}>
+                  Send my application
+                </Button>
+                <span className={rErrors ? styles.noteError : styles.noteQuiet}>{rNote}</span>
+              </div>
+            </>
+          ) : null}
+
+          {stage === "sent" ? (
+            <>
+              <svg viewBox="0 0 640 150" aria-hidden="true" className={styles.trailSvg}>
+                <path
+                  className={styles.trail}
+                  d="M10 140 C120 140 150 60 260 70 S420 120 500 50 S600 20 620 24"
+                  stroke="var(--talus-color-action-primary-bg)"
+                  strokeWidth="4"
+                  fill="none"
+                  strokeLinecap="round"
+                />
+                <path
+                  className={styles.trail}
+                  d="M10 128 C118 128 148 48 260 58 S416 108 496 38 S596 8 616 12"
+                  stroke="var(--talus-color-action-primary-bg)"
+                  strokeWidth="4"
+                  fill="none"
+                  strokeLinecap="round"
+                />
+                <g transform="translate(606 0)">
+                  <rect x="0" y="0" width="5" height="40" fill="var(--talus-color-text-on-feature)" />
+                  <path d="M5 2 L30 10 L5 18Z" fill="var(--talus-color-bg-accent)" />
+                </g>
+              </svg>
+              <h1 className={styles.hSent}>Sent. Nice work, {firstName}.</h1>
+              <p className={styles.sentLede}>
+                Your application for {job.title} is with {employer.name}. Here&apos;s exactly what
+                to expect, and when.
+              </p>
+              <h2 className={styles.sentH2}>What happens next</h2>
+              <ol className={styles.nextList}>
+                {nextSteps.map((step) => (
+                  <li key={step.title} className={styles.nextRow}>
+                    <div>
+                      <div className={styles.nextWhen}>{step.when}</div>
+                      <div className={styles.nextHow}>{step.how}</div>
+                    </div>
+                    <div>
+                      <div className={styles.nextTitle}>{step.title}</div>
+                      <div className={styles.nextBody}>{step.body}</div>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+              <div className={styles.headsUp}>
+                <strong>A heads up.</strong> We will never ask you for money, bank details or to
+                buy equipment to get hired. If anyone does, it isn&apos;t us.
+              </div>
+              <div className={styles.sentBtns}>
+                <Button size="lg" onPress={() => navigate(`/status/${statusToken}`)}>
+                  See where you stand
+                </Button>
+                <a href={calendarIcs} download="two-track-reply.ics" className={styles.ghostBtn}>
+                  Add December 2 to my calendar
+                </a>
+                <Link to="/" className={styles.ghostBtn}>
+                  Back to open roles
+                </Link>
+              </div>
+            </>
+          ) : null}
+        </main>
+
+        <aside className={styles.paper}>
+          {stage === "upload" ? (
+            <div className={styles.sideCard}>
+              <div className={styles.sideTitle}>No resume handy?</div>
+              <p className={styles.sideBody}>
+                Try the flow with June Halloran&apos;s sample resume. It&apos;s made up, like
+                everything in this demo.
+              </p>
+              <button type="button" className={styles.sideBtn} onClick={useSample}>
+                Use June&apos;s sample resume
+              </button>
+            </div>
+          ) : null}
+
+          {(reading || stage === "details") && aiFilled ? (
+            <div>
+              <div className={styles.paperHead}>
+                <span>{sampleResumeName}</span>
+                <span>{sampleResumePages}</span>
+              </div>
+              <div className={styles.paperDoc}>
+                {resumeLines.map((line, index) => (
+                  <div
+                    key={`${line.key}-${line.text.slice(0, 12)}`}
+                    className={[
+                      styles.paperLine,
+                      line.variant === "name" ? styles.paperName : "",
+                      line.variant === "head" ? styles.paperHeadLine : "",
+                      line.gap === "loose" ? styles.paperGapLoose : "",
+                      line.gap === "none" ? styles.paperGapNone : "",
+                      lineLit(index, line.key) ? styles.paperLit : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                  >
+                    {line.text}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {stage === "questions" ? (
+            <>
+              <div className={styles.sideCard}>
+                <div className={styles.sideTitle}>Demo shortcut</div>
+                <p className={styles.sideBody}>
+                  Typing answers is the point for a real applicant. For a quick look, fill in
+                  June&apos;s.
+                </p>
+                <button type="button" className={styles.sideBtn} onClick={fillJuneAnswers}>
+                  Fill June&apos;s answers
+                </button>
+              </div>
+              <div className={styles.whoReads}>
+                <strong>Who reads these.</strong> Dana and the engineering lead read your answers
+                together. Nothing here is scored by software.
+              </div>
+            </>
+          ) : null}
+
+          {stage === "review" && aiFilled ? (
+            <div className={styles.aiUsed}>
+              <div className={styles.aiUsedTitle}>How AI was used here</div>
+              <p>AI read your resume and filled 14 of 17 answers. You checked each one.</p>
+              <p>AI did not write your answers to the team&apos;s questions.</p>
+              <p>
+                AI doesn&apos;t score, rank or reject anyone at {employer.name}. Dana reads every
+                application.
+              </p>
+            </div>
+          ) : null}
+
+          {stage === "sent" ? (
+            <div className={styles.postcard}>
+              <div className={styles.postcardTop}>
+                <img
+                  src="/img/tts-hero.jpg"
+                  alt=""
+                  aria-hidden="true"
+                  className={styles.postcardImg}
+                />
+                <Postmark className={styles.stamp} />
+              </div>
+              <div className={styles.postcardBody}>
+                <div className={styles.sideTitle}>Landed in Salida</div>
+                <p className={styles.sideBodyTight}>
+                  Your application for {job.title} arrived November 25. Dana Ruiz reads it by
+                  Wednesday, December 2.
+                </p>
+              </div>
+            </div>
+          ) : null}
+        </aside>
       </div>
-    </article>
+    </div>
   );
 }

@@ -21,6 +21,13 @@ export interface ErrorSummaryProps extends React.HTMLAttributes<HTMLDivElement> 
 
 const FOCUSABLE = "input, textarea, select, button, a[href], [tabindex]";
 
+function scrollBehavior(): ScrollBehavior {
+  const reduced =
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  return reduced ? "auto" : "smooth";
+}
+
 function jumpTo(targetId: string) {
   const container = document.getElementById(targetId);
   if (!container) return;
@@ -31,8 +38,8 @@ function jumpTo(targetId: string) {
   if (el === container && !container.matches(FOCUSABLE)) {
     container.setAttribute("tabindex", "-1");
   }
-  el.focus();
-  el.scrollIntoView?.({ block: "center" });
+  el.scrollIntoView?.({ block: "center", behavior: scrollBehavior() });
+  el.focus({ preventScroll: true });
 }
 
 /**
@@ -53,7 +60,10 @@ export function ErrorSummary({
   const Heading = `h${headingLevel}` as const;
 
   useEffect(() => {
-    if (autoFocus) ref.current?.focus();
+    if (autoFocus && ref.current) {
+      ref.current.scrollIntoView?.({ block: "center", behavior: scrollBehavior() });
+      ref.current.focus({ preventScroll: true });
+    }
   }, [autoFocus]);
 
   return (

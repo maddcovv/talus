@@ -341,6 +341,32 @@
         "$value": "#211A2C"
       }
     },
+    "kraft": {
+      "50": {
+        "$type": "color",
+        "$value": "#F6F2E8"
+      },
+      "100": {
+        "$type": "color",
+        "$value": "#EFE9DC"
+      },
+      "200": {
+        "$type": "color",
+        "$value": "#E3DAC6"
+      },
+      "300": {
+        "$type": "color",
+        "$value": "#D8BC8D"
+      },
+      "400": {
+        "$type": "color",
+        "$value": "#C9B98E"
+      },
+      "800": {
+        "$type": "color",
+        "$value": "#3F3520"
+      }
+    },
     "base": {
       "white": {
         "$type": "color",
@@ -556,6 +582,10 @@
         "$type": "dimension",
         "$value": "32px"
       },
+      "22": {
+        "$type": "dimension",
+        "$value": "22px"
+      },
       "40": {
         "$type": "dimension",
         "$value": "40px"
@@ -567,6 +597,10 @@
       "56": {
         "$type": "dimension",
         "$value": "56px"
+      },
+      "64": {
+        "$type": "dimension",
+        "$value": "64px"
       }
     },
     "line-height": {
