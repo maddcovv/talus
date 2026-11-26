@@ -1,0 +1,136 @@
+.hero {
+  position: relative;
+  overflow: hidden;
+  border-block-end: 2px solid var(--talus-color-text-on-feature);
+}
+
+.heroPrint {
+  position: absolute;
+  right: 0;
+  top: 0;
+  block-size: 100%;
+  inline-size: 50%;
+  object-fit: cover;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, rgba(0, 0, 0, 0.4) 30%, #000 62%);
+  mask-image: linear-gradient(90deg, transparent 0, rgba(0, 0, 0, 0.4) 30%, #000 62%);
+}
+
+.printLife {
+  object-position: 62% 30%;
+}
+
+.printBenefits {
+  object-position: 30% 78%;
+}
+
+.heroInner {
+  position: relative;
+  max-inline-size: 1240px;
+  margin-inline: auto;
+  inline-size: 100%;
+  padding: 44px 32px 48px;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--talus-font-family-display);
+  font-stretch: 118%;
+  font-weight: 900;
+  font-size: clamp(var(--talus-font-size-40), 5vw, var(--talus-font-size-56));
+  line-height: 1.03;
+  letter-spacing: -0.02em;
+  color: var(--talus-color-text-on-feature);
+}
+
+.heroSub {
+  margin: 14px 0 0;
+  max-inline-size: 560px;
+  font-size: var(--talus-font-size-18);
+  color: var(--talus-color-text-on-feature-secondary);
+}
+
+.body {
+  max-inline-size: 1240px;
+  margin-inline: auto;
+  inline-size: 100%;
+  padding: 8px 32px 64px;
+}
+
+.prose {
+  max-inline-size: 680px;
+  line-height: var(--talus-font-line-height-normal);
+}
+
+.sec {
+  margin: 48px 0 16px;
+  padding-block-start: 28px;
+  border-block-start: 2px solid var(--talus-color-text-on-feature);
+  font-family: var(--talus-font-family-display);
+  font-stretch: 112%;
+  font-weight: var(--talus-font-weight-display);
+  font-size: var(--talus-font-size-h2);
+  letter-spacing: -0.01em;
+  color: var(--talus-color-text-on-feature);
+}
+
+.para {
+  margin: 0 0 16px;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.list li {
+  position: relative;
+  padding-inline-start: 22px;
+}
+
+.list li::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 2px;
+  top: 0.62em;
+  inline-size: 8px;
+  block-size: 8px;
+  background: var(--talus-color-action-primary-bg);
+  border-radius: var(--talus-radius-xs);
+}
+
+.finePrint {
+  margin-block-start: 48px;
+  padding-block-start: 24px;
+  border-block-start: var(--talus-border-width-control) solid var(--talus-color-border-default);
+  font-size: var(--talus-font-size-body-sm);
+  line-height: var(--talus-font-line-height-normal);
+  color: var(--talus-color-text-secondary);
+}
+
+.finePrint p {
+  margin: 0;
+}
+
+.ctaRow {
+  display: flex;
+  align-items: center;
+  gap: var(--talus-space-4);
+  margin-block-start: 32px;
+}
+
+@media (max-width: 900px) {
+  .heroPrint {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .heroInner,
+  .body {
+    padding-inline: 20px;
+  }
+}

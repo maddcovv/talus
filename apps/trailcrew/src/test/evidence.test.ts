@@ -1,16 +1,17 @@
-import { candidates, candidatesForJob, evidenceFor, june, rankedFor } from "../fixtures/candidates";
-import { getJob } from "../fixtures/jobs";
-import { resumeLines, workEntries } from "../fixtures/resume";
+import {
+  candidates,
+  candidatesForJob,
+  evidenceFor,
+  june,
+  rankedFor,
+  resumeFor,
+} from "../fixtures/candidates";
+import { getJob, jobs } from "../fixtures/jobs";
 
-// June's resume is one page, defined in fixtures/resume.ts. Every evidence
-// quote the recruiter sees must be a verbatim line from it; a match may cite
-// more than one line, and anything the resume does not say shows in words,
-// never as an invented quote.
-
-const corpus = [
-  ...resumeLines.map((line) => line.text),
-  ...workEntries.flatMap((entry) => entry.bullets.split("\n")),
-];
+// Every evidence quote the recruiter sees must be a verbatim line from that
+// candidate's own resume. June's resume is the real one-page fixture; every
+// other candidate carries generated lines of their own. Anything a resume
+// does not say shows in words, never as an invented quote.
 
 function juneRows() {
   const job = getJob(june.jobId);
@@ -19,14 +20,23 @@ function juneRows() {
 }
 
 describe("evidence quotes", () => {
-  it("every cited line for June is verbatim on her one-page resume", () => {
-    for (const row of juneRows()) {
-      for (const quote of row.quotes) {
-        const found = corpus.some((line) => line.includes(quote));
-        expect({ quote, found }).toEqual({ quote, found: true });
-      }
-      if (row.quotes.length > 0) {
-        expect(row.where).toBe("Resume, page 1");
+  it("every cited line is verbatim on that candidate's own resume", () => {
+    for (const candidate of candidates) {
+      const job = getJob(candidate.jobId);
+      if (!job) continue;
+      const corpus = resumeFor(candidate);
+      for (const row of evidenceFor(candidate, job.requirements)) {
+        for (const quote of row.quotes) {
+          const found = corpus.some((line) => line.includes(quote));
+          expect({ who: candidate.id, quote, found }).toEqual({
+            who: candidate.id,
+            quote,
+            found: true,
+          });
+        }
+        if (row.quotes.length > 0) {
+          expect(row.where).toBe("Resume, page 1");
+        }
       }
     }
   });
@@ -46,13 +56,36 @@ describe("evidence quotes", () => {
     expect(testing.note).toContain("Integration testing isn't on the resume");
   });
 
-  it("AI rank is advice over everyone: full coverage first, nobody hidden", () => {
+  it("rank and the candidate page agree: June is 4 full and 1 partial, first", () => {
     const ranked = rankedFor("senior-frontend");
     expect(ranked).toHaveLength(candidatesForJob("senior-frontend").length);
-    expect(ranked[0].candidate.id).toBe("june-halloran");
-    expect(ranked[0].covered).toBe(ranked[0].total);
+    const first = ranked[0];
+    expect(first.candidate.id).toBe("june-halloran");
+    expect(first.coverage).toEqual({ full: 4, partial: 1, total: 5 });
+    // Full matches order the list; partial ones break ties.
     for (let i = 1; i < ranked.length; i += 1) {
-      expect(ranked[i - 1].covered).toBeGreaterThanOrEqual(ranked[i].covered);
+      const prev = ranked[i - 1].coverage;
+      const here = ranked[i].coverage;
+      expect(
+        prev.full > here.full ||
+          (prev.full === here.full && prev.partial >= here.partial),
+      ).toBe(true);
+    }
+  });
+
+  it("the why-line is strong evidence, never a job-title line", () => {
+    const first = rankedFor("senior-frontend")[0];
+    expect(first.top).toBe(
+      "Shipped the accessibility pass that took dashboards to WCAG 2.1 AA.",
+    );
+  });
+
+  it("no two candidates on a job share a why-line", () => {
+    for (const job of jobs) {
+      const tops = rankedFor(job.id)
+        .map((entry) => entry.top)
+        .filter((top): top is string => top !== null);
+      expect(new Set(tops).size).toBe(tops.length);
     }
   });
 

@@ -1,5 +1,11 @@
 # @talus/react
 
+## 0.8.1
+
+### Patch Changes
+
+- BoardCard's move control uses an overflow glyph instead of an arrow, so an arrow no longer sits on every card.
+
 ## 0.8.0
 
 ### Minor Changes

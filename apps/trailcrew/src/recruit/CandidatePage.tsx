@@ -17,7 +17,13 @@ import {
   ToastRegion,
   type BadgeVariant,
 } from "@talus/react";
-import { answersFor, candidatesForJob, evidenceFor, getCandidate } from "../fixtures/candidates";
+import {
+  answersFor,
+  candidatesForJob,
+  evidenceFor,
+  getCandidate,
+  resumeFor,
+} from "../fixtures/candidates";
 import { demoTodayShort, statusMessages } from "../fixtures/demo";
 import { getJob, recruiters } from "../fixtures/jobs";
 import { resumeLines, workEntries } from "../fixtures/resume";
@@ -96,8 +102,8 @@ function lineKeyFor(quote: string): string | null {
   return entry ? entry.lineKey : null;
 }
 
-function GenericResume({ candidate, job }: { candidate: Candidate; job: Job }) {
-  const lines = evidenceFor(candidate, job.requirements).flatMap((row) => row.quotes);
+function GenericResume({ candidate }: { candidate: Candidate; job: Job }) {
+  const lines = resumeFor(candidate);
   return (
     <div className={styles.genericDoc}>
       <p className={styles.genericName}>{candidate.name}</p>

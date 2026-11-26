@@ -28,7 +28,14 @@ import {
 import { Blaze } from "../components/Blaze";
 import { SourceMark } from "../components/SourceMark";
 import { Tally } from "../components/Tally";
-import { candidatesForJob, evidenceFor, needsDanaWhy, rankedFor } from "../fixtures/candidates";
+import {
+  candidatesForJob,
+  coverageFor,
+  coverageWords,
+  evidenceFor,
+  needsDanaWhy,
+  rankedFor,
+} from "../fixtures/candidates";
 import { aiLogCsv, aiLogForJob } from "../fixtures/ailog";
 import { getJob } from "../fixtures/jobs";
 import { ActivityTable } from "./AiActivityPage";
@@ -74,9 +81,9 @@ function appliedDay(candidate: Candidate): number {
   return Number.parseInt(candidate.appliedOn.replace("Nov ", ""), 10);
 }
 
-/** How many requirements have a matched line. Coverage, never a score. */
-function covered(candidate: Candidate, job: Job): number {
-  return evidenceFor(candidate, job.requirements).filter((row) => row.quotes.length > 0).length;
+/** The one evidence source, shared with the rank view. */
+function coverage(candidate: Candidate, job: Job) {
+  return coverageFor(evidenceFor(candidate, job.requirements));
 }
 
 export function PipelinePage() {
@@ -121,7 +128,11 @@ export function PipelinePage() {
       if (sort.column === "name") order = a.name.localeCompare(b.name);
       if (sort.column === "applied") order = appliedDay(a) - appliedDay(b);
       if (sort.column === "waiting") order = a.waitingDays - b.waitingDays;
-      if (sort.column === "evidence") order = covered(a, job) - covered(b, job);
+      if (sort.column === "evidence") {
+        const ca = coverage(a, job);
+        const cb = coverage(b, job);
+        order = ca.full - cb.full || ca.partial - cb.partial;
+      }
       return sort.direction === "descending" ? -order : order;
     });
 
@@ -341,8 +352,12 @@ export function PipelinePage() {
                       {stageTitles[candidate.stage]}
                     </span>
                   );
-                case "evidence":
-                  return `${covered(candidate, job)} of ${job.requirements.length}`;
+                case "evidence": {
+                  const c = coverage(candidate, job);
+                  return c.partial > 0
+                    ? `${c.full} of ${c.total}, ${c.partial} partial`
+                    : `${c.full} of ${c.total}`;
+                }
                 case "source":
                   return <SourceMark source={candidate.source} />;
                 case "applied":
@@ -381,7 +396,7 @@ export function PipelinePage() {
                     </span>
                   </span>
                   <span className={styles.rankWhy}>
-                    Matched {entry.covered} of {entry.total} requirements
+                    {coverageWords(entry.coverage)}
                     {entry.top ? (
                       <span className={styles.rankQuote}> {"·"} "{entry.top}"</span>
                     ) : null}

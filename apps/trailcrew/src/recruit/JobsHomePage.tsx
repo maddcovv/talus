@@ -7,7 +7,7 @@ import styles from "./JobsHomePage.module.css";
 
 /**
  * The numbers a hiring manager actually asks for, and they add up:
- * applied = not reviewed + in review + gotten through + rejected.
+ * applied = not reviewed + in review + moved forward + rejected.
  */
 function countsFor(jobId: string) {
   const all = candidatesForJob(jobId);
@@ -31,7 +31,7 @@ function StatStrip({ jobId, title }: { jobId: string; title: string }) {
     { label: "Applied", value: counts.applied, lead: true },
     { label: "Not reviewed", value: counts.notReviewed },
     { label: "In review", value: counts.inReview },
-    { label: "Gotten through", value: counts.through },
+    { label: "Moved forward", value: counts.through },
     { label: "Rejected", value: counts.rejected },
   ];
   return (

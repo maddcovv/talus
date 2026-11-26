@@ -18,12 +18,10 @@
 .section {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: var(--talus-space-4);
-  padding: var(--talus-space-4);
-  margin-block-end: var(--talus-space-5);
-  background: var(--talus-color-bg-surface);
-  border: var(--talus-border-width-control) solid var(--talus-color-border-default);
-  border-radius: var(--talus-radius-container);
+  padding-block: var(--talus-space-4) var(--talus-space-5);
+  border-block-start: var(--talus-border-width-control) solid var(--talus-color-border-default);
 }
 
 .h2 {

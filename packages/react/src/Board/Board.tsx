@@ -6,7 +6,7 @@ import {
   MenuTrigger,
   Popover as AriaPopover,
 } from "react-aria-components";
-import { ArrowRight } from "@phosphor-icons/react";
+import { DotsThree } from "@phosphor-icons/react";
 import { cx } from "../cx";
 import styles from "./Board.module.css";
 import util from "../shared/util.module.css";
@@ -173,7 +173,7 @@ export function BoardCard({ id, title, onOpen, children, className }: BoardCardP
       </div>
       <MenuTrigger>
         <AriaButton className={styles.moveButton} aria-label={`Move ${title}`}>
-          <ArrowRight className={styles.moveGlyph} aria-hidden="true" />
+          <DotsThree weight="bold" className={styles.moveGlyph} aria-hidden="true" />
         </AriaButton>
         <AriaPopover className={styles.menuPopover} placement="bottom end">
           <AriaMenu

@@ -1,4 +1,5 @@
 import { jobs } from "./jobs";
+import { resumeLines, workEntries } from "./resume";
 import type { Candidate, EvidenceRow, PersonCheck, Source, StageId } from "./types";
 import { stageOrder } from "./types";
 
@@ -257,36 +258,130 @@ export function candidatesForJob(jobId: string): Candidate[] {
 /** The status page token for the one demo application. */
 export const statusToken = "june-halloran";
 
-// Plausible resume lines per job, one per requirement, used as suggested
-// evidence. A deterministic hash drops about a third, so "No evidence found"
-// shows up naturally.
-const evidencePools: Record<string, string[]> = {
+// Every candidate gets a resume of their own. Each requirement has a few
+// line shapes, and every line carries a number derived from the candidate's
+// place in the job's list, so no two candidates ever share a line.
+type LineMaker = (ord: number) => string;
+
+const lineMakers: Record<string, LineMaker[][]> = {
+  "senior-frontend": [
+    [
+      (o) => `${6 + o} years building web applications, agency first, then product`,
+      (o) => `Shipped web products for ${6 + o} years across two storefronts`,
+      (o) => `Frontend engineer since ${2019 - o}, full stack before that`,
+    ],
+    [
+      (o) => `React and TypeScript daily across ${2 + o} product teams`,
+      (o) => `TypeScript strict mode over a ${40 + 5 * o}k line React codebase`,
+      (o) => `Moved ${3 + o} legacy views to typed React without a freeze`,
+    ],
+    [
+      (o) => `Maintained a ${12 + o} component design system used by three teams`,
+      (o) => `Built the shared component library, ${18 + o} releases and counting`,
+      (o) => `Ran design system reviews for ${2 + o} squads every sprint`,
+    ],
+    [
+      (o) => `Took ${1 + o} products through a WCAG 2.1 AA audit`,
+      (o) => `Closed ${38 + 3 * o} accessibility findings ahead of an AA audit`,
+      (o) => `Keyboard and screen reader passes on every release since ${2021 - o}`,
+    ],
+    [
+      (o) => `${70 + o} percent unit coverage on the storefront, integration on checkout`,
+      (o) => `Wrote ${180 + 20 * o} Vitest tests and the integration harness around them`,
+      (o) => `Unit and integration suites gate every merge, about ${3 + o} minutes end to end`,
+    ],
+  ],
   "warehouse-lead": [
-    "Four years receiving and fulfillment at a regional parts distributor",
-    "Ran a pick and pack crew of five on the afternoon shift",
-    "Daily cycle counts in Fishbowl with RF scanners",
-    "Forklift certified, sit down and stand up, renewed 2025",
-    "Loaded and unloaded trucks through peak season",
+    [
+      (o) => `${3 + o} years receiving and fulfillment at a regional parts distributor`,
+      (o) => `${3 + o} peak seasons on the floor of a furniture warehouse`,
+      (o) => `Warehouse work since ${2020 - o}, receiving through outbound`,
+    ],
+    [
+      (o) => `Ran a pick and pack crew of ${4 + o} on the afternoon shift`,
+      (o) => `Led ${4 + o} temps through two holiday ramps without an injury`,
+      (o) => `Trained and scheduled a dock team of ${4 + o}`,
+    ],
+    [
+      (o) => `Daily cycle counts in Fishbowl, ${98 + o / 10} percent location accuracy`,
+      (o) => `Ran NetSuite bins and RF scanners for ${2 + o} years`,
+      (o) => `Cut mispicks ${20 + 5 * o} percent after relabeling the fast aisle`,
+    ],
+    [
+      (o) => `Forklift certified, sit down and stand up, renewed ${2023 - (o % 3)}, ${1 + o} incidents free years`,
+      (o) => `${1 + o} years on a reach truck in narrow aisles`,
+      (o) => `Certified on counterbalance and pallet stackers, ${2 + o} years running both`,
+    ],
+    [
+      (o) => `Loaded ${8 + o} trucks a day through peak season`,
+      (o) => `Lifted 50 pounds through ${220 + 15 * o} picks a shift`,
+      (o) => `Floor role for ${3 + o} years, lifting and walking all day`,
+    ],
   ],
   "customer-support": [
-    "Three years on the support desk at a mail order nursery",
-    "Wrote the macros the rest of the team used for order status",
-    "Handled returns and reshipments end to end",
-    "Covered chat and phone on the weekend rotation",
-  ],
-  "senior-frontend": [
-    "Eight years building web applications, the last five in React",
-    "TypeScript across the whole codebase, strict mode on",
-    "Maintained the shared component library used by four teams",
-    "Audited checkout against WCAG 2.1 AA and fixed every blocker",
-    "Vitest unit tests and Playwright integration tests on every feature",
+    [
+      (o) => `${2 + o} years on the support desk at a mail order nursery`,
+      (o) => `Support for ${2 + o} years across retail and software`,
+      (o) => `Front line support since ${2021 - o}, email first`,
+    ],
+    [
+      (o) => `Wrote the ${10 + o} macros the rest of the team uses for order status`,
+      (o) => `Closed ${1100 + 60 * o} tickets last year with top satisfaction marks`,
+      (o) => `Turned ${5 + o} repeat questions into help center articles`,
+    ],
+    [
+      (o) => `Handled ${900 + 50 * o} returns and reshipments end to end last year`,
+      (o) => `Filed ${30 + 5 * o} carrier claims and won most of them`,
+      (o) => `Owned order changes and address fixes for ${2 + o} storefronts`,
+    ],
+    [
+      (o) => `Covered chat, email and phone, ${1 + o} years on the rotation`,
+      (o) => `Took ${25 + 5 * o} conversations a day across three channels`,
+      (o) => `Weekend phone rotation for ${1 + o} years without a miss`,
+    ],
   ],
   "seasonal-fulfillment": [
-    "Two holiday seasons picking orders at a book warehouse",
-    "Comfortable on my feet with totes up to 40 pounds",
-    "Picked with 99.8 percent accuracy last December",
+    [
+      (o) => `${1 + o} holiday seasons picking orders at a book warehouse`,
+      (o) => `Free November through January, ${1 + o} seasons running`,
+      (o) => `Seasonal warehouse work every winter since ${2023 - o}`,
+    ],
+    [
+      (o) => `On my feet with totes up to 40 pounds, ${320 + 25 * o} cartons a shift`,
+      (o) => `Moved ${300 + 25 * o} cartons a shift at a parcel depot`,
+      (o) => `Comfortable lifting 40 pounds all day, ${1 + o} seasons proof`,
+    ],
+    [
+      (o) => `${1200 + 80 * o} error free picks last December`,
+      (o) => `Zero mislabels across ${2 + o} weeks of December staging`,
+      (o) => `Caught ${10 + 2 * o} short picks before they shipped`,
+    ],
   ],
 };
+
+const juneCorpus = [
+  ...resumeLines.map((line) => line.text),
+  ...workEntries.flatMap((entry) => entry.bullets.split("\n")),
+];
+
+const ordinals = new Map<string, number>();
+for (const job of jobs) {
+  let ord = 0;
+  for (const candidate of candidates) {
+    if (candidate.jobId === job.id) {
+      ordinals.set(candidate.id, ord);
+      ord += 1;
+    }
+  }
+}
+
+/** The candidate's whole resume, line by line. June's is the real fixture. */
+export function resumeFor(candidate: Candidate): string[] {
+  if (candidate.id === "june-halloran") return juneCorpus;
+  const makers = lineMakers[candidate.jobId] ?? [];
+  const ord = ordinals.get(candidate.id) ?? 0;
+  return makers.map((variants, reqIdx) => variants[(ord + reqIdx) % variants.length](ord));
+}
 
 function hash(text: string): number {
   let value = 0;
@@ -335,29 +430,69 @@ export function evidenceFor(candidate: Candidate, requirements: string[]): Evide
       },
     ];
   }
-  const pool = evidencePools[candidate.jobId] ?? [];
+  const lines = resumeFor(candidate);
   return requirements.map((requirement, index) => {
     const found = (hash(candidate.id) + index) % 3 !== 1;
     return {
       requirement,
-      quotes: found && pool[index % pool.length] ? [pool[index % pool.length]] : [],
+      quotes: found && lines[index] ? [lines[index]] : [],
       where: found ? "Resume, page 1" : undefined,
     };
   });
 }
 
+export interface Coverage {
+  full: number;
+  partial: number;
+  total: number;
+}
+
+/** One evidence source for the rank view and the tables. */
+export function coverageFor(rows: EvidenceRow[]): Coverage {
+  return {
+    full: rows.filter((row) => row.quotes.length > 0 && !row.partial).length,
+    partial: rows.filter((row) => row.partial).length,
+    total: rows.length,
+  };
+}
+
+export function coverageWords(coverage: Coverage): string {
+  const base = `Matched ${coverage.full} of ${coverage.total}`;
+  return coverage.partial > 0
+    ? `${base}, ${coverage.partial} partial`
+    : base;
+}
+
+/** The line with the most requirement coverage; ties go to the longest. */
+function strongestLine(rows: EvidenceRow[]): string | null {
+  const fullRows = rows.filter((row) => row.quotes.length > 0 && !row.partial && !row.note);
+  const pool = fullRows.length > 0 ? fullRows : rows.filter((row) => row.quotes.length > 0);
+  let best: string | null = null;
+  let bestScore = -1;
+  for (const row of pool) {
+    for (const quote of row.quotes) {
+      const cover = rows.filter((entry) => entry.quotes.includes(quote)).length;
+      const score = cover * 1000 + quote.length;
+      if (score > bestScore) {
+        bestScore = score;
+        best = quote;
+      }
+    }
+  }
+  return best;
+}
+
 export interface RankedCandidate {
   candidate: Candidate;
-  /** Requirements with at least one matched resume line. */
-  covered: number;
-  total: number;
-  /** The strongest matched line, for the why. */
+  coverage: Coverage;
+  /** The strongest matched line, the one with the most requirement coverage. */
   top: string | null;
 }
 
 /**
- * AI's reading order for a job, from resume evidence against the posting.
- * Advice only: it includes everyone, hides no one, and decides nothing.
+ * AI's reading order for a job: full matches first, then partial ones, from
+ * the same evidence the candidate page shows. Advice only: it includes
+ * everyone, hides no one, and decides nothing.
  */
 export function rankedFor(jobId: string): RankedCandidate[] {
   const job = jobs.find((entry) => entry.id === jobId);
@@ -365,19 +500,18 @@ export function rankedFor(jobId: string): RankedCandidate[] {
   return candidatesForJob(jobId)
     .map((candidate) => {
       const rows = evidenceFor(candidate, job.requirements);
-      const matched = rows.filter((row) => row.quotes.length > 0);
       return {
         candidate,
-        covered: matched.length,
-        total: rows.length,
-        top: matched[0]?.quotes[0] ?? null,
+        coverage: coverageFor(rows),
+        top: strongestLine(rows),
       };
     })
     .sort((a, b) => {
       const day = (entry: RankedCandidate) =>
         Number.parseInt(entry.candidate.appliedOn.replace("Nov ", ""), 10) || 0;
       return (
-        b.covered - a.covered ||
+        b.coverage.full - a.coverage.full ||
+        b.coverage.partial - a.coverage.partial ||
         day(b) - day(a) ||
         a.candidate.name.localeCompare(b.candidate.name)
       );
