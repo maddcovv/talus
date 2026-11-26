@@ -63,14 +63,14 @@ const nextSteps = [
   {
     when: "By Wednesday, Dec 2",
     how: "Email, either way",
-    title: "Dana Ruiz reads your application",
-    body: "A person, not a filter. Yes or not this time, you hear back by email. Never silence.",
+    title: "Our recruiter reads your application",
+    body: "A person, not a filter. It's a competitive opening and not everyone moves forward, but everyone hears back by email, yes or not this time. Never silence.",
   },
   {
     when: "Within a week after",
     how: "Phone or video, your pick",
     title: "A 30 minute conversation",
-    body: "If it's a match, Dana texts first to find a time, then calls. Come with questions.",
+    body: "If it's a match, our recruiter texts first to find a time, then calls. Come with questions.",
   },
   {
     when: "About a week later",
@@ -1132,7 +1132,7 @@ export function ApplyPage() {
               <div className={styles.postcardBody}>
                 <div className={styles.sideTitle}>Landed in Salida</div>
                 <p className={styles.sideBodyTight}>
-                  Your application for {job.title} arrived November 25. Dana Ruiz reads it by
+                  Your application for {job.title} arrived November 25. Our recruiter reads it by
                   Wednesday, December 2.
                 </p>
               </div>
