@@ -22,4 +22,17 @@ describe("pipeline board keyboard move", () => {
     expect(within(offerColumn).getByText("Marisol Vega")).toBeInTheDocument();
     expect(screen.getByText("Marisol Vega moved to Offer.")).toBeInTheDocument();
   });
+
+  it("a card's name opens the candidate, with a crumb back to the job", async () => {
+    const user = userEvent.setup();
+    renderAt("/recruit/jobs/senior-frontend");
+
+    await user.click(screen.getByRole("button", { name: "June Halloran" }));
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "June Halloran" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Senior Frontend Engineer" }),
+    ).toHaveAttribute("href", "/recruit/jobs/senior-frontend");
+  });
 });

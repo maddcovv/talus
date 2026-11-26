@@ -1,5 +1,11 @@
 # @talus/react
 
+## 0.8.0
+
+### Minor Changes
+
+- BoardCard takes onOpen: the card's title becomes a keyboard-reachable press target that opens the record behind the card.
+
 ## 0.7.0
 
 ### Minor Changes

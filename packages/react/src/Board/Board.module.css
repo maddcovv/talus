@@ -166,3 +166,25 @@
 .menuItem[data-focused] {
   background: var(--talus-color-bg-hover);
 }
+
+/* The title as a press target when the card opens a record. */
+.titleButton {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  border-radius: var(--talus-radius-xs);
+}
+
+.titleButton:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.titleButton:focus-visible {
+  outline: var(--talus-focus-ring-width) solid var(--talus-color-border-focus);
+  outline-offset: var(--talus-focus-ring-offset);
+}

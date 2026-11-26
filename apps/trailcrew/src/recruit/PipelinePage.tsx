@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   CircleDashed,
   DeviceMobile,
@@ -26,6 +26,7 @@ import {
   type SortDescriptor,
 } from "@talus/react";
 import { Blaze } from "../components/Blaze";
+import { SourceMark } from "../components/SourceMark";
 import { Tally } from "../components/Tally";
 import { candidatesForJob, evidenceFor, needsDanaWhy, rankedFor } from "../fixtures/candidates";
 import { aiLogCsv, aiLogForJob } from "../fixtures/ailog";
@@ -81,6 +82,9 @@ function covered(candidate: Candidate, job: Job): number {
 export function PipelinePage() {
   const { jobId = "" } = useParams();
   const job = getJob(jobId);
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const view = searchParams.get("view") ?? "board";
   const [rows, setRows] = useState<Candidate[]>(() => candidatesForJob(jobId));
   const [filterStage, setFilterStage] = useState<string>("all");
   const [filterSource, setFilterSource] = useState<string>("all");
@@ -203,7 +207,10 @@ export function PipelinePage() {
         </div>
       </div>
 
-      <Tabs defaultSelectedKey="board">
+      <Tabs
+        selectedKey={view}
+        onSelectionChange={(key) => setSearchParams({ view: String(key) }, { replace: true })}
+      >
         <TabList aria-label="Views of this job">
           <Tab id="board">Board</Tab>
           <Tab id="candidates">Candidates</Tab>
@@ -242,7 +249,12 @@ export function PipelinePage() {
                         const CheckIcon = checkIcons[candidate.personCheck];
                         const why = needsDanaWhy(candidate);
                         return (
-                          <BoardCard key={candidate.id} id={candidate.id} title={candidate.name}>
+                          <BoardCard
+                            key={candidate.id}
+                            id={candidate.id}
+                            title={candidate.name}
+                            onOpen={() => navigate(`/recruit/candidates/${candidate.id}`)}
+                          >
                             <span className={styles.cardTop}>
                               <span className={styles.cardRole}>{candidate.currentRole}</span>
                               <Tally
@@ -255,7 +267,9 @@ export function PipelinePage() {
                               {personCheckWords[candidate.personCheck]}
                             </span>
                             <span className={styles.cardFoot}>
-                              <span className={styles.cardSource}>{candidate.source}</span>
+                              <span className={styles.cardSource}>
+                                <SourceMark source={candidate.source} />
+                              </span>
                               {why ? (
                                 <span className={styles.cardAsk}>
                                   <Blaze variant="double" className={styles.cardBlaze} />
@@ -330,7 +344,7 @@ export function PipelinePage() {
                 case "evidence":
                   return `${covered(candidate, job)} of ${job.requirements.length}`;
                 case "source":
-                  return candidate.source;
+                  return <SourceMark source={candidate.source} />;
                 case "applied":
                   return <span className={styles.dateCell}>{candidate.appliedOn}</span>;
                 case "waiting":

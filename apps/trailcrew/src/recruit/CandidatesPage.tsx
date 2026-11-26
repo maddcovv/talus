@@ -14,6 +14,7 @@ import {
   type SortDescriptor,
 } from "@talus/react";
 import { Blaze } from "../components/Blaze";
+import { SourceMark } from "../components/SourceMark";
 import { candidates, needsDana } from "../fixtures/candidates";
 import { getJob, jobs } from "../fixtures/jobs";
 import {
@@ -168,7 +169,7 @@ export function CandidatesPage() {
               );
             }
             case "source":
-              return candidate.source;
+              return <SourceMark source={candidate.source} />;
             case "applied":
               return <span className={styles.dateCell}>{candidate.appliedOn}</span>;
             default:

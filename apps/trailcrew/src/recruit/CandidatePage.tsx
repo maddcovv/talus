@@ -167,6 +167,10 @@ export function CandidatePage() {
 
   return (
     <article>
+      <p className={styles.crumbs}>
+        <Link to="/recruit">All jobs</Link> {"·"}{" "}
+        <Link to={`/recruit/jobs/${candidate.jobId}`}>{job.title}</Link>
+      </p>
       <header className={styles.head}>
         <Avatar name={candidate.name} size="lg" />
         <div className={styles.headText}>
